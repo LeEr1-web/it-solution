@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>IT Solution — Dépannage informatique en Martinique</title>
+  <meta name="description" content="Dépannage informatique, vidéosurveillance, caisse, réseau et maintenance en Martinique. Agences à Ducos et au Robert. Rendez-vous en ligne, devis immédiat, WhatsApp.">
+  <meta name="theme-color" content="#0b1526">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231554c9'/%3E%3Ctext x='16' y='21' font-family='monospace' font-size='14' font-weight='700' fill='white' text-anchor='middle'%3EIT_%3C/text%3E%3C/svg%3E">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="IT Solution — Dépannage informatique en Martinique">
+  <meta property="og:description" content="Rendez-vous en ligne, devis immédiat et packs à prix réduits. Agences à Ducos et au Robert. −15 % pour les étudiants.">
+  <meta property="og:locale" content="fr_FR">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "IT Solution",
+    "description": "Dépannage informatique, installation, vidéosurveillance, caisse, réseau et maintenance en Martinique.",
+    "areaServed": "Martinique",
+    "department": [
+      { "@type": "ProfessionalService", "name": "IT Solution — Ducos", "telephone": "+596696779902", "priceRange": "€",
+        "address": { "@type": "PostalAddress", "addressLocality": "Ducos", "addressRegion": "Martinique", "addressCountry": "FR" },
+        "openingHours": ["Mo-Fr 08:00-17:00", "Sa 08:00-12:00"] },
+      { "@type": "ProfessionalService", "name": "IT Solution — Le Robert", "telephone": "+596696482678", "priceRange": "€",
+        "address": { "@type": "PostalAddress", "addressLocality": "Le Robert", "addressRegion": "Martinique", "addressCountry": "FR" },
+        "openingHours": ["Mo-Fr 08:00-17:00", "Sa 08:00-12:00"] }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="style.css?v=42">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#" onclick="home();return false" aria-label="IT Solution — accueil">
+      <span class="mark" aria-hidden="true">IT<i>_</i></span>
+      <span class="brand-text"><b>IT Solution</b><span class="mono">Ducos · Le Robert — Martinique</span></span>
+    </a>
+    <span id="openStatus" class="status mono" aria-live="polite"></span>
+    <div class="top-actions">
+      <button type="button" class="btn btn-head" onclick="openZones()"><span>Zones & tarifs</span></button>
+      <span id="headContact" class="head-contact"></span>
+    </div>
+  </header>
+
+  <main class="layout" id="main">
+    <section class="panel config" aria-labelledby="stepTitle">
+      <ol class="stepper" id="steps"></ol>
+      <div class="content" id="app" tabindex="-1"></div>
+      <div class="nav" id="nav"></div>
+    </section>
+
+    <aside class="panel summary" aria-label="Votre estimation">
+      <div class="kind-toggle" id="kindToggle" role="group" aria-label="Je veux"></div>
+      <h2><span class="mono">&gt;</span> Votre estimation</h2>
+      <div id="lines" class="lines"></div>
+      <div class="total">
+        <span>Total estimé</span>
+        <strong id="price" class="mono" aria-live="polite">—</strong>
+      </div>
+      <p id="savings" class="savings"></p>
+      <label class="check student" id="student"></label>
+      <div id="meta" class="meta"></div>
+
+      <div class="tarifs">
+        <h3>Frais de déplacement</h3>
+        <table id="tarifs"></table>
+        <button type="button" class="link" onclick="openZones()">Voir les communes par zone</button>
+      </div>
+
+      <ul class="garanties">
+        <li>Devis gratuit et sans engagement</li>
+        <li>Prix confirmé avant toute intervention</li>
+        <li>−15 % pour les étudiants</li>
+      </ul>
+      <p class="note">Prix indicatifs, confirmés après diagnostic.</p>
+      <p id="avis" class="avis"></p>
+      <nav class="foot-links" aria-label="Liens utiles">
+        <a href="#suivi">Suivre ma demande</a>
+        <a href="services.html">Nos services et tarifs</a>
+        <a href="fiche-tarifs.html">Fiche tarifs (PDF)</a>
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="gestion.html">Espace pro</a>
+      </nav>
+    </aside>
+  </main>
+
+  <div class="mobilebar">
+    <span>Total estimé <b id="mobilePrice" class="mono">—</b></span>
+    <button type="button" class="btn btn-wa" onclick="openChat()" aria-label="Discuter sur WhatsApp"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg> WhatsApp</button>
+  </div>
+
+  <dialog id="zonesDialog" aria-labelledby="zonesTitle">
+    <div class="dialog-head">
+      <h2 id="zonesTitle">Zones d'intervention et frais de déplacement</h2>
+      <button type="button" class="btn" onclick="document.getElementById('zonesDialog').close()">Fermer</button>
+    </div>
+    <p class="muted">Départ de nos agences de Ducos et du Robert. Aucun frais en agence ou à distance, et déplacement offert dès <b id="offertZones"></b> € de prestation.</p>
+    <div id="zonesGrid" class="zones"></div>
+  </dialog>
+
+  <script src="data.js?v=42"></script>
+  <script src="app.js?v=42"></script>
+</body>
+</html>

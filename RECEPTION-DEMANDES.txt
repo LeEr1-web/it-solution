@@ -1,0 +1,107 @@
+RECEVOIR LES DEMANDES — 2 méthodes, utilisables ensemble
+
+Tous les réglages se font en haut du fichier data.js (bloc CONFIG).
+
+
+══════════════════════════════════════════════════════════════
+MÉTHODE 1 — PAR EMAIL (5 minutes, aucun compte à créer)
+══════════════════════════════════════════════════════════════
+Chaque demande (rendez-vous ou devis) vous arrive par email, et le client
+reçoit automatiquement un accusé de réception. Service gratuit : FormSubmit.
+
+  1. Dans data.js, mettez votre adresse :
+       emailReception: 'votre-adresse@gmail.com',
+  2. Mettez le site en ligne (voir HEBERGEMENT-GITHUB.txt), puis faites une
+     première demande de test depuis le site.
+  3. FormSubmit vous envoie un email « Action Required: Activate Form » :
+     cliquez sur « Activate Form ». (Pensez à regarder dans les spams.)
+  4. Refaites une demande de test : elle arrive dans votre boîte.
+  5. Conseillé : l'email d'activation contient un alias secret (une suite de
+     lettres et chiffres). Remplacez votre adresse par cet alias dans data.js :
+       emailReception: 'a1b2c3d4e5f6...',
+     Ainsi votre adresse n'apparaît plus dans le code du site (moins de spam).
+
+  Limite : les photos jointes par les clients ne passent pas par email avec
+  cette méthode (le client est invité à vous l'envoyer sur WhatsApp).
+
+
+══════════════════════════════════════════════════════════════
+MÉTHODE 2 — GOOGLE : tableau + planning + rappels + suivi (15 minutes)
+══════════════════════════════════════════════════════════════
+En plus de l'email, chaque demande :
+  - s'ajoute dans un Google Sheet (une ligne par demande, avec un statut) ;
+  - crée un rendez-vous dans l'agenda « IT Solution — Interventions »
+    (bleu = Ducos, orange = Le Robert), visible sur vos téléphones ;
+  - range la photo du client dans Google Drive et vous l'envoie par email ;
+  - grise les créneaux pleins (« Complet ») pour les clients suivants.
+Et automatiquement :
+  - chaque soir à 18 h : rappel aux clients du lendemain + planning du lendemain à l'équipe ;
+  - quand vous mettez le statut « Confirmé », « Prêt à récupérer » ou « Devis envoyé »,
+    le client est prévenu par email ;
+  - le client peut suivre sa demande sur le site (lien « Suivre ma demande »).
+
+ÉTAPE 1 — Créer le tableau
+  1. Allez sur https://sheets.google.com et créez une feuille vierge.
+  2. Nommez-la « IT Solution — Demandes ».
+
+ÉTAPE 2 — Coller le script
+  1. Dans la feuille : menu Extensions > Apps Script.
+  2. Effacez le code présent, puis collez TOUT le contenu de google-apps-script.gs.
+  3. En haut du code, dans REGLAGES :
+       - EQUIPE : vos adresses email, par exemple
+         EQUIPE: ['ducos@gmail.com', 'robert@gmail.com'],
+       - SITE_URL : l'adresse du site une fois en ligne (pour le lien de suivi)
+       - CAPACITE : interventions possibles par agence et par créneau (2 par défaut)
+       - CLE_GESTION : un code secret de votre choix (ex : 'ducos-robert-2026').
+         C'est le code qui ouvre la page de gestion gestion.html. Ne le donnez qu'à l'équipe.
+  4. Cliquez sur l'icône Enregistrer (disquette).
+
+ÉTAPE 3 — Installer (une seule fois)
+  1. En haut, choisissez la fonction « installer » puis cliquez sur ▶ Exécuter.
+  2. Google demande des autorisations : Autoriser > votre compte >
+     « Paramètres avancés » > « Accéder au projet (non sécurisé) » > Autoriser.
+     (C'est normal : c'est votre propre script.)
+  3. Le « Journal d'exécution » affiche deux lignes à copier dans data.js :
+       - l'identifiant de l'agenda  -> CONFIG.calendarId
+       - le lien du tableau         -> CONFIG.sheetUrl
+
+ÉTAPE 4 — Publier le script
+  1. Bouton bleu « Déployer » > « Nouveau déploiement ».
+  2. Roue dentée > type « Application Web ».
+  3. Exécuter en tant que : « Moi ».   Qui a accès : « Tout le monde ».
+  4. Déployer, puis copiez « l'URL de l'application Web » (elle finit par /exec).
+  5. Collez-la dans data.js : endpoint: 'https://script.google.com/macros/s/..../exec',
+
+ÉTAPE 5 — Partager le planning avec votre associé
+  1. Ouvrez https://calendar.google.com
+  2. À gauche, survolez « IT Solution — Interventions » > ⋮ > Paramètres et partage.
+  3. « Partager avec des personnes » > ajoutez son email > « Apporter des modifications aux événements ».
+
+AU QUOTIDIEN — LA PAGE DE GESTION (le plus simple)
+  Ouvrez  https://VOTRE-SITE/gestion.html  (lien « Espace pro » en bas du site) et entrez CLE_GESTION.
+  - « À traiter » : les nouvelles demandes. Un clic sur « Confirmer » = le client reçoit un email.
+    Les devis sans date ont un bouton « Placer » : choisissez date, créneau et agence.
+  - « Planning » : la semaine, jour par jour (bleu = Ducos, orange = Le Robert).
+    Cliquez un rendez-vous pour le déplacer, changer son statut (En diagnostic, En réparation,
+    Prêt à récupérer, Terminé…) ou l'annuler. Le client est prévenu par email (case à cocher).
+  - « Toutes les demandes » : recherche par nom, téléphone ou référence.
+  - « + RDV téléphone » : ajoutez un rendez-vous pris par téléphone ou en agence.
+  Tout ce que vous faites ici met à jour le tableau ET Google Agenda automatiquement.
+
+AU QUOTIDIEN — DIRECTEMENT DANS LE TABLEAU (possible aussi)
+  - Nouvelle demande : email reçu + rendez-vous « [À confirmer] » dans le planning.
+  - Appelez le client, puis dans le tableau changez le Statut :
+      Confirmé          -> « [Confirmé] » dans le planning + email au client
+      En diagnostic / En réparation -> visible par le client dans « Suivre ma demande »
+      Prêt à récupérer  -> email au client
+      Terminé           -> passe en vert ;  Annulé -> passe en gris, le créneau se libère
+  - Vous pouvez déplacer un rendez-vous directement dans Google Agenda.
+
+SI VOUS MODIFIEZ LE SCRIPT PLUS TARD
+  Déployer > Gérer les déploiements > crayon > Version : « Nouvelle version » > Déployer.
+  L'URL reste la même. Si vous ajoutez des colonnes au tableau, ajoutez-les à la FIN.
+
+
+TANT QU'AUCUNE MÉTHODE N'EST ACTIVÉE
+  Le formulaire fonctionne quand même : à la fin, le client est invité à envoyer
+  sa demande par WhatsApp au numéro de son agence.

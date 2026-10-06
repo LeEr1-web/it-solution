@@ -1,0 +1,4 @@
+# Script Google : contient le code de gestion (CLE_GESTION), ne jamais le publier
+google-apps-script.gs
+.playwright-mcp/
+_t_*

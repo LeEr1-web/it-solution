@@ -1,0 +1,43 @@
+/* Fiche tarifs — lisible à l'écran, compacte à l'impression (A4) */
+.fiche{max-width:1100px;margin:20px auto 40px;padding:26px 30px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}
+.f-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.f-brand{display:flex;gap:10px;align-items:center}
+.f-brand b{display:block;font-size:20px}
+.f-brand div span{display:block;font-size:13px;color:var(--muted)}
+.f-brand .mark{color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.f-meta{display:grid;text-align:right;font-size:12px;color:var(--muted)}
+.f-meta b{color:var(--primary);font-size:15px}
+.f-intro{font-size:13px;color:var(--muted);margin:10px 0 0}
+.fiche h2{display:flex;align-items:center;gap:8px;font-size:16px;margin:18px 0 8px;padding:6px 10px;background:var(--ink);color:#fff;border-radius:6px}
+.fiche h2 .ico{color:#7dd3fc;width:18px;height:18px}
+.f-packs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.f-pack{border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:grid;gap:2px}
+.f-pack b{font-size:13.5px}
+.f-pack .mono{color:var(--primary);font-weight:700}
+.f-pack s{color:#8a96aa;font-weight:400;font-size:11px}
+.f-pack small{font-size:11.5px;color:var(--muted)}
+.f-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.f-svc{border:1px solid var(--line);border-radius:6px;padding:8px 10px;break-inside:avoid}
+.f-svc h3{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0;font-size:14px}
+.f-svc h3 span{display:flex;align-items:center;gap:6px}
+.f-svc h3 .ico{width:16px;height:16px;color:var(--primary)}
+.f-svc h3 b{color:var(--primary);font-size:13px;white-space:nowrap}
+.f-desc{margin:2px 0 4px;font-size:12px;color:var(--muted)}
+.f-etu{color:var(--ok);font-weight:600}
+.f-svc table{width:100%;border-collapse:collapse;font-size:12px}
+.f-svc td{padding:2px 0;border-top:1px dotted var(--line);vertical-align:top}
+.f-svc td small{display:block;color:var(--muted);font-size:10.5px}
+.f-svc td.mono{text-align:right;white-space:nowrap;padding-left:8px}
+.f-note{margin:4px 0 0;font-size:11px;color:var(--muted);font-style:italic}
+.f-foot{margin-top:16px;padding-top:8px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);text-align:center}
+@media (max-width:900px){.f-grid,.f-packs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.fiche{margin:0;padding:16px;border:0;border-radius:0}.f-grid,.f-packs{grid-template-columns:minmax(0,1fr)}.f-meta{text-align:left}}
+@media print{
+  @page{size:A4;margin:10mm}
+  .no-print{display:none!important}
+  body{background:#fff!important}
+  .fiche{margin:0;padding:0;border:0;max-width:none}
+  .fiche h2{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid}
+  .f-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .f-packs{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
