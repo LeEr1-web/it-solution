@@ -46,7 +46,7 @@ const STEPS = {
   devis: ['Choix', 'Lieu', 'Coordonnées']
 };
 const DEFAULT = {
-  step: 1, kind: 'rdv', tab: 'services', cat: 'ordi', pack: null, symptoms: [], sel: [], opt: {}, open: '',
+  step: 1, kind: 'rdv', tab: 'services', cat: 'ordi', pack: null, symptoms: [], sel: [], opt: {},
   d: { appType: '', mode: 'site', commune: '', agence: 'ducos', creneau: '', date: '', type: 'individual', budget: 'medium', appareil: '', desc: '', contrat: false, name: '', email: '', phone: '', address: '', pref: 'whatsapp', consent: false, website: '', chatMsg: MESSAGES_WA[0][1], chatCommune: '', etudiant: false }
 };
 let state = load();
@@ -249,7 +249,7 @@ function renderSummary() {
   }
   if (r.presta && r.urg) h += line(`Délai ${DELAIS[r.delai].label.toLowerCase()}`, '+' + eur(r.urg));
   if (r.presta && r.cren) h += line(CRENEAUX[d.creneau].label, '+' + eur(r.cren));
-  $('lines').innerHTML = h || '<p class="empty">Rien de choisi pour l’instant. Cochez un service ou un pack : il s’affiche ici, avec ses options et son prix.</p>';
+  $('lines').innerHTML = h || '<p class="empty">Rien de choisi pour l’instant. Cochez un service ou un pack : il s’affiche ici avec son prix.</p>';
   const n = state.sel.filter(id => !(packValid() && pack(state.pack).items[id])).length + (packValid() ? 1 : 0);
   $('selCount').textContent = n || '';
   $('mobileCount').textContent = n ? `Ma sélection (${n})` : 'Total estimé';
@@ -278,43 +278,32 @@ function renderSummary() {
 }
 
 // Liste de ce que le client a pris : pack et services, chacun avec ses options (cochables ici même)
-function optionsHTML(ids, p) {
-  return `<div class="sel-opts">${ids.map(id => {
-    const s = svc(id), locked = p?.items[id] || [];
-    const list = s.options.filter(o => !locked.includes(o[0]));
-    if (!list.length) return '';
-    return (p ? `<p class="sel-sub">${esc(s.nom)}</p>` : '') + (s.note ? `<p class="sel-note">${s.note}</p>` : '') + list.map(o => `<label class="opt">
-      <input type="checkbox" ${state.opt[id]?.includes(o[0]) ? 'checked' : ''} onchange="toggleOpt('${id}','${o[0]}')"><span>${o[1]}</span>
-      <b class="mono">${optPrice(o)}${o[2] && s.mensuel ? '/mois' : ''}</b></label>`).join('');
-  }).join('')}</div>`;
-}
 function selectionHTML() {
   const p = packValid() ? pack(state.pack) : null;
   const chosen = id => (state.opt[id] || []).map(o => optOf(id, o)).filter(Boolean);
-  const card = ({ key, style, cls = '', icon, title, detail, price, remove, label, body }) => {
-    const open = state.open === key;
-    return `<div class="sel ${cls} ${open ? 'open' : ''}" style="${style}">
+  const card = ({ style, cls = '', icon, title, detail, price, remove, label }) => {
+    return `<div class="sel ${cls}" style="${style}">
       <div class="sel-row"><span class="sel-ico">${ico(icon)}</span>
-        <button type="button" class="sel-name" onclick="openSel('${key}')" aria-expanded="${open}"><b>${title}</b><small>${detail}</small></button>
+        <span class="sel-name"><b>${title}</b><small>${detail}</small></span>
         <span class="sel-price mono">${price}</span>
         <button type="button" class="sel-x" onclick="${remove}" aria-label="Retirer ${esc(label)}" title="Retirer">×</button></div>
-      ${open ? body : ''}<button type="button" class="sel-more" onclick="openSel('${key}')">${open ? 'Masquer les options' : body.includes('class="opt"') ? '+ Options' : ''}</button></div>`;
+</div>`;
   };
   let h = '';
   if (p) {
     const extra = Object.keys(p.items).flatMap(id => chosen(id).filter(o => !p.items[id].includes(o[0])));
-    h += card({ key: 'pack', style: packStyle(p), cls: 'sel-pack' + (packTheme(p).multi ? ' multi' : ''), icon: p.icon, title: esc(packLabel(p)), label: p.nom,
+    h += card({ style: packStyle(p), cls: 'sel-pack' + (packTheme(p).multi ? ' multi' : ''), icon: p.icon, title: esc(packLabel(p)), label: p.nom,
       detail: esc(p.inclus.join(' · ')) + (extra.length ? `<em>+ ${esc(extra.map(o => o[1]).join(', '))}</em>` : ''),
       price: `<s>${eur(itemsValue(p.items))}</s>${eur(p.prix + extra.reduce((t, o) => t + o[2], 0))}`,
-      remove: `selectPack('${p.id}')`, body: optionsHTML(Object.keys(p.items), p) });
+      remove: `selectPack('${p.id}')` });
   }
   state.sel.filter(id => !p?.items[id]).forEach(id => {
     const s = svc(id), opts = chosen(id);
     const sub = s.base + opts.reduce((t, o) => t + o[2], 0);
-    h += card({ key: id, style: `--t:${themeOf(id)}`, icon: s.icon, title: esc(s.nom), label: s.nom,
+    h += card({ style: `--t:${themeOf(id)}`, icon: s.icon, title: esc(s.nom), label: s.nom,
       detail: opts.length ? esc(opts.map(o => o[1]).join(', ')) : `<span class="sel-cat">${esc(catOf(id).nom)}</span>`,
       price: sub ? eur(sub) + (s.mensuel ? '/mois' : '') : '<span class="free">Gratuit</span>',
-      remove: `toggle('${id}')`, body: optionsHTML([id]) });
+      remove: `toggle('${id}')` });
   });
   return h;
 }
@@ -587,7 +576,6 @@ function setGrand(on) {
   try { localStorage.setItem('itGrand', on ? '1' : ''); } catch (e) {}
   const b = $('grandBtn'); if (b) b.setAttribute('aria-pressed', on);
 }
-function openSel(key) { state.open = state.open === key ? '' : key; renderSummary(); save(); }
 function showSel() { document.querySelector('.summary').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 const univOf = cat => (CATEGORIES.find(c => c.id === cat) || CATEGORIES[0]).univers;
 function setUniv(u) { const c = CATEGORIES.find(x => x.univers === u && !x.bientot); if (c) { state.cat = c.id; render(); } }
@@ -611,7 +599,6 @@ function toggle(id) {
   const { sel } = state;
   const adding = !sel.includes(id);
   state.sel = adding ? [...sel, id] : sel.filter(x => x !== id);
-  state.open = adding && svc(id).options.length ? id : state.open === id ? '' : state.open;
   if (!packValid()) state.pack = null;
   state.symptoms = [];
   fixMode();
@@ -633,7 +620,6 @@ function selectPack(id) {
   if (packValid()) removeItems(pack(state.pack).items);
   state.pack = null;
   if (!wasOn) { state.pack = id; applyItems(pack(id).items); }
-  state.open = '';
   state.symptoms = [];
   fixMode();
   render();
