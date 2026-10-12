@@ -325,7 +325,7 @@ function renderSteps() {
   if (!inFlow) return;
   $('steps').innerHTML = STEPS[state.kind].map((s, i) => {
     const n = i + 1, cls = n === state.step ? 'cur' : n < state.step ? 'done' : '';
-    return `<li class="${cls}" ${n === state.step ? 'aria-current="step"' : ''}><span class="n">0${n}</span><span class="t">${s}</span></li>`;
+    return `<li class="${cls}" ${n === state.step ? 'aria-current="step"' : ''}><span class="n">${n < state.step ? '✓' : n}</span><span class="t">${n === state.step ? `Étape ${n} sur ${STEPS[state.kind].length} : ` : ''}${s}</span></li>`;
   }).join('');
 }
 
@@ -335,8 +335,8 @@ function renderNav() {
   if (s === 'chat' || s === 'suivi') { $('nav').innerHTML = `<button type="button" class="btn" onclick="home()">Retour aux services</button><p id="err" class="err" role="alert"></p>`; return; }
   if (s === 1) {
     $('nav').innerHTML = `<button type="button" class="btn btn-wa nav-wa" onclick="openChat()" aria-label="Discuter sur WhatsApp">${ico('chat')}<span>WhatsApp</span></button>
-      <p id="err" class="err" role="alert"></p>
-      <div class="nav-go"><button type="button" class="btn" onclick="start('devis')">${ico('doc')}<span class="lg">Obtenir un devis</span><span class="sm">Devis</span></button>
+      <p id="err" class="err" role="alert"></p><p class="howto"><b>1</b>Choisir <b>2</b>Le jour <b>3</b>Vos coordonnées<span> · gratuit</span></p>
+      <div class="nav-go"><button type="button" class="btn" onclick="start('devis')">${ico('doc')}<span class="lg">Connaître le prix</span><span class="sm">Prix</span></button>
       <button type="button" class="btn btn-primary" onclick="start('rdv')">${ico('calendar')}<span class="lg">Prendre rendez-vous</span><span class="sm">Rendez-vous</span></button></div>`;
     return;
   }
@@ -345,7 +345,7 @@ function renderNav() {
   $('nav').innerHTML = `<button type="button" class="btn" onclick="prev()" ${sending ? 'disabled' : ''}>Retour</button>
     <p id="err" class="err" role="alert"></p>
     ${last ? `<button type="button" class="btn btn-primary" onclick="send()" ${sending ? 'disabled' : ''}>${sending ? 'Envoi en cours…' : state.kind === 'devis' ? 'Voir mon devis' : 'Réserver mon rendez-vous'}</button>`
-           : `<button type="button" class="btn btn-primary" onclick="next()">Continuer<span class="hide-sm"> — ${steps[s]}</span> ${ico('arrow')}</button>`}`;
+           : `<button type="button" class="btn btn-primary" onclick="next()">Étape suivante<span class="hide-sm"> : ${steps[s]}</span> ${ico('arrow')}</button>`}`;
 }
 
 // Case cliquable (checkbox ou radio) accessible au clavier
@@ -363,7 +363,7 @@ function packCard(p, on, action) {
     <span class="pack-tag mono">${p.populaire ? '★ Le plus demandé' : cats.join(' + ')}</span>
     <span class="pack-head">${ico(p.icon)}<b>${p.nom}</b></span>
     <ul class="pack-inclus">${p.inclus.map(i => `<li>${i}</li>`).join('')}</ul>
-    <span class="pack-bottom"><b class="pack-now mono">${eur(p.prix)}</b><s class="mono" title="Prix des mêmes prestations à la carte">au lieu de ${eur(value)}</s></span></button>`;
+    <span class="pack-bottom"><b class="pack-now mono">${eur(p.prix)}</b><s class="mono" title="Prix des mêmes services pris un par un">${eur(value)}</s><span class="add">${on ? '✓ Choisi' : 'Choisir'}</span></span></button>`;
 }
 
 /* =====================================================================
@@ -409,42 +409,40 @@ const VIEWS = {
   },
   1() {
     if (state.tab === 'symptomes') {
-      let h = `<h2 id="stepTitle">Décrivez votre problème</h2>
-        <p class="lead">Cochez ce qui vous arrive : nous choisissons les bons services pour vous. <button type="button" class="link" onclick="setTab('services')">Revenir aux services et packs</button></p>
+      let h = `<h2 id="stepTitle">Qu'est-ce qui ne va pas ?</h2>
+        <p class="lead">Touchez la phrase qui ressemble à votre situation (une ou plusieurs). Nous choisissons pour vous. <button type="button" class="link" onclick="setTab('services')">Retour à la liste des services</button></p>
         <div class="grid g3 symptoms">${SYMPTOMES.map(x => tile({ type: 'checkbox', name: 'sym', value: x.id, checked: state.symptoms.includes(x.id), title: x.label, cls: 'symptom', onchange: `toggleSymptom('${x.id}')` })).join('')}</div>`;
       if (state.sel.length) {
         const p = packValid() ? pack(state.pack) : null;
         const parts = (p ? [packLabel(p)] : []).concat(state.sel.filter(id => !p?.items[id]).map(id => svc(id).nom));
-        h += `<p class="proposal">${ico('arrow')} Notre proposition : <b>${parts.join(' + ')}</b></p>`;
+        h += `<p class="proposal">${ico('arrow')} Nous vous proposons : <b>${parts.join(' + ')}</b>. Touchez « Prendre rendez-vous » en bas pour continuer.</p>`;
       }
       return h;
     }
-    const st = openStatus();
-    const slot = nextFreeSlot();
-    return `<div class="pick-head"><h2 id="stepTitle">Que pouvons-nous faire pour vous ?</h2>
-        <p class="pick-info mono"><span class="dot ${st.open ? 'on' : ''}"></span>${st.text}${slot ? ` · Prochain créneau : ${slot}` : ''}</p></div>
-      <h3 class="sec">${ico('grid')} À la carte
+    return `<div class="pick-head"><h2 id="stepTitle">De quoi avez-vous besoin ?</h2>
+        <div class="help-row"><button type="button" class="btn btn-help" onclick="setTab('symptomes')">${ico('search')}<span>Dites-nous ce qui ne va pas</span></button>
+        <button type="button" class="btn btn-help call" onclick="openHelp()">${ico('phone')}<span>Appeler un technicien</span></button></div></div>
+      <h3 class="sec">${ico('grid')} Choisissez un service
         <span class="univers" role="tablist" aria-label="Univers">${UNIVERS.map(u => {
           const n = CATEGORIES.filter(c => c.univers === u.id && !c.bientot).flatMap(c => c.services).filter((id, i, a) => a.indexOf(id) === i && state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
           return `<button type="button" role="tab" style="--t:${u.couleur}" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
         }).join('')}</span>
-        <span class="sec-links"><button type="button" class="link" onclick="setTab('symptomes')">${ico('search')} Décrivez votre problème</button>
-        <button type="button" class="link" onclick="help()">${ico('help')} Je ne sais pas</button></span></h3>
+        <span class="sec-links"><button type="button" class="link" onclick="help()">${ico('help')} Je ne sais pas quoi choisir</button></span></h3>
       <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot && c.univers === univOf(state.cat)).map(c => {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
         return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
       }).join('')}</div>
-      ${BIENTOT.length ? `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.join(' · ')}</p>` : ''}
       <div class="grid g5 services" role="tabpanel">${CATEGORIES.find(c => c.id === state.cat).services.map(id => {
           const x = svc(id);
           const inPack = packValid() && pack(state.pack).items[x.id];
           return tile({ type: 'checkbox', name: 'svc', value: x.id, checked: !inPack && state.sel.includes(x.id), disabled: !!inPack,
             title: x.nom.replace('Vidéosurveillance', 'Vidéo\u00ADsurveillance'),
-            sub: inPack ? '✓ Inclus au pack' : `${x.desc}<span class="mono price-line">${fromPrice(x)}</span>`,
+            sub: inPack ? '✓ Inclus dans votre formule' : `${x.desc}<span class="price-row"><span class="mono">${fromPrice(x)}</span><span class="add">${state.sel.includes(x.id) ? '✓ Ajouté' : '+ Ajouter'}</span></span>`,
             icon: x.icon, theme: themeOf(x.id), cls: 'service' + (inPack ? ' included' : ''), onchange: `toggle('${x.id}')` });
         }).join('')}</div>
-      <h3 class="sec">${ico('box')} Nos packs <span class="muted">une solution complète, à prix fixe · dégradé = plusieurs catégories réunies</span></h3>
-      <div class="grid g4 packs">${PACKS.map(p => packCard(p, state.pack === p.id && packValid(), `selectPack('${p.id}')`)).join('')}</div>`;
+      <h3 class="sec">${ico('box')} Ou une formule tout compris <span class="muted">plusieurs services ensemble, à prix fixe et moins cher</span></h3>
+      <div class="grid g4 packs">${PACKS.map(p => packCard(p, state.pack === p.id && packValid(), `selectPack('${p.id}')`)).join('')}</div>
+      ${BIENTOT.length ? `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.join(' · ')}</p>` : ''}`;
   },
   2() {
     const { d } = state;
@@ -501,17 +499,16 @@ const VIEWS = {
     return `<h2 id="stepTitle">Vos coordonnées</h2><p class="lead">${rdv ? `L'agence ${AGENCES[agenceKey()].de} vous recontacte pour confirmer le rendez-vous.` : 'Votre devis s’affiche juste après, et l’agence en reçoit une copie.'}</p><div class="form">
       <div class="field"><label for="name">Nom et prénom <span class="req">*</span></label><input id="name" value="${esc(d.name)}" autocomplete="name" required oninput="setD('name',this.value,true)"></div>
       <div class="field"><label for="phone">Téléphone <span class="req">*</span></label><input id="phone" type="tel" value="${esc(d.phone)}" autocomplete="tel" placeholder="0696 00 00 00" required oninput="setD('phone',this.value,true)"></div>
-      <div class="field"><label for="email">Email <span class="req">*</span></label><input id="email" type="email" value="${esc(d.email)}" autocomplete="email" required oninput="setD('email',this.value,true)"></div>
+      <div class="field"><label for="email">Email <span class="muted">(facultatif : pour recevoir le récapitulatif)</span></label><input id="email" type="email" value="${esc(d.email)}" autocomplete="email" oninput="setD('email',this.value,true)"></div>
       <div class="field"><label for="pref">On vous recontacte par</label><select id="pref" onchange="setD('pref',this.value,true)">${opts(CONTACT_PREF, d.pref)}</select></div>
       ${d.mode === 'site' ? `<div class="field full"><label for="address">Adresse ou quartier</label><input id="address" value="${esc(d.address)}" autocomplete="street-address" placeholder="Quartier, rue… (${esc(d.commune)})" oninput="setD('address',this.value,true)"></div>` : ''}
       <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" oninput="setD('website',this.value,true)">
       </div>
-      <h3>${ico('help')} Votre besoin <span class="muted">facultatif : aide le technicien à préparer l'intervention</span></h3><div class="form">
+      <h3>${ico('help')} Quelques précisions <span class="muted">facultatif : vous pouvez laisser vide</span></h3><div class="form">
       <div class="field"><label for="type">Vous êtes</label><select id="type" onchange="setD('type',this.value)">${opts(TYPES, d.type)}</select></div>
-      <div class="field"><label for="budget">Budget prévu</label><select id="budget" onchange="setD('budget',this.value,true)">${opts({ low: 'Moins de 250 €', medium: 'De 250 à 1 000 €', high: 'De 1 000 à 3 000 €', pro: 'Plus de 3 000 €' }, d.budget)}</select></div>
       ${needsAppareil() ? `<div class="field"><label for="appType">Type d'appareil</label><select id="appType" onchange="setD('appType',this.value,true)"><option value="">Choisir…</option>${opts(APPAREILS, d.appType)}</select></div>
       <div class="field"><label for="appareil">Marque et modèle <span class="muted">(si vous savez)</span></label><input id="appareil" value="${esc(d.appareil)}" placeholder="Exemple : HP Pavilion 15, Windows 11" oninput="setD('appareil',this.value,true)"></div>` : ''}
-      <div class="field full"><label for="desc">Décrivez votre besoin</label><textarea id="desc" placeholder="Exemple : mon ordinateur est très lent depuis une mise à jour." oninput="setD('desc',this.value,true)">${esc(d.desc)}</textarea></div>
+      <div class="field full"><label for="desc">Expliquez avec vos mots</label><textarea id="desc" placeholder="Exemple : mon ordinateur est très lent depuis une mise à jour." oninput="setD('desc',this.value,true)">${esc(d.desc)}</textarea></div>
       <div class="field full"><label for="photo">Photo du problème <span class="muted">(message d'erreur, matériel…)</span></label>
         <div class="photo-row"><input id="photo" type="file" accept="image/*" onchange="addPhoto(this.files[0])">${photo ? `<img src="${photo.url}" alt="Aperçu de votre photo" class="thumb"><button type="button" class="link" onclick="removePhoto()">Retirer</button>` : ''}</div></div></div>
       ${d.type !== 'individual' && d.type !== 'student' ? `<label class="check"><input type="checkbox" ${d.contrat ? 'checked' : ''} onchange="setD('contrat',this.checked,true)"><span><b>Je souhaite des informations sur le ${CONTRAT_PRO}</b><br><span class="muted">Interventions prioritaires, déplacements inclus, suivi des sauvegardes.</span></span></label>` : ''}
@@ -544,6 +541,10 @@ function renderStatic() {
     <span class="muted">${z.delai}</span>
     <p>${COMMUNES.filter(c => c[1] === k).map(c => esc(c[0])).join(', ')}</p></div>`).join('');
   $('headContact').innerHTML = Object.values(AGENCES).map(a => `<a class="btn btn-head" href="${waUrl(a.tel, "Bonjour IloTech, j'aimerais un renseignement.")}" target="_blank" rel="noopener" aria-label="WhatsApp agence ${a.nom}, ${esc(a.tel)}">${ico('chat')}<span>${a.nom}</span><span class="tel mono">${esc(a.tel)}</span></a>`).join('');
+  $('helpAgences').innerHTML = Object.values(AGENCES).map(a => `<div class="agency"><b>${ico('pin')} Agence ${a.de}</b>
+    <span class="muted">${a.detail}</span><a class="btn btn-primary big" href="${telUrl(a.tel)}">${ico('phone')} Appeler le ${esc(a.tel)}</a>
+    <a class="btn btn-wa" href="${waUrl(a.tel, "Bonjour IloTech, j'ai besoin d'aide.")}" target="_blank" rel="noopener">${ico('chat')} Écrire sur WhatsApp</a></div>`).join('');
+  $('helpHours').textContent = 'Du lundi au vendredi de ' + HORAIRES[1][0] + ' h à ' + HORAIRES[1][1] + ' h, le samedi de ' + HORAIRES[6][0] + ' h à ' + HORAIRES[6][1] + ' h.';
   updateStatus();
 }
 function renderAvis() {
@@ -574,6 +575,18 @@ function setDate(v) {
   fetchSlots(v);
 }
 function setTab(t) { state.tab = t; render(); }
+function openHelp() { $('helpDialog').showModal(); }
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); if (!t) return;
+  t.innerHTML = msg + (window.innerWidth <= 900 ? ' <button type="button" class="link" onclick="showSel()">Voir</button>' : '');
+  t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+function setGrand(on) {
+  document.body.classList.toggle('grand', on);
+  try { localStorage.setItem('itGrand', on ? '1' : ''); } catch (e) {}
+  const b = $('grandBtn'); if (b) b.setAttribute('aria-pressed', on);
+}
 function openSel(key) { state.open = state.open === key ? '' : key; renderSummary(); save(); }
 function showSel() { document.querySelector('.summary').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 const univOf = cat => (CATEGORIES.find(c => c.id === cat) || CATEGORIES[0]).univers;
@@ -603,6 +616,7 @@ function toggle(id) {
   state.symptoms = [];
   fixMode();
   render();
+  toast(adding ? `✓ « ${esc(svc(id).nom)} » ajouté à votre sélection` : `« ${esc(svc(id).nom)} » retiré`);
 }
 function toggleOpt(id, o) {
   const cur = state.opt[id] || [];
@@ -623,6 +637,7 @@ function selectPack(id) {
   state.symptoms = [];
   fixMode();
   render();
+  toast(wasOn ? `Formule « ${esc(pack(id).nom)} » retirée` : `✓ Formule « ${esc(pack(id).nom)} » choisie`);
 }
 function toggleSymptom(id) {
   const cur = state.symptoms;
@@ -740,8 +755,9 @@ function buildLead() {
 async function send() {
   const { d } = state;
   if (sending) return;
-  if (!d.name.trim() || !d.email.trim() || !d.phone.trim()) return error('Merci de remplir les champs obligatoires.');
-  if (!/^\S+@\S+\.\S+$/.test(d.email)) return error("L'adresse email n'est pas valide.");
+  if (!d.name.trim() || !d.phone.trim()) return error('Merci d’indiquer votre nom et votre téléphone.');
+  if (d.email.trim() && !/^\S+@\S+\.\S+$/.test(d.email)) return error("L'adresse email n'est pas valide (vous pouvez aussi la laisser vide).");
+  if (d.pref === 'email' && !d.email.trim()) return error('Indiquez votre email, ou choisissez d’être recontacté par appel ou WhatsApp.');
   if (digits(d.phone).length < 10) return error("Le numéro de téléphone n'est pas valide.");
   if (!d.consent) return error('Merci de cocher la case d’accord pour que nous puissions vous recontacter.');
 
@@ -800,6 +816,7 @@ async function sendByEmail(lead, photoInGoogle) {
     'Description': lead.desc || '—',
     'Récapitulatif': lead.recap
   };
+  if (!lead.email) { delete body._replyto; delete body._autoresponse; body.email = 'Pas d’email (rappeler au ' + lead.phone + ')'; }
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(CONFIG.emailReception), {
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body)
@@ -867,7 +884,7 @@ function renderSuccess(lead, received, google) {
       <h2 id="stepTitle">${received ? `Merci ${esc(lead.name)}, votre demande est bien reçue` : 'Dernière étape : envoyez-nous votre demande'}</h2>
       <span class="ref mono">${esc(lead.ref)}</span>
       <p>${received
-        ? `L'agence <b>${ag.de}</b> vous recontacte par <b>${CONTACT_PREF[lead.pref].toLowerCase()}</b> pour confirmer votre rendez-vous du <b>${esc(lead.dateLabel)}</b>, ${esc(lead.creneauLabel.toLowerCase())}. Un email récapitulatif vient de vous être envoyé.${lead.hasPhoto && !google ? ' <b>Envoyez aussi votre photo</b> sur WhatsApp.' : ''}`
+        ? `L'agence <b>${ag.de}</b> vous recontacte par <b>${CONTACT_PREF[lead.pref].toLowerCase()}</b> pour confirmer votre rendez-vous du <b>${esc(lead.dateLabel)}</b>, ${esc(lead.creneauLabel.toLowerCase())}.${lead.email ? ' Un email récapitulatif vient de vous être envoyé.' : ''}${lead.hasPhoto && !google ? ' <b>Envoyez aussi votre photo</b> sur WhatsApp.' : ''}`
         : `Votre demande est prête. Envoyez-la à l'agence <b>${ag.de}</b> sur WhatsApp pour réserver votre rendez-vous du <b>${esc(lead.dateLabel)}</b>.`}</p>
       <div class="actions">
         <a class="btn ${received ? '' : 'btn-wa'}" href="${waUrl(ag.tel, txt)}" target="_blank" rel="noopener">${ico('chat')} ${received ? 'Écrire' : 'Envoyer'} sur WhatsApp</a>
@@ -974,6 +991,7 @@ window.addEventListener('hashchange', () => {
 });
 if (location.hash === '#suivi') { state.step = 'suivi'; suivi = { ref: new URLSearchParams(location.search).get('ref') || '' }; }
 setInterval(updateStatus, 60000);
+try { if (localStorage.getItem('itGrand')) setGrand(true); } catch (e) {}
 renderStatic();
 renderAvis();
 render();

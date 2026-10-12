@@ -515,3 +515,64 @@ body.admin .layout{grid-template-columns:1fr}
 
 /* pages claires : cadres blancs */
 .gestion-page .panel,.gestion-page .doc,.theme-light .panel{background:#fff;box-shadow:0 1px 2px rgba(11,21,38,.06)}
+
+
+/* =====================================================================
+   FACILE À UTILISER : aide, boutons explicites, confirmation, texte plus grand
+   ===================================================================== */
+.pick-head{align-items:center}
+.help-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn-help{min-height:40px;padding:6px 14px;font-size:14.5px;border-width:1.5px;border-color:var(--cyan);background:var(--cyan-soft)}
+.btn-help .ico{color:var(--cyan)}
+.btn-help.call{border-color:var(--orange);background:rgba(245,158,11,.12)}
+.btn-help.call .ico{color:var(--orange)}
+.btn-help:hover{background:var(--surface-3)}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:3px}
+.add{display:inline-block;padding:1px 8px;border-radius:12px;border:1.5px solid var(--t,var(--primary));color:var(--t,var(--primary));font:700 11.5px var(--sans);white-space:nowrap}
+.tile.on .add,.pack.on .add{background:var(--t,var(--primary));color:#05070d}
+.pack .add{margin-left:auto;border-color:var(--t);color:var(--t)}
+.pack.multi .add{border-image:none}
+.services .service .box{display:none}
+.howto{flex:1;margin:0;text-align:center;font-size:13px;color:var(--muted)}
+.howto b{display:inline-grid;place-items:center;width:20px;height:20px;margin:0 3px 0 8px;border-radius:50%;background:var(--primary);color:#fff;font-size:11.5px}
+.howto span{color:var(--ok)}
+.nav .err:not(:empty)+.howto{display:none}
+.stepper .n{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:var(--surface-3)}
+.stepper li.cur .n{background:var(--primary);color:#fff}
+.stepper li.done .n{background:var(--ok);color:#03140a}
+.btn-aide{border-color:var(--orange)!important;color:#ffd08a!important}
+.aa{font:800 15px var(--sans);letter-spacing:-1px}
+.aa small{font-size:11px}
+#grandBtn[aria-pressed="true"]{background:var(--primary);border-color:var(--primary)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:50;max-width:min(560px,92vw);padding:12px 18px;border-radius:10px;background:#0f2a1a;border:1px solid var(--ok);color:#dcfce7;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.toast .link{color:#86efac;margin-left:8px}
+.help-dialog{width:min(760px,94vw)}
+.help-dialog .agency{gap:8px}
+.help-dialog .btn.big{min-height:52px;font-size:17px}
+.btn-aide-m{background:var(--orange);border-color:var(--orange);color:#1a1000}
+@media (max-width:1180px){.howto span{display:none}}
+@media (max-width:900px){.howto{display:none}.help-row{width:100%}.help-row .btn{flex:1}}
+@media (max-width:600px){
+  .help-row .btn{font-size:13px;padding:6px 8px}
+  .top-actions>#grandBtn,.top-actions>.btn-aide{display:inline-flex;flex:none}
+  .top-actions>#grandBtn span,.top-actions>.btn-aide span{display:none}
+  .top-actions>.btn-aide::before{content:"?";font-weight:800}
+}
+
+/* Texte plus grand : tout est agrandi, la page défile normalement */
+body.grand{height:auto!important;overflow:visible!important}
+body.grand .layout{zoom:1.22}
+body.grand .content,body.grand .summary{overflow:visible}
+body.grand{--muted:#c4cfe0;--faint:#9aa8bf}
+body.grand .pack-inclus li{white-space:normal}
+body.grand .nav{position:sticky;bottom:0;z-index:4}
+@media (max-width:900px){body.grand .layout{zoom:1.12}body.grand .nav{bottom:64px}}
+.howto{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+.howto b{margin-left:6px}
+.price-row{flex-wrap:wrap;row-gap:4px}
+.price-row .mono{white-space:nowrap}
+body.grand .howto{display:none}
+body.grand .cats,body.grand .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+body.grand .g4{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.toast{bottom:150px}}
+@media (max-width:600px){body.grand .cats,body.grand .g5,body.grand .g4{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -181,7 +181,7 @@ const UNIVERS = [
 const CATEGORIES = [
   { id: 'ordi',     univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    couleur: '#2b8cff', services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
   { id: 'securite', univers: 'info',   nom: 'Sécurité',      icon: 'shield',     couleur: '#ef4444', services: ['antivirus', 'comptes'] },
-  { id: 'donnees',  univers: 'info',   nom: 'Données',       icon: 'database',   couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
+  { id: 'donnees',  univers: 'info',   nom: 'Fichiers',      icon: 'database',   couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
   { id: 'install',  univers: 'info',   nom: 'Installation',  icon: 'printer',    couleur: '#a78bfa', services: ['install', 'printer', 'ups'] },
   { id: 'gaming',   univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    couleur: '#e040fb', services: ['console', 'emulation', 'gamer'] },
   { id: 'aide',     univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      couleur: '#f59e0b', services: ['cours', 'abonnement'] },

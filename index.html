@@ -29,7 +29,7 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="style.css?v=45">
+  <link rel="stylesheet" href="style.css?v=46">
 </head>
 <body>
   <header class="top">
@@ -39,7 +39,8 @@
     </a>
     <span id="openStatus" class="status mono" aria-live="polite"></span>
     <div class="top-actions">
-      <button type="button" class="btn btn-head" onclick="openZones()"><span>Zones & tarifs</span></button>
+      <button type="button" class="btn btn-head" id="grandBtn" aria-pressed="false" onclick="setGrand(!document.body.classList.contains('grand'))"><b class="aa">A<small>A</small></b><span>Texte plus grand</span></button>
+      <button type="button" class="btn btn-head btn-aide" onclick="openHelp()"><span>Besoin d'aide ?</span></button>
       <span id="headContact" class="head-contact"></span>
     </div>
   </header>
@@ -77,6 +78,7 @@
       <p class="note">Prix indicatifs, confirmés après diagnostic.</p>
       <p id="avis" class="avis"></p>
       <nav class="foot-links" aria-label="Liens utiles">
+        <a href="#" onclick="openZones();return false">Zones & déplacement</a>
         <a href="#suivi">Suivre ma demande</a>
         <a href="services.html">Nos services et tarifs</a>
         <a href="fiche-tarifs.html">Fiche tarifs (PDF)</a>
@@ -89,8 +91,21 @@
 
   <div class="mobilebar">
     <button type="button" class="mobile-sel" onclick="showSel()"><span id="mobileCount">Total estimé</span><b id="mobilePrice" class="mono">—</b></button>
-    <button type="button" class="btn btn-wa" onclick="openChat()" aria-label="Discuter sur WhatsApp"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg> WhatsApp</button>
+    <button type="button" class="btn btn-aide-m" onclick="openHelp()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> Aide</button>
   </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
+    <div class="dialog-head">
+      <h2 id="helpTitle">Besoin d'aide ? Un technicien vous répond</h2>
+      <button type="button" class="btn" onclick="document.getElementById('helpDialog').close()">Fermer</button>
+    </div>
+    <p class="lead">Vous n'êtes pas à l'aise avec internet ? Pas de souci : appelez-nous, nous faisons la demande avec vous.</p>
+    <div id="helpAgences" class="grid g2 agencies"></div>
+    <p class="muted" id="helpHours"></p>
+    <p><button type="button" class="link" onclick="document.getElementById('helpDialog').close();help()">Ou demandez un diagnostic : un technicien regarde et vous conseille</button></p>
+  </dialog>
 
   <dialog id="zonesDialog" aria-labelledby="zonesTitle">
     <div class="dialog-head">
@@ -101,7 +116,7 @@
     <div id="zonesGrid" class="zones"></div>
   </dialog>
 
-  <script src="data.js?v=45"></script>
-  <script src="app.js?v=45"></script>
+  <script src="data.js?v=46"></script>
+  <script src="app.js?v=46"></script>
 </body>
 </html>
