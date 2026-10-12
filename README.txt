@@ -17,8 +17,11 @@ UN SEUL FICHIER À MODIFIER : data.js
   modifiez un prix ou ajoutez une prestation, tout se met à jour automatiquement.
   - SERVICES   : chaque prestation = un prix de base (« dès ») + des options
   - PACKS      : prix fixe ; le « au lieu de » est calculé tout seul
-  - CATEGORIES : les onglets (Ordinateur, Sécurité, Données, Installation, Gaming, Caméras,
-                 Domotique, Wi-Fi, Aide & suivi, Pro) ; BIENTOT : la ligne « Bientôt »
+  - UNIVERS + CATEGORIES : 3 univers et leurs onglets
+      Informatique : Ordinateur, Sécurité, Données, Installation, Gaming, Aide & suivi
+      Maison connectée : Caméras, Domotique, Wi-Fi
+      Pro & digital : Web & apps, Cybersécurité, Caisse, Maintenance
+    BIENTOT : la ligne « Bientôt » (mobile & tablette, drone, production, accessoires)
   - SYMPTOMES  : « Décrivez votre problème »
   - ZONES, DELAIS, CRENEAUX, HORAIRES, CONFIG (remise étudiant, déplacement offert…)
   Après une modification : augmentez le numéro ?v= dans les fichiers .html.

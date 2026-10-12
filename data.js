@@ -140,6 +140,27 @@ const SERVICES = [
   { id: 'mobile', icon: 'smartphone', nom: 'Smartphone & tablette', desc: 'Écran, batterie, transfert', base: 25, remise: true, modes: ['atelier'], appareil: true,
     options: [['screen', 'Écran cassé (hors pièce)', 45], ['battery', 'Batterie (hors pièce)', 25], ['transfer', 'Transfert vers un nouveau téléphone', 20],
       ['backup', 'Sauvegarde des photos', 15], ['setup', 'Configuration et applications', 15]] },
+  // --- Web & apps (pro et particuliers)
+  { id: 'siteweb', icon: 'globe', nom: 'Site web', desc: 'Vitrine, réservation, boutique', base: 390, modes: ['distance', 'site', 'atelier'],
+    note: 'Prix indicatifs : devis précis après un premier échange gratuit. Le site vous appartient.',
+    options: [['pages', '5 pages supplémentaires', 90], ['resa', 'Prise de rendez-vous en ligne', 150], ['shop', 'Boutique en ligne', 390],
+      ['seo', 'Référencement local (Google)', 120], ['domain', 'Nom de domaine + email pro (1 an)', 49], ['logo', 'Logo simple', 90]] },
+  { id: 'appmobile', icon: 'smartphone', nom: 'Application mobile', desc: 'Appli, espace client, outil métier', base: 990, modes: ['distance', 'site', 'atelier'],
+    note: 'Prix indicatifs : nous construisons l’application autour des actions utiles à vos clients. Devis après échange.',
+    options: [['client', 'Espace client (compte, historique)', 490], ['rdv', 'Réservation / rendez-vous', 390], ['notif', 'Notifications', 190],
+      ['admin', 'Interface de gestion', 490], ['stores', 'Publication App Store / Google Play', 190]] },
+  { id: 'maintweb', icon: 'repeat', nom: 'Maintenance de site', desc: 'Mises à jour, sauvegardes, modifs', base: 29, mensuel: true, modes: ['distance'],
+    note: 'Prix par mois : mises à jour, sauvegardes et surveillance du site. Étudié selon votre site.',
+    options: [['secu', 'Surveillance sécurité renforcée', 10], ['modifs', '1 h de modifications par mois', 25], ['stats', 'Rapport de visites mensuel', 5]] },
+  // --- Cybersécurité (pros)
+  { id: 'cyber', icon: 'lock', nom: 'Audit cybersécurité', desc: 'Vérifications web autorisées', base: 290, modes: ['distance', 'site'],
+    note: 'Uniquement sur vos propres systèmes ou avec autorisation écrite. Rapport clair : constats expliqués et corrections ciblées.',
+    options: [['site', 'Vérification d’un site web supplémentaire', 150], ['email', 'Sécurité des emails (SPF, DMARC)', 90], ['acces', 'Revue des accès et mots de passe', 120],
+      ['fix', 'Corrections ciblées (par heure)', 59], ['form', 'Sensibilisation de l’équipe (1 h)', 99]] },
+  // --- Drone (prêt, encore « Bientôt »)
+  { id: 'drone', icon: 'drone', nom: 'Drone', desc: 'Images aériennes, observation', base: 149, modes: ['site'],
+    note: 'Sous réserve de faisabilité (météo, zone autorisée).',
+    options: [['photo', 'Photos aériennes', 0, 'Inclus'], ['video', 'Vidéo aérienne montée', 120], ['inspect', 'Observation toiture / bâtiment', 60]] },
   // --- Pro
   { id: 'pos', icon: 'receipt', nom: 'Caisse enregistreuse', desc: 'Pour commerces', base: 149, modes: ['site'],
     options: [['touch', 'Écran tactile', 190], ['drawer', 'Tiroir-caisse', 79], ['scanner', 'Lecteur code-barres', 59], ['printer', 'Imprimante ticket', 79], ['stock', 'Gestion des stocks', 49], ['tpe', 'Liaison terminal CB', 39]] },
@@ -149,23 +170,35 @@ const SERVICES = [
 
 // Onglets « À la carte » : un onglet = un type de besoin, chaque service n'est qu'à un seul endroit
 // bientot : true = onglet affiché mais pas encore disponible
+// Univers : regroupent les onglets (ligne du titre « À la carte »)
+const UNIVERS = [
+  { id: 'info',   nom: 'Informatique',     icon: 'monitor' },
+  { id: 'maison', nom: 'Maison connectée', icon: 'home' },
+  { id: 'pro',    nom: 'Pro & digital',    icon: 'globe' }
+];
+
 const CATEGORIES = [
-  { id: 'ordi',     nom: 'Ordinateur',   icon: 'monitor',    services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
-  { id: 'securite', nom: 'Sécurité',     icon: 'shield',     services: ['antivirus', 'comptes'] },
-  { id: 'donnees',  nom: 'Données',      icon: 'database',   services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
-  { id: 'install',  nom: 'Installation', icon: 'printer',    services: ['install', 'printer', 'ups'] },
-  { id: 'gaming',   nom: 'Gaming',       icon: 'gamepad',    services: ['console', 'emulation', 'gamer'] },
-  { id: 'camera',   nom: 'Caméras',      icon: 'camera',     services: ['camera', 'alarme'] },
-  { id: 'domo',     nom: 'Domotique',    icon: 'home',       services: ['domotique'] },
-  { id: 'wifi',     nom: 'Wi-Fi',        icon: 'wifi',       services: ['network'] },
-  { id: 'aide',     nom: 'Aide & suivi', icon: 'users',      services: ['cours', 'abonnement'] },
-  { id: 'pro',      nom: 'Pro',          icon: 'receipt',    services: ['pos', 'maintenance'] },
-  { id: 'mobile',   nom: 'Mobile',       icon: 'smartphone', services: ['mobile'], bientot: true }   // retirez « bientot: true » pour ouvrir
+  { id: 'ordi',     univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
+  { id: 'securite', univers: 'info',   nom: 'Sécurité',      icon: 'shield',     services: ['antivirus', 'comptes'] },
+  { id: 'donnees',  univers: 'info',   nom: 'Données',       icon: 'database',   services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
+  { id: 'install',  univers: 'info',   nom: 'Installation',  icon: 'printer',    services: ['install', 'printer', 'ups'] },
+  { id: 'gaming',   univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    services: ['console', 'emulation', 'gamer'] },
+  { id: 'aide',     univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      services: ['cours', 'abonnement'] },
+  { id: 'camera',   univers: 'maison', nom: 'Caméras',       icon: 'camera',     services: ['camera', 'alarme'] },
+  { id: 'domo',     univers: 'maison', nom: 'Domotique',     icon: 'home',       services: ['domotique'] },
+  { id: 'wifi',     univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       services: ['network'] },
+  { id: 'web',      univers: 'pro',    nom: 'Web & apps',    icon: 'globe',      services: ['siteweb', 'appmobile', 'maintweb'] },
+  { id: 'cyber',    univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       services: ['cyber'] },
+  { id: 'caisse',   univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    services: ['pos'] },
+  { id: 'pro',      univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      services: ['maintenance'] },
+  // pas encore ouverts : retirez « bientot: true » (et la ligne dans BIENTOT) pour les ouvrir
+  { id: 'mobile',   univers: 'info',   nom: 'Mobile',        icon: 'smartphone', services: ['mobile'], bientot: true },
+  { id: 'drone',    univers: 'maison', nom: 'Drone',         icon: 'drone',      services: ['drone'],  bientot: true }
 ];
 
 // Annoncés sous les onglets (« Bientôt ») — retirez une ligne quand le service est lancé.
 // Pour ouvrir le mobile : retirez « bientot: true » de la catégorie « mobile » ci-dessus et la ligne correspondante ici.
-const BIENTOT = ['Réparation mobile & tablette', 'Vente d’accessoires', 'Impression 3D'];
+const BIENTOT = ['Réparation mobile & tablette', 'Drone : images aériennes', 'Production', 'Vente d’accessoires'];
 
 // Type d'appareil demandé à l'étape « Situation » (pré-rempli selon les services choisis)
 const APPAREILS = { fixe: 'PC fixe', portable: 'PC portable', aio: 'PC tout-en-un', mac: 'Mac', console: 'Console de jeux', autre: 'Autre' };
@@ -225,6 +258,9 @@ const SYMPTOMES = [
   { id: 'alarme',  label: 'Je veux une alarme ou un visiophone',      items: { alarme: ['alarm'] } },
   { id: 'domo',    label: 'Je veux piloter ma maison au téléphone',   items: { domotique: ['hub', 'plug'] } },
   { id: 'shop',    label: "J'ouvre ou j'équipe un commerce",          pack: 'shop' },
+  { id: 'site',    label: 'Je veux un site web pour mon activité',    items: { siteweb: [] } },
+  { id: 'appli',   label: 'Je veux une application pour mes clients', items: { appmobile: [] } },
+  { id: 'audit',   label: 'Je veux vérifier la sécurité de mon site', items: { cyber: [] } },
   { id: 'gamer',   label: 'Je veux un PC pour jouer',                 items: { gamer: ['build', 'windows'] } },
   { id: 'aide',    label: "J'ai besoin d'aide pour utiliser mon PC",  items: { cours: [] } },
   { id: 'vieux',   label: 'Je veux me débarrasser de mon ancien PC',  items: { recyclage: ['wipe', 'recycle'] } }
@@ -294,6 +330,8 @@ const ICONS = {
   recycle: '<path d="M7 19H4.8a1.8 1.8 0 0 1-1.6-2.7L7.3 9"/><path d="M11 19h8.2a1.8 1.8 0 0 0 1.6-2.7l-1.2-2"/><path d="m14 16-3 3 3 3"/><path d="M8.3 13.6 7.3 9l-4.6 1"/><path d="m9.3 5.7 1-1.8a1.8 1.8 0 0 1 3.1 0l4 6.8"/><path d="m13.4 9.5 4.6 1 1-4.6"/>',
   home: '<path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',
+  drone: '<circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/>',
   printer: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
   battery: '<rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/><path d="m12 9-2.5 3.5h4L11 16"/>',
   tower: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 6h4M10 10h4"/><circle cx="12" cy="16" r="1.2"/>',

@@ -365,10 +365,14 @@ const VIEWS = {
     const slot = nextFreeSlot();
     return `<div class="pick-head"><h2 id="stepTitle">Que pouvons-nous faire pour vous ?</h2>
         <p class="pick-info mono"><span class="dot ${st.open ? 'on' : ''}"></span>${st.text}${slot ? ` · Prochain créneau : ${slot}` : ''}</p></div>
-      <h3 class="sec">${ico('grid')} À la carte <span class="muted">plusieurs choix possibles</span>
+      <h3 class="sec">${ico('grid')} À la carte
+        <span class="univers" role="tablist" aria-label="Univers">${UNIVERS.map(u => {
+          const n = CATEGORIES.filter(c => c.univers === u.id && !c.bientot).flatMap(c => c.services).filter((id, i, a) => a.indexOf(id) === i && state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
+          return `<button type="button" role="tab" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
+        }).join('')}</span>
         <span class="sec-links"><button type="button" class="link" onclick="setTab('symptomes')">${ico('search')} Décrivez votre problème</button>
-        <button type="button" class="link" onclick="help()">${ico('help')} Je ne sais pas : diagnostic</button></span></h3>
-      <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot).map(c => {
+        <button type="button" class="link" onclick="help()">${ico('help')} Je ne sais pas</button></span></h3>
+      <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot && c.univers === univOf(state.cat)).map(c => {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
         return `<button type="button" role="tab" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
       }).join('')}</div>
@@ -528,6 +532,8 @@ function setDate(v) {
   fetchSlots(v);
 }
 function setTab(t) { state.tab = t; render(); }
+const univOf = cat => (CATEGORIES.find(c => c.id === cat) || CATEGORIES[0]).univers;
+function setUniv(u) { const c = CATEGORIES.find(x => x.univers === u && !x.bientot); if (c) { state.cat = c.id; render(); } }
 function setCat(c) { if (CATEGORIES.find(x => x.id === c && !x.bientot)) { state.cat = c; render(); } }
 function setKind(k) {
   state.kind = k;

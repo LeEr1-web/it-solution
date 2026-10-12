@@ -329,10 +329,10 @@ body.admin .layout{grid-template-columns:1fr}
 .content[data-view="1"]{padding-top:16px;padding-bottom:10px}
 .tile.included .box::after{content:"✓"}
 .pick-head h2{font-size:20px}
-.content h3.sec{margin:10px 0 7px}
-.services .service{min-height:54px;padding:7px 12px}
-.packs{row-gap:14px;margin-top:4px}
-.pack{padding:12px 13px 10px;gap:5px}
+.content h3.sec{margin:6px 0 6px}
+.services .service{min-height:54px;padding:6px 12px}
+.packs{row-gap:13px;margin-top:2px}
+.pack{padding:11px 13px 8px;gap:4px}
 .pack .pack-tag{position:absolute;top:-9px;right:10px;font-size:10.5px;padding:1px 7px}
 .pack-head b{font-size:14px;line-height:1.2}
 .pack-bottom{white-space:nowrap}
@@ -397,7 +397,7 @@ body.admin .layout{grid-template-columns:1fr}
 
 
 /* Packs : ce qui est inclus, en clair */
-.pack-inclus{list-style:none;margin:0;padding:0;display:grid;gap:1px;font-size:12.5px;line-height:1.35;color:var(--text)}
+.pack-inclus{list-style:none;margin:0;padding:0;display:grid;gap:0;font-size:12.5px;line-height:1.28;color:var(--text)}
 .pack-inclus li{display:flex;gap:6px}
 .pack-inclus li::before{content:"✓";color:var(--ok);font-weight:700;flex:none}
 .pack-fixe{font-size:11px;color:var(--muted)}
@@ -408,9 +408,9 @@ body.admin .layout{grid-template-columns:1fr}
 
 /* Catégories « À la carte » */
 .sec-links{margin-left:auto;display:inline-flex;flex-wrap:wrap;gap:4px 14px}
-.sec-links .link{display:inline-flex;align-items:center;gap:5px;font-size:14px}
+.sec-links .link{display:inline-flex;align-items:center;gap:5px;font-size:13.5px}
 .sec-links .ico{width:16px;height:16px}
-.cats{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-bottom:6px}
+.cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-bottom:6px}
 .cats button{position:relative;display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .cats button .ico{width:18px;height:18px;color:var(--primary)}
 .cats button:hover:not(:disabled){border-color:var(--primary)}
@@ -422,7 +422,7 @@ body.admin .layout{grid-template-columns:1fr}
 .cats .count{background:var(--ok);color:#fff}
 .cats .soon,.soon{background:#fff3c4;color:#7a4b00;font-size:10.5px;font-weight:700;border-radius:10px;padding:1px 6px}
 .doc .cat-title{margin:22px 0 10px;font-size:18px}
-.cats button{white-space:nowrap;font-size:12px;flex-direction:column;gap:2px;min-height:50px;padding:5px 2px}
+.cats button{white-space:nowrap;font-size:13.5px;gap:7px;min-height:38px;padding:4px 6px}
 .cats button span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .cats .count{position:absolute;top:-7px;right:4px}
 .cats .soon{position:absolute;top:-8px;right:6px}
@@ -435,6 +435,16 @@ body.admin .layout{grid-template-columns:1fr}
 /* Annonce « Bientôt » sous les onglets */
 .bientot{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
 .bientot .soon{margin-right:4px}
+
+
+/* Univers (Informatique / Maison connectée / Pro & digital) */
+.univers{display:inline-flex;gap:3px;padding:3px;margin-left:10px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);vertical-align:middle}
+.univers button{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:4px 10px;border:0;border-radius:7px;background:none;color:var(--muted);font:600 13.5px var(--sans);cursor:pointer;white-space:nowrap}
+.univers button .ico{width:16px;height:16px}
+.univers button:hover{color:var(--text)}
+.univers button[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:0 1px 3px rgba(11,21,38,.2)}
+.univers button[aria-selected="true"] .ico{color:#7dd3fc}
+.univers .count{position:absolute;top:-6px;right:-2px;font-style:normal;font-size:10.5px;font-weight:700;border-radius:10px;padding:0 6px;background:var(--ok);color:#fff}
 
 /* =====================================================================
    RESPONSIVE
@@ -471,6 +481,9 @@ body.admin .layout{grid-template-columns:1fr}
 }
 @media (max-width:420px){.hide-xs{display:none}.nav .btn{padding:9px 12px}}
 @media (max-width:600px){
+  .univers{display:flex;width:100%;margin:6px 0 0}
+  .univers button{flex:1;justify-content:center;padding:4px 4px;font-size:12px;white-space:normal;text-align:center;line-height:1.15}
+  .univers button .ico{display:none}
   .pack{padding:12px 10px 10px}
   .pack-bottom{flex-wrap:wrap;white-space:normal;row-gap:2px}
   .pack-bottom s{flex-basis:100%}
@@ -478,8 +491,8 @@ body.admin .layout{grid-template-columns:1fr}
   .pack-bottom .pack-now{font-size:17px}
   .pack-head b{font-size:14px}
   .sec-links{margin-left:0;flex-basis:100%}
-  .cats{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .cats button{font-size:11.5px}
+  .cats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cats button{font-size:12px;flex-direction:column;gap:2px;min-height:48px}
   .cats button{flex-direction:column;gap:2px;font-size:12.5px;padding:6px 4px;text-align:center}
   .g4,.g3,.g2,.form,.zones{grid-template-columns:minmax(0,1fr)}
   .g4,.g5{grid-template-columns:repeat(2,minmax(0,1fr))}
