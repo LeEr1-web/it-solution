@@ -1,4 +1,4 @@
-IT SOLUTION — SITE DE RENDEZ-VOUS ET DEVIS (Ducos · Le Robert, Martinique)
+ILOTECH — SITE DE RENDEZ-VOUS ET DEVIS (Ducos · Le Robert, Martinique)
 
 AUCUNE INSTALLATION : double-cliquez sur index.html pour l'essayer.
 Mise en ligne gratuite : HEBERGEMENT-GITHUB.txt
@@ -17,7 +17,8 @@ UN SEUL FICHIER À MODIFIER : data.js
   modifiez un prix ou ajoutez une prestation, tout se met à jour automatiquement.
   - SERVICES   : chaque prestation = un prix de base (« dès ») + des options
   - PACKS      : prix fixe ; le « au lieu de » est calculé tout seul
-  - UNIVERS + CATEGORIES : 3 univers et leurs onglets
+  - UNIVERS + CATEGORIES : 3 univers et leurs onglets ; « couleur » = thème de chaque catégorie
+      (un pack qui réunit plusieurs catégories prend automatiquement un dégradé de leurs couleurs)
       Informatique : Ordinateur, Sécurité, Données, Installation, Gaming, Aide & suivi
       Maison connectée : Caméras, Domotique, Wi-Fi
       Pro & digital : Web & apps, Cybersécurité, Caisse, Maintenance
@@ -35,10 +36,12 @@ TARIFS (octobre 2026) — main d'œuvre, matériel en plus sauf mention
   Délai : rapide (sous 48 h) +15 € · urgence jour même +35 € · samedi matin +10 €
   Étudiants : −15 % sur la main d'œuvre · Abonnement entretien : 9,90 €/mois
 
-LE PARCOURS CLIENT
-  1. Choix : onglets « à la carte » + 8 packs, ou « Décrivez votre problème »
-  2. Détails (options)   3. Rendez-vous (date, créneau) ou Lieu (devis)
-  4. Situation (type d'appareil, photo)   5. Coordonnées
+LE PARCOURS CLIENT (3 étapes)
+  1. Choix : 3 univers, onglets « à la carte » + 8 packs, ou « Décrivez votre problème ».
+     Tout ce qui est choisi s'affiche à droite dans « Votre sélection » (sur téléphone : en bas),
+     avec ses options à cocher, son prix, et une croix pour le retirer.
+  2. Rendez-vous (lieu, date, créneau) ou Lieu (devis)
+  3. Coordonnées + besoin (type d'appareil, description, photo)
   -> la demande arrive par email et/ou dans Google (tableau + agenda), le client reçoit un accusé.
 
 FICHIERS

@@ -20,7 +20,7 @@
   const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   let h = `
     <header class="f-head">
-      <div class="f-brand"><span class="mark">IT</span><div><b>${esc(ENTREPRISE.nomCommercial)}</b><span>Dépannage · installation · sécurité — Martinique</span></div></div>
+      <div class="f-brand"><img class="devis-logo" src="img/logo-ilo.png" alt=""><div><b>${esc(ENTREPRISE.nomCommercial)}</b><span>Dépannage · installation · sécurité — Martinique</span></div></div>
       <div class="f-meta mono"><b>FICHE TARIFS</b><span>À jour le ${today}</span>
         ${Object.values(AGENCES).map(a => `<span>${esc(a.nom)} · ${esc(a.tel)}</span>`).join('')}</div>
     </header>
@@ -34,7 +34,7 @@
   const vus = new Set();
   h += CATEGORIES.filter(c => !c.bientot).map(c => {
     const list = c.services.filter(id => !vus.has(id)); list.forEach(id => vus.add(id));
-    return list.length ? `<h2>${ico(c.icon)} ${esc(c.nom)}</h2><div class="f-grid">${list.map(id => service(svc(id))).join('')}</div>` : '';
+    return list.length ? `<h2 style="--t:${c.couleur}">${ico(c.icon)} ${esc(c.nom)}</h2><div class="f-grid">${list.map(id => service(svc(id))).join('')}</div>` : '';
   }).join('');
 
   // Déplacement, délais, conditions

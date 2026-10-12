@@ -25,6 +25,16 @@ const daysFromToday = s => Math.round((parseISO(s) - parseISO(todayISO())) / 864
 const frDate = s => parseISO(s).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const shortDate = s => { const l = parseISO(s).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }); return l.charAt(0).toUpperCase() + l.slice(1); };
 
+// thème (couleur) d'une catégorie, d'un service, d'un pack
+const catOf = sid => CATEGORIES.find(c => c.services.includes(sid)) || CATEGORIES[0];
+const themeOf = sid => catOf(sid).couleur;
+// un pack d'une seule catégorie garde sa couleur ; s'il en mélange plusieurs, il prend un dégradé
+function packTheme(p) {
+  const cols = [...new Set(Object.keys(p.items).map(themeOf))];
+  return { c: cols[0], bg: cols.length > 1 ? `linear-gradient(120deg, ${cols.join(', ')})` : cols[0], multi: cols.length > 1 };
+}
+const packStyle = p => { const t = packTheme(p); return `--t:${t.c};--tg:${t.bg}`; };
+
 // valeur normale (sans remise) d'un ensemble { service: [options] }
 const itemsValue = items => Object.entries(items).reduce((t, [sid, opts]) => t + svc(sid).base + opts.reduce((u, o) => u + optOf(sid, o)[2], 0), 0);
 
@@ -32,11 +42,11 @@ const itemsValue = items => Object.entries(items).reduce((t, [sid, opts]) => t +
    ÉTAT
    ===================================================================== */
 const STEPS = {
-  rdv:   ['Choix', 'Détails', 'Rendez-vous', 'Situation', 'Coordonnées'],
-  devis: ['Choix', 'Détails', 'Lieu', 'Situation', 'Coordonnées']
+  rdv:   ['Choix', 'Rendez-vous', 'Coordonnées'],
+  devis: ['Choix', 'Lieu', 'Coordonnées']
 };
 const DEFAULT = {
-  step: 1, kind: 'rdv', tab: 'services', cat: 'ordi', pack: null, symptoms: [], sel: [], opt: {},
+  step: 1, kind: 'rdv', tab: 'services', cat: 'ordi', pack: null, symptoms: [], sel: [], opt: {}, open: '',
   d: { appType: '', mode: 'site', commune: '', agence: 'ducos', creneau: '', date: '', type: 'individual', budget: 'medium', appareil: '', desc: '', contrat: false, name: '', email: '', phone: '', address: '', pref: 'whatsapp', consent: false, website: '', chatMsg: MESSAGES_WA[0][1], chatCommune: '', etudiant: false }
 };
 let state = load();
@@ -47,11 +57,12 @@ let suivi = {};          // recherche « Suivre ma demande »
 
 function load() {
   try {
-    const saved = JSON.parse(localStorage.getItem('itDraft2'));
+    const saved = JSON.parse(localStorage.getItem('itDraft3'));
     if (saved && saved.d) {
       const base = structuredClone(DEFAULT);
       const st = { ...base, ...saved, d: { ...base.d, ...saved.d, consent: false, website: '' } };
-      if (st.kind === 'rdv' && st.step > 3 && (!st.d.date || !CRENEAUX[st.d.creneau] || st.d.date < todayISO())) st.step = 3;
+      if (typeof st.step === 'number' && st.step > 3) st.step = 1;
+      if (st.kind === 'rdv' && st.step > 2 && (!st.d.date || !CRENEAUX[st.d.creneau] || st.d.date < todayISO())) st.step = 2;
       if ((typeof st.step !== 'number' && st.step !== 'chat') || st.step < 1) st.step = 1;
       if (!CATEGORIES.find(c => c.id === st.cat && !c.bientot)) st.cat = 'ordi';
       st.sel = st.sel.filter(id => svc(id)); if (st.pack && !PACKS.find(x => x.id === st.pack)) st.pack = null;
@@ -61,7 +72,7 @@ function load() {
   return structuredClone(DEFAULT);
 }
 function save() {
-  try { localStorage.setItem('itDraft2', JSON.stringify(state)); } catch (e) {}
+  try { localStorage.setItem('itDraft3', JSON.stringify(state)); } catch (e) {}
 }
 
 /* =====================================================================
@@ -131,7 +142,7 @@ async function fetchSlots(date) {
     const data = await res.json();
     if (data.ok) slotCache[key] = data.complet || {};
   } catch (e) { /* hors ligne : tous les créneaux restent proposés */ }
-  if (state.step === 3) render();
+  if (state.step === 2) render();
 }
 
 /* =====================================================================
@@ -230,14 +241,18 @@ function renderSummary() {
   const r = calc();
   const { d } = state;
   const line = (label, value, detail) => `<div class="line"><span>${label}${detail ? `<small>${esc(detail)}</small>` : ''}</span><b>${value}</b></div>`;
-  let h = r.lines.map(l => line(esc(l.label), l.remise ? `<span class="free">${eur(l.prix)}</span>` : !l.prix && !l.mensuel ? '<span class="free">Gratuit</span>' : (l.old ? `<s>${eur(l.old)}</s>` : '') + lineVal(l), l.detail)).join('');
-  if (r.presta && r.deplLabel && state.step >= 3) {
+  let h = selectionHTML();
+  if (r.remise) h += line(`Remise étudiant (−${CONFIG.remiseEtudiant} %)`, `<span class="free">${eur(-r.remise)}</span>`, 'Sur présentation de la carte étudiant');
+  if (r.presta && r.deplLabel && state.step >= 2) {
     const c = commune(d.commune);
     h += line(r.deplLabel, r.offert ? `<s>${eur(r.deplPlein)}</s><span class="free">Offert</span>` : r.depl ? eur(r.depl) : '<span class="free">Gratuit</span>', d.mode === 'site' && c ? c[0] : '');
   }
   if (r.presta && r.urg) h += line(`Délai ${DELAIS[r.delai].label.toLowerCase()}`, '+' + eur(r.urg));
   if (r.presta && r.cren) h += line(CRENEAUX[d.creneau].label, '+' + eur(r.cren));
-  $('lines').innerHTML = h || '<p class="empty">Choisissez un service ou un pack pour voir le prix.</p>';
+  $('lines').innerHTML = h || '<p class="empty">Rien de choisi pour l’instant. Cochez un service ou un pack : il s’affiche ici, avec ses options et son prix.</p>';
+  const n = state.sel.filter(id => !(packValid() && pack(state.pack).items[id])).length + (packValid() ? 1 : 0);
+  $('selCount').textContent = n || '';
+  $('mobileCount').textContent = n ? `Ma sélection (${n})` : 'Total estimé';
 
   const txt = priceText(r);
   $('price').textContent = txt;
@@ -249,9 +264,9 @@ function renderSummary() {
   const meta = [];
   const c = commune(d.commune);
   if (r.presta) {
-    if (state.step >= 3 && d.mode === 'site' && c) meta.push(`Agence : <b>${AGENCES[c[2]].nom}</b>`);
+    if (state.step >= 2 && d.mode === 'site' && c) meta.push(`Agence : <b>${AGENCES[c[2]].nom}</b>`);
     if (state.kind === 'rdv' && d.date) meta.push(`Rendez-vous : <b>${frDate(d.date)}${d.creneau ? ', ' + CRENEAUX[d.creneau].label.toLowerCase() : ''}</b>`);
-    if (state.step >= 3 && d.mode === 'site' && c && !r.offert && r.deplPlein > 0) {
+    if (state.step >= 2 && d.mode === 'site' && c && !r.offert && r.deplPlein > 0) {
       const pct = Math.min(100, (r.presta / CONFIG.deplacementOffertDes) * 100);
       meta.push(`Encore <b>${eur(CONFIG.deplacementOffertDes - r.presta)}</b> pour un déplacement offert<div class="progress"><span style="width:${pct}%"></span></div>`);
     }
@@ -260,6 +275,48 @@ function renderSummary() {
 
   $('kindToggle').hidden = !(typeof state.step === 'number' && state.step > 1);
   $('kindToggle').innerHTML = `<button type="button" aria-pressed="${state.kind === 'rdv'}" onclick="setKind('rdv')">${ico('calendar')} Rendez-vous</button><button type="button" aria-pressed="${state.kind === 'devis'}" onclick="setKind('devis')">${ico('doc')} Devis</button>`;
+}
+
+// Liste de ce que le client a pris : pack et services, chacun avec ses options (cochables ici même)
+function optionsHTML(ids, p) {
+  return `<div class="sel-opts">${ids.map(id => {
+    const s = svc(id), locked = p?.items[id] || [];
+    const list = s.options.filter(o => !locked.includes(o[0]));
+    if (!list.length) return '';
+    return (p ? `<p class="sel-sub">${esc(s.nom)}</p>` : '') + (s.note ? `<p class="sel-note">${s.note}</p>` : '') + list.map(o => `<label class="opt">
+      <input type="checkbox" ${state.opt[id]?.includes(o[0]) ? 'checked' : ''} onchange="toggleOpt('${id}','${o[0]}')"><span>${o[1]}</span>
+      <b class="mono">${optPrice(o)}${o[2] && s.mensuel ? '/mois' : ''}</b></label>`).join('');
+  }).join('')}</div>`;
+}
+function selectionHTML() {
+  const p = packValid() ? pack(state.pack) : null;
+  const chosen = id => (state.opt[id] || []).map(o => optOf(id, o)).filter(Boolean);
+  const card = ({ key, style, cls = '', icon, title, detail, price, remove, label, body }) => {
+    const open = state.open === key;
+    return `<div class="sel ${cls} ${open ? 'open' : ''}" style="${style}">
+      <div class="sel-row"><span class="sel-ico">${ico(icon)}</span>
+        <button type="button" class="sel-name" onclick="openSel('${key}')" aria-expanded="${open}"><b>${title}</b><small>${detail}</small></button>
+        <span class="sel-price mono">${price}</span>
+        <button type="button" class="sel-x" onclick="${remove}" aria-label="Retirer ${esc(label)}" title="Retirer">×</button></div>
+      ${open ? body : ''}<button type="button" class="sel-more" onclick="openSel('${key}')">${open ? 'Masquer les options' : body.includes('class="opt"') ? '+ Options' : ''}</button></div>`;
+  };
+  let h = '';
+  if (p) {
+    const extra = Object.keys(p.items).flatMap(id => chosen(id).filter(o => !p.items[id].includes(o[0])));
+    h += card({ key: 'pack', style: packStyle(p), cls: 'sel-pack' + (packTheme(p).multi ? ' multi' : ''), icon: p.icon, title: esc(packLabel(p)), label: p.nom,
+      detail: esc(p.inclus.join(' · ')) + (extra.length ? `<em>+ ${esc(extra.map(o => o[1]).join(', '))}</em>` : ''),
+      price: `<s>${eur(itemsValue(p.items))}</s>${eur(p.prix + extra.reduce((t, o) => t + o[2], 0))}`,
+      remove: `selectPack('${p.id}')`, body: optionsHTML(Object.keys(p.items), p) });
+  }
+  state.sel.filter(id => !p?.items[id]).forEach(id => {
+    const s = svc(id), opts = chosen(id);
+    const sub = s.base + opts.reduce((t, o) => t + o[2], 0);
+    h += card({ key: id, style: `--t:${themeOf(id)}`, icon: s.icon, title: esc(s.nom), label: s.nom,
+      detail: opts.length ? esc(opts.map(o => o[1]).join(', ')) : `<span class="sel-cat">${esc(catOf(id).nom)}</span>`,
+      price: sub ? eur(sub) + (s.mensuel ? '/mois' : '') : '<span class="free">Gratuit</span>',
+      remove: `toggle('${id}')`, body: optionsHTML([id]) });
+  });
+  return h;
 }
 
 function renderSteps() {
@@ -292,8 +349,8 @@ function renderNav() {
 }
 
 // Case cliquable (checkbox ou radio) accessible au clavier
-function tile({ type = 'radio', name, value, checked, disabled, title, sub, icon, price, cls = '', tip = '', onchange }) {
-  return `<label class="tile ${cls} ${checked ? 'on' : ''} ${disabled ? 'off' : ''}"${tip ? ` title="${tip}"` : ''}>
+function tile({ type = 'radio', name, value, checked, disabled, title, sub, icon, price, cls = '', tip = '', theme = '', onchange }) {
+  return `<label class="tile ${cls} ${checked ? 'on' : ''} ${disabled ? 'off' : ''}"${tip ? ` title="${tip}"` : ''}${theme ? ` style="--t:${theme}"` : ''}>
     <input type="${type}" name="${name}" value="${value}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''} onchange="${onchange}">
     ${icon ? ico(icon) : ''}<span class="box ${type === 'radio' ? 'round' : ''}" aria-hidden="true"></span>
     <span class="tile-text"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span>${price ? `<span class="price">${price}</span>` : ''}</label>`;
@@ -301,8 +358,9 @@ function tile({ type = 'radio', name, value, checked, disabled, title, sub, icon
 
 function packCard(p, on, action) {
   const value = itemsValue(p.items);
-  return `<button type="button" class="pack ${on ? 'on' : ''}" aria-pressed="${on}" onclick="${action}">
-    <span class="pack-tag mono">${p.populaire ? '★ Le plus demandé' : p.pour}</span>
+  const cats = [...new Set(Object.keys(p.items).map(id => catOf(id).nom))];
+  return `<button type="button" class="pack ${on ? 'on' : ''} ${packTheme(p).multi ? 'multi' : ''}" style="${packStyle(p)}" aria-pressed="${on}" onclick="${action}">
+    <span class="pack-tag mono">${p.populaire ? '★ Le plus demandé' : cats.join(' + ')}</span>
     <span class="pack-head">${ico(p.icon)}<b>${p.nom}</b></span>
     <ul class="pack-inclus">${p.inclus.map(i => `<li>${i}</li>`).join('')}</ul>
     <span class="pack-bottom"><b class="pack-now mono">${eur(p.prix)}</b><s class="mono" title="Prix des mêmes prestations à la carte">au lieu de ${eur(value)}</s></span></button>`;
@@ -333,7 +391,7 @@ const VIEWS = {
     if (!CONFIG.endpoint) {
       return h + `<p class="lead">Le suivi en ligne n'est pas encore activé. Contactez directement votre agence avec votre référence :</p>
         <div class="grid g2 agencies">${Object.values(AGENCES).map(a => `<div class="agency"><b>${ico('pin')} ${a.nom}</b><span class="mono tel">${esc(a.tel)}</span>
-        <div class="agency-actions"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waUrl(a.tel, 'Bonjour IT Solution, je viens aux nouvelles de ma demande (référence : ).')}">${ico('chat')} WhatsApp</a><a class="btn" href="${telUrl(a.tel)}">${ico('phone')} Appeler</a></div></div>`).join('')}</div>`;
+        <div class="agency-actions"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waUrl(a.tel, 'Bonjour IloTech, je viens aux nouvelles de ma demande (référence : ).')}">${ico('chat')} WhatsApp</a><a class="btn" href="${telUrl(a.tel)}">${ico('phone')} Appeler</a></div></div>`).join('')}</div>`;
     }
     h += `<p class="lead">Entrez la référence reçue (par exemple RDV-261004-AB12) et les 4 derniers chiffres de votre téléphone.</p>
       <div class="form"><div class="field"><label for="sRef">Référence</label><input id="sRef" class="mono" value="${esc(suivi.ref || '')}" autocapitalize="characters" autocomplete="off" placeholder="RDV-261004-AB12"></div>
@@ -345,7 +403,7 @@ const VIEWS = {
       const ag = AGENCES[r.agence] || AGENCES.ducos;
       h += `<div class="suivi-card"><span class="mono">${esc(suivi.ref)}</span><b class="statut">${esc(r.statut)}</b><p>${esc(SUIVI[r.statut] || '')}</p>
         ${r.rdv ? `<p>Rendez-vous : <b>${esc(r.rdv)}</b></p>` : ''}<p class="muted">Agence ${ag.de} · ${esc(ag.tel)}</p>
-        <div class="actions left"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waUrl(ag.tel, `Bonjour IT Solution, au sujet de ma demande ${suivi.ref} :`)}">${ico('chat')} Écrire à l'agence</a></div></div>`;
+        <div class="actions left"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waUrl(ag.tel, `Bonjour IloTech, au sujet de ma demande ${suivi.ref} :`)}">${ico('chat')} Écrire à l'agence</a></div></div>`;
     }
     return h;
   },
@@ -368,13 +426,13 @@ const VIEWS = {
       <h3 class="sec">${ico('grid')} À la carte
         <span class="univers" role="tablist" aria-label="Univers">${UNIVERS.map(u => {
           const n = CATEGORIES.filter(c => c.univers === u.id && !c.bientot).flatMap(c => c.services).filter((id, i, a) => a.indexOf(id) === i && state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
-          return `<button type="button" role="tab" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
+          return `<button type="button" role="tab" style="--t:${u.couleur}" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
         }).join('')}</span>
         <span class="sec-links"><button type="button" class="link" onclick="setTab('symptomes')">${ico('search')} Décrivez votre problème</button>
         <button type="button" class="link" onclick="help()">${ico('help')} Je ne sais pas</button></span></h3>
       <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot && c.univers === univOf(state.cat)).map(c => {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
-        return `<button type="button" role="tab" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
+        return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
       }).join('')}</div>
       ${BIENTOT.length ? `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.join(' · ')}</p>` : ''}
       <div class="grid g5 services" role="tabpanel">${CATEGORIES.find(c => c.id === state.cat).services.map(id => {
@@ -383,24 +441,12 @@ const VIEWS = {
           return tile({ type: 'checkbox', name: 'svc', value: x.id, checked: !inPack && state.sel.includes(x.id), disabled: !!inPack,
             title: x.nom.replace('Vidéosurveillance', 'Vidéo\u00ADsurveillance'),
             sub: inPack ? '✓ Inclus au pack' : `${x.desc}<span class="mono price-line">${fromPrice(x)}</span>`,
-            icon: x.icon, cls: 'service' + (inPack ? ' included' : ''), onchange: `toggle('${x.id}')` });
+            icon: x.icon, theme: themeOf(x.id), cls: 'service' + (inPack ? ' included' : ''), onchange: `toggle('${x.id}')` });
         }).join('')}</div>
-      <h3 class="sec">${ico('box')} Nos packs <span class="muted">une solution complète, à prix fixe</span></h3>
+      <h3 class="sec">${ico('box')} Nos packs <span class="muted">une solution complète, à prix fixe · dégradé = plusieurs catégories réunies</span></h3>
       <div class="grid g4 packs">${PACKS.map(p => packCard(p, state.pack === p.id && packValid(), `selectPack('${p.id}')`)).join('')}</div>`;
   },
   2() {
-    const { sel, opt } = state;
-    const p = packValid() ? pack(state.pack) : null;
-    return `<h2 id="stepTitle">Précisez votre demande</h2><p class="lead">${p ? `Le <b>${packLabel(p).replace(/^Pack/, 'pack')}</b> est inclus (en vert). Ajoutez des options si besoin.` : 'Cochez ce qui correspond à votre situation. Cette étape est facultative.'}</p>` + sel.map(id => {
-      const s = svc(id);
-      const inPack = p?.items[id];
-      return `<div class="option-group"><h3>${ico(s.icon)} ${s.nom} <span class="muted mono">${inPack ? 'inclus dans le pack' : s.base ? 'base ' + eur(s.base) + (s.mensuel ? '/mois' : '') : 'gratuit'}</span></h3>${s.note ? `<p class="notice small-note">${s.note}</p>` : ''}<div class="grid g3">${s.options.map(o => {
-        const locked = inPack?.includes(o[0]);
-        return tile({ type: 'checkbox', name: 'opt-' + id, value: o[0], checked: locked || opt[id]?.includes(o[0]), disabled: locked, title: o[1], price: locked ? 'Inclus' : optPrice(o) + (o[2] && s.mensuel ? '/mois' : ''), cls: 'option' + (locked ? ' included' : ''), onchange: `toggleOpt('${id}','${o[0]}')` });
-      }).join('')}</div></div>`;
-    }).join('');
-  },
-  3() {
     const { d } = state;
     const allowed = allowedModes();
     const c = commune(d.commune);
@@ -447,33 +493,29 @@ const VIEWS = {
     }
     return h;
   },
-  4() {
-    const { d } = state;
-    const opts = (o, v) => Object.entries(o).map(([k, l]) => `<option value="${k}" ${v === k ? 'selected' : ''}>${l}</option>`).join('');
-    let h = `<h2 id="stepTitle">Votre situation</h2><p class="lead">Ces informations aident le technicien à préparer l'intervention.</p><div class="form">
-      <div class="field"><label for="type">Vous êtes</label><select id="type" onchange="setD('type',this.value)">${opts(TYPES, d.type)}</select></div>
-      <div class="field"><label for="budget">Budget prévu</label><select id="budget" onchange="setD('budget',this.value,true)">${opts({ low: 'Moins de 250 €', medium: 'De 250 à 1 000 €', high: 'De 1 000 à 3 000 €', pro: 'Plus de 3 000 €' }, d.budget)}</select></div>
-      ${needsAppareil() ? `<div class="field"><label for="appType">Type d'appareil</label><select id="appType" onchange="setD('appType',this.value,true)"><option value="">Choisir…</option>${opts(APPAREILS, d.appType)}</select></div>
-      <div class="field"><label for="appareil">Marque et modèle <span class="muted">(si vous savez)</span></label><input id="appareil" value="${esc(d.appareil)}" placeholder="Exemple : HP Pavilion 15, Windows 11" oninput="setD('appareil',this.value,true)"></div>` : ''}
-      <div class="field full"><label for="desc">Décrivez votre besoin <span class="muted">(facultatif)</span></label><textarea id="desc" placeholder="Exemple : mon ordinateur est très lent depuis une mise à jour." oninput="setD('desc',this.value,true)">${esc(d.desc)}</textarea></div>
-      <div class="field full"><label for="photo">Photo du problème <span class="muted">(facultatif : message d'erreur, matériel…)</span></label>
-        <div class="photo-row"><input id="photo" type="file" accept="image/*" onchange="addPhoto(this.files[0])">${photo ? `<img src="${photo.url}" alt="Aperçu de votre photo" class="thumb"><button type="button" class="link" onclick="removePhoto()">Retirer</button>` : ''}</div></div></div>`;
-    if (d.type !== 'individual') h += `<label class="check"><input type="checkbox" ${d.contrat ? 'checked' : ''} onchange="setD('contrat',this.checked,true)"><span><b>Je souhaite des informations sur le ${CONTRAT_PRO}</b><br><span class="muted">Interventions prioritaires, déplacements inclus, suivi des sauvegardes.</span></span></label>`;
-    return h;
-  },
-  5() {
+  3() {
     const { d } = state;
     const r = calc();
     const rdv = state.kind === 'rdv';
+    const opts = (o, v) => Object.entries(o).map(([k, l]) => `<option value="${k}" ${v === k ? 'selected' : ''}>${l}</option>`).join('');
     return `<h2 id="stepTitle">Vos coordonnées</h2><p class="lead">${rdv ? `L'agence ${AGENCES[agenceKey()].de} vous recontacte pour confirmer le rendez-vous.` : 'Votre devis s’affiche juste après, et l’agence en reçoit une copie.'}</p><div class="form">
       <div class="field"><label for="name">Nom et prénom <span class="req">*</span></label><input id="name" value="${esc(d.name)}" autocomplete="name" required oninput="setD('name',this.value,true)"></div>
       <div class="field"><label for="phone">Téléphone <span class="req">*</span></label><input id="phone" type="tel" value="${esc(d.phone)}" autocomplete="tel" placeholder="0696 00 00 00" required oninput="setD('phone',this.value,true)"></div>
       <div class="field"><label for="email">Email <span class="req">*</span></label><input id="email" type="email" value="${esc(d.email)}" autocomplete="email" required oninput="setD('email',this.value,true)"></div>
-      <div class="field"><label for="pref">On vous recontacte par</label><select id="pref" onchange="setD('pref',this.value,true)">${Object.entries(CONTACT_PREF).map(([k, l]) => `<option value="${k}" ${d.pref === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label for="pref">On vous recontacte par</label><select id="pref" onchange="setD('pref',this.value,true)">${opts(CONTACT_PREF, d.pref)}</select></div>
       ${d.mode === 'site' ? `<div class="field full"><label for="address">Adresse ou quartier</label><input id="address" value="${esc(d.address)}" autocomplete="street-address" placeholder="Quartier, rue… (${esc(d.commune)})" oninput="setD('address',this.value,true)"></div>` : ''}
       <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" oninput="setD('website',this.value,true)">
       </div>
-      <label class="check consent"><input type="checkbox" ${d.consent ? 'checked' : ''} onchange="setD('consent',this.checked,true)"><span>J'accepte que mes informations soient utilisées par IT Solution pour traiter ma demande et me recontacter (<a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>). <span class="req">*</span></span></label>
+      <h3>${ico('help')} Votre besoin <span class="muted">facultatif : aide le technicien à préparer l'intervention</span></h3><div class="form">
+      <div class="field"><label for="type">Vous êtes</label><select id="type" onchange="setD('type',this.value)">${opts(TYPES, d.type)}</select></div>
+      <div class="field"><label for="budget">Budget prévu</label><select id="budget" onchange="setD('budget',this.value,true)">${opts({ low: 'Moins de 250 €', medium: 'De 250 à 1 000 €', high: 'De 1 000 à 3 000 €', pro: 'Plus de 3 000 €' }, d.budget)}</select></div>
+      ${needsAppareil() ? `<div class="field"><label for="appType">Type d'appareil</label><select id="appType" onchange="setD('appType',this.value,true)"><option value="">Choisir…</option>${opts(APPAREILS, d.appType)}</select></div>
+      <div class="field"><label for="appareil">Marque et modèle <span class="muted">(si vous savez)</span></label><input id="appareil" value="${esc(d.appareil)}" placeholder="Exemple : HP Pavilion 15, Windows 11" oninput="setD('appareil',this.value,true)"></div>` : ''}
+      <div class="field full"><label for="desc">Décrivez votre besoin</label><textarea id="desc" placeholder="Exemple : mon ordinateur est très lent depuis une mise à jour." oninput="setD('desc',this.value,true)">${esc(d.desc)}</textarea></div>
+      <div class="field full"><label for="photo">Photo du problème <span class="muted">(message d'erreur, matériel…)</span></label>
+        <div class="photo-row"><input id="photo" type="file" accept="image/*" onchange="addPhoto(this.files[0])">${photo ? `<img src="${photo.url}" alt="Aperçu de votre photo" class="thumb"><button type="button" class="link" onclick="removePhoto()">Retirer</button>` : ''}</div></div></div>
+      ${d.type !== 'individual' && d.type !== 'student' ? `<label class="check"><input type="checkbox" ${d.contrat ? 'checked' : ''} onchange="setD('contrat',this.checked,true)"><span><b>Je souhaite des informations sur le ${CONTRAT_PRO}</b><br><span class="muted">Interventions prioritaires, déplacements inclus, suivi des sauvegardes.</span></span></label>` : ''}
+      <label class="check consent"><input type="checkbox" ${d.consent ? 'checked' : ''} onchange="setD('consent',this.checked,true)"><span>J'accepte que mes informations soient utilisées par IloTech pour traiter ma demande et me recontacter (<a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>). <span class="req">*</span></span></label>
       <div class="estimate">${rdv ? `Rendez-vous : <b>${frDate(d.date)}, ${CRENEAUX[d.creneau]?.label.toLowerCase() || ''}</b> · ` : ''}Estimation : <b>${priceText(r)}</b></div>`;
   }
 };
@@ -501,7 +543,7 @@ function renderStatic() {
     <div class="zone-head"><b>${z.nom}</b><strong>${z.prix ? z.prix + ' €' : 'Offert'}</strong></div>
     <span class="muted">${z.delai}</span>
     <p>${COMMUNES.filter(c => c[1] === k).map(c => esc(c[0])).join(', ')}</p></div>`).join('');
-  $('headContact').innerHTML = Object.values(AGENCES).map(a => `<a class="btn btn-head" href="${waUrl(a.tel, "Bonjour IT Solution, j'aimerais un renseignement.")}" target="_blank" rel="noopener" aria-label="WhatsApp agence ${a.nom}, ${esc(a.tel)}">${ico('chat')}<span>${a.nom}</span><span class="tel mono">${esc(a.tel)}</span></a>`).join('');
+  $('headContact').innerHTML = Object.values(AGENCES).map(a => `<a class="btn btn-head" href="${waUrl(a.tel, "Bonjour IloTech, j'aimerais un renseignement.")}" target="_blank" rel="noopener" aria-label="WhatsApp agence ${a.nom}, ${esc(a.tel)}">${ico('chat')}<span>${a.nom}</span><span class="tel mono">${esc(a.tel)}</span></a>`).join('');
   updateStatus();
 }
 function renderAvis() {
@@ -532,12 +574,14 @@ function setDate(v) {
   fetchSlots(v);
 }
 function setTab(t) { state.tab = t; render(); }
+function openSel(key) { state.open = state.open === key ? '' : key; renderSummary(); save(); }
+function showSel() { document.querySelector('.summary').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 const univOf = cat => (CATEGORIES.find(c => c.id === cat) || CATEGORIES[0]).univers;
 function setUniv(u) { const c = CATEGORIES.find(x => x.univers === u && !x.bientot); if (c) { state.cat = c.id; render(); } }
 function setCat(c) { if (CATEGORIES.find(x => x.id === c && !x.bientot)) { state.cat = c; render(); } }
 function setKind(k) {
   state.kind = k;
-  if (state.step > 3 && k === 'rdv' && (!state.d.date || !state.d.creneau)) state.step = 3;
+  if (state.step > 2 && k === 'rdv' && (!state.d.date || !state.d.creneau)) state.step = 2;
   render();
 }
 function start(kind) {
@@ -552,7 +596,9 @@ function openChat() {
 }
 function toggle(id) {
   const { sel } = state;
-  state.sel = sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id];
+  const adding = !sel.includes(id);
+  state.sel = adding ? [...sel, id] : sel.filter(x => x !== id);
+  state.open = adding && svc(id).options.length ? id : state.open === id ? '' : state.open;
   if (!packValid()) state.pack = null;
   state.symptoms = [];
   fixMode();
@@ -573,6 +619,7 @@ function selectPack(id) {
   if (packValid()) removeItems(pack(state.pack).items);
   state.pack = null;
   if (!wasOn) { state.pack = id; applyItems(pack(id).items); }
+  state.open = '';
   state.symptoms = [];
   fixMode();
   render();
@@ -598,18 +645,18 @@ function guessAppType() {
   return '';
 }
 function goTo(step) {
-  if (step === 4 && !state.d.appType) state.d.appType = guessAppType();
+  if (step === 3 && !state.d.appType) state.d.appType = guessAppType();
   state.step = step;
   render();
   $('app').scrollTop = 0;
   $('app').focus({ preventScroll: true });
   if (window.innerWidth <= 900) $('main').scrollIntoView({ block: 'start' });
-  if (step === 3) fetchSlots(state.d.date);
+  if (step === 2) fetchSlots(state.d.date);
 }
 function next() {
   const { step, sel, d, kind } = state;
   if (step === 1 && !sel.length) return error('Choisissez au moins un service ou un pack.');
-  if (step === 3) {
+  if (step === 2) {
     if (d.mode === 'site' && !d.commune) return error('Choisissez votre commune.');
     if (kind === 'rdv') {
       if (!d.date) return error('Choisissez une date.');
@@ -625,7 +672,7 @@ function help() {
   state.sel = ['repair']; state.opt = { repair: [] }; state.pack = null; state.symptoms = [];
   if (!state.d.desc) state.d.desc = 'Je ne sais pas exactement quelle intervention choisir. Je souhaite un diagnostic et un conseil.';
   fixMode();
-  goTo(3);
+  goTo(2);
 }
 
 /* =====================================================================
@@ -640,7 +687,7 @@ function lieuLabel(d) {
 function recapText(lead) {
   const r = lead.estimate;
   const lines = [
-    `${lead.kind === 'devis' ? 'Demande de devis' : 'Demande de rendez-vous'} ${lead.ref} — IT Solution (agence ${lead.agenceNom})`,
+    `${lead.kind === 'devis' ? 'Demande de devis' : 'Demande de rendez-vous'} ${lead.ref} — IloTech (agence ${lead.agenceNom})`,
     `Client : ${lead.name} — ${lead.phone} — ${lead.email}`,
     lead.kind === 'rdv' ? `Rendez-vous : ${lead.dateLabel}, ${lead.creneauLabel}` : '',
     `Lieu : ${lead.lieu}`,
@@ -717,7 +764,7 @@ async function send() {
   if (google && !google.ok && google.reason === 'complet') {
     sending = false;
     delete slotCache[d.date + '|' + lead.agence];
-    goTo(3);
+    goTo(2);
     return error('Ce créneau vient d’être réservé par un autre client. Choisissez-en un autre.');
   }
   // ② Email (FormSubmit)
@@ -735,7 +782,7 @@ async function sendByEmail(lead, photoInGoogle) {
     _template: 'table',
     _captcha: 'false',
     _replyto: lead.email,
-    _autoresponse: `Bonjour ${lead.name},\n\nNous avons bien reçu votre demande ${lead.ref}. L'agence ${AGENCES[lead.agence].de} vous recontacte rapidement.\n\n${lead.recap}\n\nIT Solution — ${AGENCES[lead.agence].tel}`,
+    _autoresponse: `Bonjour ${lead.name},\n\nNous avons bien reçu votre demande ${lead.ref}. L'agence ${AGENCES[lead.agence].de} vous recontacte rapidement.\n\n${lead.recap}\n\nIloTech — ${AGENCES[lead.agence].tel}`,
     email: lead.email,
     'Référence': lead.ref,
     'Demande': lead.kind === 'devis' ? 'Devis' : 'Rendez-vous',
@@ -809,7 +856,7 @@ function finishScreen() {
   $('nav').innerHTML = ''; $('nav').hidden = true;
   $('app').scrollTop = 0;
   $('app').focus();
-  try { localStorage.removeItem('itDraft2'); } catch (e) {}
+  try { localStorage.removeItem('itDraft3'); } catch (e) {}
 }
 
 function renderSuccess(lead, received, google) {
@@ -849,7 +896,7 @@ function renderDevis(lead, received, google) {
     </div>
     <article class="devis" id="devisDoc">
       <header class="devis-head">
-        <div class="devis-brand"><span class="mark">IT</span><div><b>${ENTREPRISE.nomCommercial}</b><small>Agence ${ag.de} · ${esc(ag.tel)}</small><small>${ENTREPRISE.exploitant} · SIRET ${ENTREPRISE.siret}</small><small>${ENTREPRISE.adresse}</small></div></div>
+        <div class="devis-brand"><img class="devis-logo" src="img/logo-ilo.png" alt=""><div><b>${ENTREPRISE.nomCommercial}</b><small>Agence ${ag.de} · ${esc(ag.tel)}</small><small>${ENTREPRISE.exploitant} · SIRET ${ENTREPRISE.siret}</small><small>${ENTREPRISE.adresse}</small></div></div>
         <div class="mono devis-meta"><b>DEVIS ESTIMATIF</b><span>N° ${esc(lead.ref)}</span><span>Émis le ${new Date().toLocaleDateString('fr-FR')}</span><span>Valable jusqu'au ${parseISO(lead.validite).toLocaleDateString('fr-FR')}</span></div>
       </header>
       <div class="devis-client"><span class="mono">CLIENT</span><b>${esc(lead.name)}</b><span>${esc(lead.phone)} · ${esc(lead.email)}</span><span>${esc(lead.lieu)}</span>${lead.appareil ? `<span>Appareil : ${esc(lead.appareil)}</span>` : ''}</div>
@@ -862,11 +909,11 @@ function renderDevis(lead, received, google) {
   finishScreen();
 }
 
-function devisToRdv() { state.kind = 'rdv'; goTo(3); }
+function devisToRdv() { state.kind = 'rdv'; goTo(2); }
 
 function reset() {
   state = structuredClone(DEFAULT);
-  try { localStorage.removeItem('itDraft2'); } catch (e) {}
+  try { localStorage.removeItem('itDraft3'); } catch (e) {}
   render();
 }
 
@@ -910,7 +957,7 @@ function exportCSV() {
   const csv = '﻿' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = 'demandes-it-solution.csv';
+  a.download = 'demandes-ilotech.csv';
   a.click();
 }
 
@@ -930,4 +977,4 @@ setInterval(updateStatus, 60000);
 renderStatic();
 renderAvis();
 render();
-if (state.step === 3) fetchSlots(state.d.date);
+if (state.step === 2) fetchSlots(state.d.date);

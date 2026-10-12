@@ -185,7 +185,7 @@ function ouvrir(ref) {
     <label class="check"><input type="checkbox" id="fNotif" checked><span>Prévenir le client par email</span></label>
     <div class="actions left">
       <a class="btn" href="tel:+${intl(d.tel)}">Appeler</a>
-      <a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/${intl(d.tel)}?text=${encodeURIComponent(`Bonjour ${d.nom}, IT Solution au sujet de votre demande ${d.ref} :`)}">WhatsApp</a>
+      <a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/${intl(d.tel)}?text=${encodeURIComponent(`Bonjour ${d.nom}, IloTech au sujet de votre demande ${d.ref} :`)}">WhatsApp</a>
       ${d.statut !== 'Annulé' ? `<button class="btn g-danger" onclick="$('fStatut').value='Annulé'; changerStatut('${esc(d.ref)}')">Annuler le rendez-vous</button>` : ''}
     </div>`;
   $('fiche').showModal();

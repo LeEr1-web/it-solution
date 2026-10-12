@@ -7,8 +7,8 @@
   const value = items => Object.entries(items).reduce((t, [sid, opts]) => t + svc(sid).base + opts.reduce((u, o) => u + optOf(sid, o)[2], 0), 0);
   const where = { site: 'chez vous', atelier: 'en agence', distance: 'à distance' };
 
-  const block = s => `
-    <section class="svc-block" id="${s.id}">
+  const block = (s, c) => `
+    <section class="svc-block" id="${s.id}" style="--t:${c.couleur}">
       <h3>${ico(s.icon)} ${esc(s.nom)} <span class="mono">${s.base ? 'dès ' + eur(s.base) + (s.mensuel ? '/mois' : '') : 'Gratuit'}</span></h3>
       <p class="muted">${esc(s.desc)} — intervention ${s.modes.map(m => where[m]).join(', ')}.${s.remise ? ` Remise étudiant −${CONFIG.remiseEtudiant} %.` : ''}${s.note ? ` ${esc(s.note)}` : ''}</p>
       <table class="price-table"><tbody>${s.options.map(o => `<tr><td>${esc(o[1])}</td><td class="mono">${o[2] ? '+' + eur(o[2]) + (s.mensuel ? '/mois' : '') : esc(o[3] || 'Gratuit')}</td></tr>`).join('')}</tbody></table>
@@ -19,9 +19,9 @@
     const list = c.services.filter(id => !vus.has(id));
     const deja = c.services.filter(id => vus.has(id));
     list.forEach(id => vus.add(id));
-    return `<h3 class="cat-title">${ico(c.icon)} ${esc(c.nom)}</h3>` +
+    return `<h3 class="cat-title" style="--t:${c.couleur}">${ico(c.icon)} ${esc(c.nom)}</h3>` +
       (deja.length ? `<p class="muted small">Également : ${deja.map(id => esc(svc(id).nom)).join(', ')} (voir ci-dessus).</p>` : '') +
-      `<div class="svc-list">${list.map(id => block(svc(id))).join('')}</div>`;
+      `<div class="svc-list">${list.map(id => block(svc(id), c)).join('')}</div>`;
   }).join('');
 
   if (BIENTOT.length) h += `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.map(esc).join(' · ')}</p>`;

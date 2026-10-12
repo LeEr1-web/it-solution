@@ -5,13 +5,13 @@ const CONFIG = {
   // ① Réception par EMAIL (le plus simple) : votre adresse. Chaque demande vous est envoyée par email
   //    via le service gratuit FormSubmit. La 1re fois, FormSubmit vous envoie un email d'activation à valider.
   //    Ensuite, vous pouvez remplacer l'adresse par l'alias secret fourni par FormSubmit (voir RECEPTION-DEMANDES.txt).
-  emailReception: '',
+  emailReception: 'labicheerwan81@gmail.com',
   // ② Réception GOOGLE (tableau + planning + rappels + suivi de réparation) : URL du script (RECEPTION-DEMANDES.txt).
   //    Les deux peuvent fonctionner ensemble. Si aucun n'est rempli, les demandes partent par WhatsApp.
   endpoint: '',
-  calendarId: '',   // identifiant du Google Agenda « IT Solution — Interventions » (affiché dans l'Espace pro)
+  calendarId: '',   // identifiant du Google Agenda « IloTech — Interventions » (affiché dans l'Espace pro)
   sheetUrl: '',     // lien du Google Sheet des demandes (bouton dans l'Espace pro)
-  email: '',        // adresse de contact affichée aux clients (ex : 'contact@itsolution.mq')
+  email: 'labicheerwan81@gmail.com', // adresse de contact affichée aux clients
   avisGoogleUrl: '',// lien « Laisser un avis » de votre fiche Google Business (affiché s'il est rempli)
   mentionPrix: '',  // ex : 'Prix TTC' ou 'TVA non applicable, art. 293 B du CGI' — affiché sur les devis
   agenceDistance: 'ducos',   // agence qui traite les interventions à distance
@@ -23,7 +23,7 @@ const CONFIG = {
 
 // Identité légale (mentions sur les devis et pages légales)
 const ENTREPRISE = {
-  nomCommercial: 'IT Solution',
+  nomCommercial: 'IloTech',
   exploitant: 'Erwan Labiche, Entrepreneur individuel (EI)',
   siret: '104 702 436 00015',
   adresse: 'Route de Duchesne, 97231 Le Robert, Martinique'
@@ -169,31 +169,32 @@ const SERVICES = [
 ];
 
 // Onglets « À la carte » : un onglet = un type de besoin, chaque service n'est qu'à un seul endroit
+// couleur : thème de la catégorie (onglet, cartes, sélection ; un pack qui mélange plusieurs catégories prend un dégradé)
 // bientot : true = onglet affiché mais pas encore disponible
 // Univers : regroupent les onglets (ligne du titre « À la carte »)
 const UNIVERS = [
-  { id: 'info',   nom: 'Informatique',     icon: 'monitor' },
-  { id: 'maison', nom: 'Maison connectée', icon: 'home' },
-  { id: 'pro',    nom: 'Pro & digital',    icon: 'globe' }
+  { id: 'info',   nom: 'Informatique',     icon: 'monitor', couleur: '#2b8cff' },
+  { id: 'maison', nom: 'Maison connectée', icon: 'home',    couleur: '#22c55e' },
+  { id: 'pro',    nom: 'Pro & digital',    icon: 'globe',   couleur: '#8b5cf6' }
 ];
 
 const CATEGORIES = [
-  { id: 'ordi',     univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
-  { id: 'securite', univers: 'info',   nom: 'Sécurité',      icon: 'shield',     services: ['antivirus', 'comptes'] },
-  { id: 'donnees',  univers: 'info',   nom: 'Données',       icon: 'database',   services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
-  { id: 'install',  univers: 'info',   nom: 'Installation',  icon: 'printer',    services: ['install', 'printer', 'ups'] },
-  { id: 'gaming',   univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    services: ['console', 'emulation', 'gamer'] },
-  { id: 'aide',     univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      services: ['cours', 'abonnement'] },
-  { id: 'camera',   univers: 'maison', nom: 'Caméras',       icon: 'camera',     services: ['camera', 'alarme'] },
-  { id: 'domo',     univers: 'maison', nom: 'Domotique',     icon: 'home',       services: ['domotique'] },
-  { id: 'wifi',     univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       services: ['network'] },
-  { id: 'web',      univers: 'pro',    nom: 'Web & apps',    icon: 'globe',      services: ['siteweb', 'appmobile', 'maintweb'] },
-  { id: 'cyber',    univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       services: ['cyber'] },
-  { id: 'caisse',   univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    services: ['pos'] },
-  { id: 'pro',      univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      services: ['maintenance'] },
+  { id: 'ordi',     univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    couleur: '#2b8cff', services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
+  { id: 'securite', univers: 'info',   nom: 'Sécurité',      icon: 'shield',     couleur: '#ef4444', services: ['antivirus', 'comptes'] },
+  { id: 'donnees',  univers: 'info',   nom: 'Données',       icon: 'database',   couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
+  { id: 'install',  univers: 'info',   nom: 'Installation',  icon: 'printer',    couleur: '#a78bfa', services: ['install', 'printer', 'ups'] },
+  { id: 'gaming',   univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    couleur: '#e040fb', services: ['console', 'emulation', 'gamer'] },
+  { id: 'aide',     univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      couleur: '#f59e0b', services: ['cours', 'abonnement'] },
+  { id: 'camera',   univers: 'maison', nom: 'Caméras',       icon: 'camera',     couleur: '#fb923c', services: ['camera', 'alarme'] },
+  { id: 'domo',     univers: 'maison', nom: 'Domotique',     icon: 'home',       couleur: '#22c55e', services: ['domotique'] },
+  { id: 'wifi',     univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       couleur: '#22d3ee', services: ['network'] },
+  { id: 'web',      univers: 'pro',    nom: 'Web & apps',    icon: 'globe',      couleur: '#6366f1', services: ['siteweb', 'appmobile', 'maintweb'] },
+  { id: 'cyber',    univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       couleur: '#f43f5e', services: ['cyber'] },
+  { id: 'caisse',   univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    couleur: '#facc15', services: ['pos'] },
+  { id: 'pro',      univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      couleur: '#94a3b8', services: ['maintenance'] },
   // pas encore ouverts : retirez « bientot: true » (et la ligne dans BIENTOT) pour les ouvrir
-  { id: 'mobile',   univers: 'info',   nom: 'Mobile',        icon: 'smartphone', services: ['mobile'], bientot: true },
-  { id: 'drone',    univers: 'maison', nom: 'Drone',         icon: 'drone',      services: ['drone'],  bientot: true }
+  { id: 'mobile',   univers: 'info',   nom: 'Mobile',        icon: 'smartphone', couleur: '#c084fc', services: ['mobile'], bientot: true },
+  { id: 'drone',    univers: 'maison', nom: 'Drone',         icon: 'drone',      couleur: '#38bdf8', services: ['drone'],  bientot: true }
 ];
 
 // Annoncés sous les onglets (« Bientôt ») — retirez une ligne quand le service est lancé.
@@ -291,11 +292,11 @@ const CONTACT_PREF = { appel: 'Un appel', whatsapp: 'WhatsApp', email: 'Email' }
 const CONTRAT_PRO = 'contrat de maintenance mensuel (à partir de 49 €/mois par poste)';
 
 const MESSAGES_WA = [
-  ['Renseignement', "Bonjour IT Solution, j'aimerais un renseignement."],
-  ['Devis', 'Bonjour IT Solution, je voudrais un devis pour : '],
-  ['Suivi réparation', 'Bonjour IT Solution, je viens aux nouvelles de ma réparation (référence : ).'],
-  ['Urgent', "Bonjour IT Solution, j'ai un problème urgent : "],
-  ['Professionnel', 'Bonjour IT Solution, je suis un professionnel et je souhaite parler de la maintenance de mon parc informatique.']
+  ['Renseignement', "Bonjour IloTech, j'aimerais un renseignement."],
+  ['Devis', 'Bonjour IloTech, je voudrais un devis pour : '],
+  ['Suivi réparation', 'Bonjour IloTech, je viens aux nouvelles de ma réparation (référence : ).'],
+  ['Urgent', "Bonjour IloTech, j'ai un problème urgent : "],
+  ['Professionnel', 'Bonjour IloTech, je suis un professionnel et je souhaite parler de la maintenance de mon parc informatique.']
 ];
 
 /* Icônes (trait simple) */
