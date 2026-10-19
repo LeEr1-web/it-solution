@@ -8,6 +8,7 @@ FICHIERS À METTRE EN LIGNE
   services.html  services.js
   fiche-tarifs.html  fiche-tarifs.js  fiche-tarifs.css
   gestion.html  gestion.js  gestion.css
+  prospection.html  prospection.js  prospection.css  osm-martinique.json  img/
   mentions-legales.html  confidentialite.html
   ⚠ NE METTEZ PAS EN LIGNE google-apps-script.gs : il contient votre code de gestion
     (CLE_GESTION). Il reste sur votre ordinateur et se colle dans Google Apps Script.

@@ -9,6 +9,7 @@ LES PAGES
   services.html       « Services et tarifs » (référencement Google)
   fiche-tarifs.html   fiche tarifs à imprimer / enregistrer en PDF
   gestion.html        ESPACE PRO : voir, confirmer, placer / déplacer, annuler les rendez-vous
+  prospection.html    PROSPECTION : trouver, classer et contacter de nouveaux clients pros (voir plus bas)
   mentions-legales.html, confidentialite.html   pages légales (zones jaunes à compléter)
 
 UN SEUL FICHIER À MODIFIER : data.js
@@ -49,3 +50,22 @@ FICHIERS
   services.js, fiche-tarifs.js/.css       pages tarifs (générées depuis data.js)
   gestion.js/.css                         espace pro
   google-apps-script.gs                   script Google — reste sur votre PC (contient CLE_GESTION)
+
+PROSPECTION (prospection.html, lien « Prospection » dans l'espace pro)
+  Trouve les entreprises de Martinique qui ont le plus de chances d'avoir besoin de IloTech.
+  Sources publiques et gratuites, sans compte :
+    - Nouvelles entreprises : créations publiées au BODACC (journal officiel), les plus récentes d'abord
+    - Commerces et pros : OpenStreetMap (téléphone, site, email quand ils sont connus)
+    - Annuaire officiel des entreprises : recherche par nom ou activité
+  Chaque prospect reçoit un SCORE sur 100 (activité, entreprise récente, pas de site / site non
+  sécurisé, téléphone connu, taille, proximité d'une agence) avec le détail « Pourquoi ».
+  L'outil propose l'OFFRE adaptée (services du site + formule) et écrit le MESSAGE :
+  WhatsApp, SMS, email, script d'appel avec réponses aux objections, discours de visite.
+  Après chaque envoi, la RELANCE est programmée toute seule (J+3, puis J+10, puis « Sans réponse »).
+  « Aujourd'hui » : relances du jour + plan du jour (N prospects, équilibrés Ducos / Le Robert).
+  Suivi : statuts (À contacter → Contacté → Intéressé → RDV / devis → Client), notes, carte, export Excel.
+  Les prospects sont gardés sur l'appareil ; avec le script Google, ils sont partagés entre les deux
+  agences dans l'onglet « Prospects » du tableau (même code que l'espace pro).
+  Règles : uniquement des professionnels, source des coordonnées citée, « Ne plus contacter » respecté
+  pour toujours, 3 messages maximum sans réponse, aucun envoi automatique en masse.
+  osm-martinique.json : copie de secours d'OpenStreetMap, utilisée si le service ne répond pas.

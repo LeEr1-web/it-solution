@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prospection — IloTech</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="style.css?v=48">
+  <link rel="stylesheet" href="gestion.css?v=48">
+  <link rel="stylesheet" href="prospection.css?v=48">
+</head>
+<body class="page-doc gestion-page prospect-page">
+  <header class="top">
+    <a class="brand" href="gestion.html" aria-label="IloTech — espace pro">
+      <img class="logo" src="img/logo-ilo.png" alt="" width="64" height="38">
+      <span class="brand-text"><b>Ilo<span>Tech</span> <em class="it">PROSPECTION</em></b><span class="mono">Trouver et contacter de nouveaux clients</span></span>
+    </a>
+    <span id="syncEtat" class="status mono"></span>
+    <div class="top-actions">
+      <a class="btn btn-head" href="gestion.html">Rendez-vous</a>
+      <a class="btn btn-head" href="index.html" target="_blank" rel="noopener">Voir le site</a>
+    </div>
+  </header>
+  <main class="g-main">
+    <nav class="g-tabs" id="pTabs" aria-label="Prospection"></nav>
+    <section id="pVue"></section>
+  </main>
+  <dialog id="fiche" class="g-dialog p-dialog" aria-label="Fiche prospect"></dialog>
+  <div id="toast" class="g-toast" role="status" aria-live="polite" hidden></div>
+  <script src="data.js?v=48"></script>
+  <script src="prospection.js?v=48"></script>
+</body>
+</html>
