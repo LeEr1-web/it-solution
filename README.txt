@@ -10,6 +10,8 @@ LES PAGES
   fiche-tarifs.html   fiche tarifs à imprimer / enregistrer en PDF
   gestion.html        ESPACE PRO : voir, confirmer, placer / déplacer, annuler les rendez-vous
   prospection.html    PROSPECTION : trouver, classer et contacter de nouveaux clients pros (voir plus bas)
+  visibilite.html     ÊTRE TROUVÉ : où s'inscrire pour que les particuliers vous trouvent + textes prêts à copier
+  flyer.html          flyers à imprimer (4 par A4, version particuliers ou professionnels, QR code)
   mentions-legales.html, confidentialite.html   pages légales (zones jaunes à compléter)
 
 UN SEUL FICHIER À MODIFIER : data.js
@@ -69,3 +71,10 @@ PROSPECTION (prospection.html, lien « Prospection » dans l'espace pro)
   Règles : uniquement des professionnels, source des coordonnées citée, « Ne plus contacter » respecté
   pour toujours, 3 messages maximum sans réponse, aucun envoi automatique en masse.
   osm-martinique.json : copie de secours d'OpenStreetMap, utilisée si le service ne répond pas.
+  AVEC LE SCRIPT GOOGLE installé, en plus :
+    - « Analyser son site » : trouve l'email et le téléphone affichés sur le site du prospect, et vérifie
+      s'il est sécurisé, adapté au mobile, à jour, ou carrément hors service (argument de vente)
+    - « Envoyer maintenant » / « Envoyer les emails du jour » : les emails partent de votre Gmail
+      (25 par jour conseillé, 100 au maximum), les réponses arrivent dans votre boîte
+  PARTICULIERS : la loi interdit de les démarcher par email, SMS ou téléphone sans leur accord.
+  Ils doivent vous trouver : suivez visibilite.html (fiche Google, Facebook, Leboncoin, annuaires, flyers).

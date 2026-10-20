@@ -97,6 +97,8 @@ AU QUOTIDIEN — DIRECTEMENT DANS LE TABLEAU (possible aussi)
   - Vous pouvez déplacer un rendez-vous directement dans Google Agenda.
 
 SI VOUS MODIFIEZ LE SCRIPT PLUS TARD
+  (La prospection ajoute deux autorisations Google : « se connecter à un service externe » pour
+  analyser les sites des prospects, et l'envoi d'emails. Acceptez-les au premier lancement.)
   Déployer > Gérer les déploiements > crayon > Version : « Nouvelle version » > Déployer.
   L'URL reste la même. Si vous ajoutez des colonnes au tableau, ajoutez-les à la FIN.
 

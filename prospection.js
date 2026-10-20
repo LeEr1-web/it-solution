@@ -141,7 +141,15 @@ function scorer(p) {
     else if (age <= 365) r.push([20, 'Créée cette année : encore en train de s’équiper']);
     else if (age <= 730) r.push([8, 'Créée il y a moins de 2 ans']);
   }
-  if (p.site) r.push(/^http:\/\//i.test(p.site) ? [10, 'Site internet non sécurisé (sans cadenas) : à moderniser'] : [0, 'A déjà un site internet']);
+  const a = p.analyse;
+  if (p.site && a && a.ok) {
+    const vieux = a.annee && a.annee <= new Date().getFullYear() - 3;
+    if (!a.https) r.push([10, 'Site non sécurisé (pas de cadenas)']);
+    if (!a.mobile) r.push([10, 'Site mal affiché sur téléphone']);
+    if (vieux) r.push([6, `Site pas mis à jour depuis ${a.annee}`]);
+    if (a.https && a.mobile && !vieux) r.push([0, 'Site récent et correct']);
+  } else if (p.site && a && a.reason === 'injoignable') r.push([12, 'Son site ne s’ouvre plus : les clients tombent sur une erreur']);
+  else if (p.site) r.push(/^http:\/\//i.test(p.site) ? [10, 'Site internet non sécurisé (sans cadenas) : à moderniser'] : [0, 'A déjà un site internet']);
   else if (p.sansSite) r.push([15, 'N’a pas de site internet']);
   else r.push([5, 'Site internet non trouvé (à vérifier)']);
   if (p.tel) r.push([12, digits(p.tel).match(/^(0|596)?69[67]/) ? 'Portable connu : WhatsApp possible' : 'Téléphone connu']);
@@ -159,13 +167,16 @@ function scorer(p) {
 }
 const niveau = s => s >= 70 ? ['Très chaud', 'n-tc'] : s >= 50 ? ['Chaud', 'n-c'] : s >= 30 ? ['Tiède', 'n-t'] : ['Froid', 'n-f'];
 
+// site à refaire : sans cadenas, mal affiché sur téléphone ou abandonné depuis 3 ans
+const siteFaible = p => !!p.site && (/^http:/i.test(p.site) || p.analyse?.reason === 'injoignable' ||!!(p.analyse?.ok && (!p.analyse.https || !p.analyse.mobile || (p.analyse.annee && p.analyse.annee <= new Date().getFullYear() - 3))));
+
 // Offre conseillée : services du site + valeur estimée
 function offreDe(p) {
   const seg = SEGMENTS[p.segment] || SEGMENTS.autre;
   let ids = [...seg.offre];
   if (!p.site && !ids.includes('siteweb')) ids.unshift('siteweb');
   if (!p.site && ids.includes('siteweb')) ids = ['siteweb', ...ids.filter(x => x !== 'siteweb')];
-  if (p.site && /^http:/i.test(p.site)) ids = ['maintweb', 'cyber', ...ids.filter(x => x !== 'siteweb')];
+  if (siteFaible(p)) ids = ['siteweb', 'maintweb', ...ids.filter(x => x !== 'siteweb')];
   const pk = seg.pack && PACKS.find(x => x.id === seg.pack);
   const inPack = pk ? Object.keys(pk.items) : [];
   ids = [...new Set(ids)].filter(id => SERVICES.find(s => s.id === id) && !inPack.includes(id)).slice(0, 4);
@@ -438,6 +449,7 @@ async function remplirAuto() {
     vue = 'jour';
   } catch (e) { chargement = ''; toast('Recherche impossible : ' + e.message, true); }
   render();
+  if (scriptPret() && aAnalyser().length) await completerEmails();
 }
 const SOURCES = { bodacc: 'journal officiel BODACC', osm: 'OpenStreetMap', annuaire: 'annuaire officiel des entreprises', manuel: 'saisie manuelle' };
 const SOURCE_PHRASE = { bodacc: 'l’annonce de création publiée au BODACC', osm: 'la carte OpenStreetMap', annuaire: 'l’annuaire officiel des entreprises', manuel: '' };
@@ -454,7 +466,10 @@ function contexte(p) {
   const v = hash(p.id) % 2;
   let accroche;
   if (age !== null && age <= 365) accroche = v ? `Félicitations pour le lancement de ${nomCourt} !` : `Bravo pour la création de ${nomCourt}, et bienvenue dans l’aventure !`;
-  else if (p.site && /^http:/i.test(p.site)) accroche = `J’ai remarqué que le site de ${nomCourt} s’affiche « non sécurisé » dans les navigateurs, ce qui peut faire fuir des clients.`;
+  else if (p.site && p.analyse?.reason === 'injoignable') accroche = `J’ai voulu consulter le site de ${nomCourt}, mais il ne s’affiche plus : vos clients tombent sur une page d’erreur.`;
+  else if (p.analyse?.ok && !p.analyse.mobile) accroche = `J’ai regardé le site de ${nomCourt} : il s’affiche mal sur téléphone, alors que la plupart de vos clients vous cherchent depuis leur portable.`;
+  else if (p.analyse?.ok && p.analyse.annee && p.analyse.annee <= new Date().getFullYear() - 3) accroche = `J’ai regardé le site de ${nomCourt} : il n’a pas l’air d’avoir été mis à jour depuis ${p.analyse.annee}.`;
+  else if ((p.site && /^http:/i.test(p.site)) || (p.analyse?.ok && !p.analyse.https)) accroche = `J’ai remarqué que le site de ${nomCourt} s’affiche « non sécurisé » dans les navigateurs, ce qui peut faire fuir des clients.`;
   else if (!p.site && p.sansSite) accroche = `J’ai vu que ${nomCourt} n’a pas encore de site internet : c’est pourtant là que vos clients vous cherchent en premier.`;
   else accroche = v ? `Je me permets de vous contacter au sujet de l’informatique de ${nomCourt}.` : `Je travaille avec plusieurs ${seg.pluriel} en Martinique et je pense pouvoir vous être utile.`;
   const bonjour = p.prenom ? `Bonjour ${p.prenom}` : 'Bonjour';
@@ -497,6 +512,64 @@ function contacte(id, mode) {
   if (!delai && p.statut === 'contacte') { p.statut = 'sansrep'; noter(p, 'Séquence terminée sans réponse'); }
   sauver(p); renderFiche(); render();
 }
+/* ---------- Automatique (via le script Google) : analyse des sites, envoi des emails ---------- */
+const scriptPret = () => !!(CONFIG.endpoint && cle);
+async function analyser(id, silencieux) {
+  const p = parId(id); if (!p || !p.site || !scriptPret()) return null;
+  if (!silencieux) toast('Analyse du site en cours…');
+  try { p.analyse = { ...(await api('prospects_site', { site: p.site })), quand: todayISO() }; }
+  catch (e) { p.analyse = { ok: false, reason: e.message, quand: todayISO() }; }
+  if (p.analyse.ok) {
+    if (!p.email && p.analyse.emails?.[0]) { p.email = p.analyse.emails[0]; noter(p, `Email trouvé sur son site : ${p.email}`); }
+    if (!p.tel && p.analyse.tels?.[0]) { p.tel = p.analyse.tels[0]; noter(p, `Téléphone trouvé sur son site : ${p.tel}`); }
+  }
+  p.offre = offreDe(p);
+  sauver(p);
+  if (!silencieux) { renderFiche(); render(); toast(p.analyse.ok ? (p.analyse.emails?.length ? 'Email trouvé sur le site' : 'Site analysé : aucun email affiché') : 'Site injoignable', !p.analyse.ok); }
+  return p.analyse;
+}
+const aAnalyser = () => db.prospects.filter(p => p.site && !p.analyse && !['stop', 'perdu', 'client'].includes(p.statut));
+async function completerEmails() {
+  const list = aAnalyser().slice(0, 40);
+  let n = 0;
+  for (let i = 0; i < list.length; i++) {
+    chargement = `Analyse des sites : ${i + 1} / ${list.length}…`; renderChargement();
+    const a = await analyser(list[i].id, true);
+    if (a?.ok && a.emails?.length) n++;
+  }
+  chargement = ''; toast(`${list.length} sites analysés : ${n} emails trouvés`); render();
+}
+async function envoyerEmail(id, silencieux) {
+  const p = parId(id); if (!p || !p.email) return false;
+  const m = messages(p);
+  const sujet = !silencieux && $('fSujet') ? $('fSujet').value : m.email.sujet;
+  const corps = !silencieux && $('fMsg') ? $('fMsg').value : m.email.corps;
+  try {
+    await api('prospects_envoyer', { to: p.email, sujet, corps });
+    contacte(id, 'Email envoyé');
+    if (!silencieux) toast(`Email envoyé à ${p.email}`);
+    return true;
+  } catch (e) {
+    if (!silencieux) toast(e.message === 'quota' ? 'Limite Gmail du jour atteinte : réessayez demain' : e.message === 'email' ? 'Adresse email invalide' : 'Envoi impossible pour le moment', true);
+    return e.message === 'quota' ? 'quota' : false;
+  }
+}
+// emails du jour : relances dues + nouveaux prospects du plan qui ont un email (séquence pas terminée)
+const emailsDuJour = () => { const { relances, choix } = plan(); return [...relances, ...choix].filter(p => p.email && (p.etape || 0) < 3).slice(0, db.reglages.maxEmails || 25); };
+async function envoyerEmailsDuJour() {
+  const list = emailsDuJour();
+  if (!list.length || !confirm(`Envoyer ${list.length} emails personnalisés maintenant ?\n\n${list.map(p => '• ' + p.nom).join('\n')}\n\nChaque message est écrit pour le prospect, et la relance suivante est programmée.`)) return;
+  let ok = 0;
+  for (let i = 0; i < list.length; i++) {
+    chargement = `Envoi des emails : ${i + 1} / ${list.length}…`; renderChargement();
+    const r = await envoyerEmail(list[i].id, true);
+    if (r === 'quota') { toast('Limite Gmail du jour atteinte : la suite partira demain', true); break; }
+    if (r) ok++;
+    await sleep(1500);
+  }
+  chargement = ''; toast(`${ok} email${ok > 1 ? 's' : ''} envoyé${ok > 1 ? 's' : ''}`); render();
+}
+
 function appeler(id) { const p = parId(id); noter(p, 'Appel passé'); if (p.statut === 'nouveau') p.statut = 'contacte'; p.relance = p.relance || addDays(todayISO(), 2); sauver(p); renderFiche(); render(); }
 function setStatut(id, s) {
   const p = parId(id); if (!p || p.statut === s) return;
@@ -583,6 +656,15 @@ const VUES = {
         <span><b>${enCours.length}</b> en discussion · ${eur(enCours.reduce((s, p) => s + (p.offre?.valeur || 0), 0))}</span>
         <span><b>${gagnes.length}</b> client${gagnes.length > 1 ? 's' : ''} gagné${gagnes.length > 1 ? 's' : ''} ce mois</span>
         <span><b>${contactes.length ? Math.round(repondu.length / contactes.length * 100) : 0} %</b> de réponses</span></div>
+      ${(() => {
+        const mails = emailsDuJour(), sites = aAnalyser().length;
+        if (!mails.length && !sites) return '';
+        return `<div class="p-auto"><b>${ico('zap')} En automatique</b>
+          ${scriptPret()
+            ? `${mails.length ? `<button type="button" class="btn btn-primary" onclick="envoyerEmailsDuJour()" ${chargement ? 'disabled' : ''}>Envoyer les ${mails.length} emails du jour</button>` : ''}
+               ${sites ? `<button type="button" class="btn" onclick="completerEmails()" ${chargement ? 'disabled' : ''}>Chercher les emails sur ${Math.min(sites, 40)} sites</button>` : ''}`
+            : `<span class="muted">${mails.length ? `${mails.length} emails pourraient partir en un clic` : ''}${mails.length && sites ? ', et ' : ''}${sites ? `${sites} sites pourraient être analysés pour trouver l’email` : ''} : il suffit d’installer le script Google (RECEPTION-DEMANDES.txt) puis de se connecter dans Réglages.</span>`}</div>`;
+      })()}
       ${relances.length ? `<h2>${ico('repeat')} À relancer aujourd’hui (${relances.length})</h2><div class="p-list">${relances.map(ligne).join('')}</div>` : ''}
       <h2>${ico('zap')} Votre plan du jour : ${choix.length} prospect${choix.length > 1 ? 's' : ''} à contacter</h2>
       <p class="muted">Les plus prometteurs d’abord, équilibrés entre Ducos et Le Robert. Ouvrez une fiche : le message est déjà écrit.</p>
@@ -651,7 +733,9 @@ const VUES = {
     const r = db.reglages;
     return `<h2>Réglages</h2><div class="p-filtres">
         <label>Votre prénom (signature des messages)<input value="${esc(r.signature)}" onchange="db.reglages.signature=this.value.trim()||'Erwan';sauver()"></label>
-        <label>Prospects à contacter par jour<input type="number" min="1" max="50" value="${r.parJour}" onchange="db.reglages.parJour=Math.max(1,+this.value||10);sauver()"></label></div>
+        <label>Prospects à contacter par jour<input type="number" min="1" max="50" value="${r.parJour}" onchange="db.reglages.parJour=Math.max(1,+this.value||10);sauver()"></label>
+        <label>Emails envoyés par jour au maximum<input type="number" min="1" max="60" value="${r.maxEmails || 25}" onchange="db.reglages.maxEmails=Math.min(60,Math.max(1,+this.value||25));sauver()"></label></div>
+      <p class="muted small">Gmail autorise environ 100 emails par jour : restez autour de 25 pour que vos messages ne finissent pas en spam.</p>
       <h2>Partage entre Ducos et Le Robert</h2>
       ${!CONFIG.endpoint ? '<p class="notice">Le script Google n’est pas encore branché : vos prospects restent sur cet appareil. Une fois le script installé (RECEPTION-DEMANDES.txt), ils seront partagés automatiquement dans l’onglet « Prospects » du tableau.</p>'
         : cle ? `<p class="notice ok">Connecté : vos prospects sont partagés dans l’onglet « Prospects » du tableau Google. <button type="button" class="link" onclick="synchroniser()">Synchroniser maintenant</button></p>`
@@ -677,7 +761,7 @@ function render() {
   const n = db.prospects.length, rel = plan().relances.length;
   $('pTabs').innerHTML = [['jour', `Aujourd’hui${rel ? ` <em>${rel}</em>` : ''}`], ['trouver', 'Trouver des prospects'], ['liste', `Mes prospects (${n})`], ['carte', 'Carte'], ['reglages', 'Réglages']]
     .map(([k, l]) => `<button type="button" class="${vue === k ? 'on' : ''}" onclick="setVue('${k}')">${l}</button>`).join('');
-  $('pVue').innerHTML = (chargement && vue === 'jour' ? `<p class="p-load">${esc(chargement)}</p>` : '') + VUES[vue]();
+  $('pVue').innerHTML = (vue !== 'trouver' ? `<p id="chargement" class="p-load">${esc(chargement)}</p>` : '') + VUES[vue]();
   renderSync();
 }
 function setVue(v) { vue = v; render(); window.scrollTo(0, 0); }
@@ -694,7 +778,8 @@ function renderFiche() {
   const actions = {
     whatsapp: mobile ? `<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/${intl(p.tel)}?text=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','WhatsApp'),300)">${ico('chat')} Ouvrir WhatsApp avec ce message</a>` : '<p class="muted">WhatsApp : il faut un numéro de portable (0696 / 0697).</p>',
     sms: p.tel ? `<a class="btn" href="sms:+${intl(p.tel)}?body=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','SMS'),300)">Envoyer par SMS</a>` : '<p class="muted">Ajoutez un téléphone.</p>',
-    email: p.email ? `<a class="btn btn-primary" href="mailto:${esc(p.email)}?subject=${encodeURIComponent(m.email.sujet)}&body=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','Email'),300)">Ouvrir l’email</a>` : '<p class="muted">Ajoutez une adresse email.</p>',
+    email: p.email ? `${scriptPret() ? `<button type="button" class="btn btn-primary" onclick="envoyerEmail('${esc(p.id)}')">Envoyer maintenant à ${esc(p.email)}</button>` : ''}<a class="btn ${scriptPret() ? '' : 'btn-primary'}" href="mailto:${esc(p.email)}?subject=${encodeURIComponent(m.email.sujet)}&body=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','Email'),300)">Ouvrir dans ma messagerie</a>`
+      : p.site && scriptPret() ? `<button type="button" class="btn btn-primary" onclick="analyser('${esc(p.id)}')">Chercher l’email sur son site</button>` : '<p class="muted">Ajoutez une adresse email (voir « Chercher sur Google » à droite).</p>',
     appel: p.tel ? `<a class="btn btn-primary" href="tel:+${intl(p.tel)}" onclick="setTimeout(()=>appeler('${esc(p.id)}'),300)">${ico('phone')} Appeler le ${esc(p.tel)}</a>` : '<p class="muted">Ajoutez un téléphone.</p>',
     visite: `<button type="button" class="btn" onclick="noter(parId('${esc(p.id)}'),'Visite sur place');if(parId('${esc(p.id)}').statut==='nouveau')parId('${esc(p.id)}').statut='contacte';sauver(parId('${esc(p.id)}'));renderFiche();render()">J’y suis passé</button>`
   };
@@ -726,6 +811,15 @@ function renderFiche() {
           <label>Activité<select onchange="majChamp('${esc(p.id)}','segment',this.value)">${Object.entries(SEGMENTS).map(([k, s]) => `<option value="${k}" ${p.segment === k ? 'selected' : ''}>${s.nom}</option>`).join('')}</select></label>
           <label>Commune<select onchange="majChamp('${esc(p.id)}','commune',this.value)"><option value="">—</option>${COMMUNES.map(c => `<option ${normCommune(c[0]) === normCommune(p.commune) ? 'selected' : ''}>${esc(c[0])}</option>`).join('')}</select></label>
           <label>Relance le<input type="date" value="${esc(p.relance || '')}" onchange="majChamp('${esc(p.id)}','relance',this.value)"></label></div>
+        ${p.site ? `<div class="p-analyse">${(() => {
+          const a = p.analyse;
+          if (!a) return scriptPret() ? `<button type="button" class="btn btn-sm" onclick="analyser('${esc(p.id)}')">${ico('search')} Analyser son site (email, téléphone, mobile)</button>` : '<span class="muted small">Analyse automatique du site : disponible avec le script Google.</span>';
+          if (!a.ok) return `<span class="p-ok ko">⚠ Le site ne s’ouvre plus (vérifié le ${frDate(a.quand)})</span> ${scriptPret() ? `<button type="button" class="link" onclick="analyser('${esc(p.id)}')">Réessayer</button>` : ''}`;
+          const etat = (bon, oui, non) => `<span class="p-ok ${bon ? '' : 'ko'}">${bon ? '✓ ' + oui : '⚠ ' + non}</span>`;
+          return `${etat(a.https, 'Sécurisé', 'Non sécurisé')}${etat(a.mobile, 'Adapté au mobile', 'Mal affiché sur mobile')}${a.annee ? etat(a.annee > new Date().getFullYear() - 3, 'À jour (' + a.annee + ')', 'Ancien (' + a.annee + ')') : ''}
+            ${(a.emails || []).map(e => `<button type="button" class="p-chip" title="Utiliser cet email" onclick="majChamp('${esc(p.id)}','email','${esc(e)}')">@ ${esc(e)}</button>`).join('')}
+            ${(a.tels || []).map(t => `<button type="button" class="p-chip" title="Utiliser ce numéro" onclick="majChamp('${esc(p.id)}','tel','${esc(t)}')">${ico('phone')} ${esc(t)}</button>`).join('')}`;
+        })()}</div>` : ''}
         <div class="p-liens">
           <a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Chercher sur Google</a>
           <a href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener">Google Maps</a>
