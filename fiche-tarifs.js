@@ -1,10 +1,5 @@
 /* Fiche tarifs : générée à partir de data.js — toute modification de prix ou de prestation s'y reporte automatiquement */
 (function () {
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const eur = n => { const v = Math.round(n * 100) / 100; return (Number.isInteger(v) ? v.toLocaleString('fr-FR') : v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) + ' €'; };
-  const svc = id => SERVICES.find(s => s.id === id);
-  const optOf = (sid, oid) => svc(sid).options.find(o => o[0] === oid);
-  const value = items => Object.entries(items).reduce((t, [sid, opts]) => t + svc(sid).base + opts.reduce((u, o) => u + optOf(sid, o)[2], 0), 0);
   const mois = s => s.mensuel ? '/mois' : '';
   const prixBase = s => s.base ? eur(s.base) + mois(s) : 'Gratuit';
   const prixOpt = (s, o) => o[2] ? '+' + eur(o[2]) + mois(s) : esc(o[3] || 'Gratuit');
@@ -28,7 +23,7 @@
 
   // Packs
   h += `<h2>Packs à prix fixe</h2><div class="f-packs">${PACKS.map(p => `
-    <div class="f-pack"><b>${esc(p.nom)}</b><span class="mono">${eur(p.prix)} <s>${eur(value(p.items))}</s></span><small>${esc(p.inclus.join(' · '))}</small></div>`).join('')}</div>`;
+    <div class="f-pack"><b>${esc(p.nom)}</b><span class="mono">${eur(p.prix)} <s>${eur(itemsValue(p.items))}</s></span><small>${esc(p.inclus.join(' · '))}</small></div>`).join('')}</div>`;
 
   // Services par onglet
   const vus = new Set();

@@ -2,15 +2,6 @@
    GESTION DES RENDEZ-VOUS — lit et modifie le Google Sheet via le script Google
    (CONFIG.endpoint dans data.js, code secret = REGLAGES.CLE_GESTION dans le script)
    ===================================================================== */
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const eur = n => (Math.round(Number(n) || 0)).toLocaleString('fr-FR') + ' €';
-const digits = t => String(t || '').replace(/\D/g, '');
-const intl = t => { const d = digits(t); return d.startsWith('596') ? d : '596' + d.replace(/^0/, ''); };
-const iso = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
-const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return iso(d); };
-const todayISO = () => iso(new Date());
 const frDay = s => parseISO(s).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
 const frLong = s => parseISO(s).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const mondayOf = s => { const d = parseISO(s); const k = (d.getDay() + 6) % 7; d.setDate(d.getDate() - k); return iso(d); };
@@ -194,7 +185,7 @@ function ouvrir(ref) {
 function render() {
   $('logout').hidden = !cle;
   if (!CONFIG.endpoint) {
-    $('g').innerHTML = `<div class="doc"><h1>Gestion des rendez-vous</h1><p class="notice">La réception Google n'est pas encore activée. Suivez le guide <b>RECEPTION-DEMANDES.txt</b> (méthode 2), puis renseignez <code>CONFIG.endpoint</code> dans data.js et <code>CLE_GESTION</code> dans le script Google.</p></div>`;
+    $('g').innerHTML = `<div class="doc"><h1>Gestion des rendez-vous</h1><p class="notice">La réception Google n'est pas encore activée. Installez le moteur Google (README.txt, partie « INSTALLER LE MOTEUR GOOGLE ») puis renseignez son adresse dans <code>CONFIG.endpoint</code> (data.js).</p></div>`;
     return;
   }
   if (!cle) {

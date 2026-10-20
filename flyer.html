@@ -55,12 +55,11 @@
   </div>
   <p class="aide">Imprimez sur du papier un peu épais (160 g ou plus), puis découpez le long des pointillés. En boîte aux lettres, respectez les « Stop pub ». Les prix sont repris du site et restent toujours à jour.</p>
   <div class="feuille" id="feuille"></div>
-  <script src="data.js?v=50"></script>
+  <script src="data.js?v=51"></script>
+  <script src="outils.js?v=51"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
-    const SITE = 'https://leer1-web.github.io/it-solution/';
-    const eur = n => (Math.round(n * 100) / 100).toLocaleString('fr-FR') + ' €';
-    const s = id => SERVICES.find(x => x.id === id), p = id => PACKS.find(x => x.id === id);
+    const s = svc, p = pack;
     const dès = id => `dès ${eur(s(id).base)}${s(id).mensuel ? '/mois' : ''}`;
     const VERSIONS = {
       part: { titre: 'Un souci avec votre ordinateur, votre Wi-Fi ou votre téléphone ?', lignes: [

@@ -1,26 +1,12 @@
 /* =====================================================================
    OUTILS
    ===================================================================== */
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const eur = n => { const v = Math.round(n * 100) / 100; return (Number.isInteger(v) ? v.toLocaleString('fr-FR') : v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) + ' €'; };
 const lineVal = l => eur(l.prix) + (l.mensuel ? '/mois' : '');
 const optPrice = o => o[2] ? '+' + eur(o[2]) : (o[3] || 'Gratuit');
 const fromPrice = s => s.base ? `dès ${eur(s.base)}${s.mensuel ? '/mois' : ''}` : 'Gratuit';
-const svc = id => SERVICES.find(s => s.id === id);
-const pack = id => PACKS.find(p => p.id === id);
 const packLabel = p => `Pack « ${p.nom} »`;
-const optOf = (sid, oid) => svc(sid).options.find(o => o[0] === oid);
 const commune = nom => COMMUNES.find(c => c[0] === nom);
-const digits = tel => String(tel || '').replace(/\D/g, '');
-const intl = tel => { const d = digits(tel); return d.startsWith('596') ? d : '596' + d.replace(/^0/, ''); };
-const waUrl = (tel, text) => 'https://wa.me/' + (digits(tel) ? intl(tel) : '') + (text ? '?text=' + encodeURIComponent(text) : '');
-const telUrl = tel => 'tel:+' + intl(tel);
 
-const iso = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
-const todayISO = () => iso(new Date());
-const addDays = (s, n) => { const dt = parseISO(s); dt.setDate(dt.getDate() + n); return iso(dt); };
 const daysFromToday = s => Math.round((parseISO(s) - parseISO(todayISO())) / 86400000);
 const frDate = s => parseISO(s).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const shortDate = s => { const l = parseISO(s).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }); return l.charAt(0).toUpperCase() + l.slice(1); };
@@ -34,9 +20,6 @@ function packTheme(p) {
   return { c: cols[0], bg: cols.length > 1 ? `linear-gradient(120deg, ${cols.join(', ')})` : cols[0], multi: cols.length > 1 };
 }
 const packStyle = p => { const t = packTheme(p); return `--t:${t.c};--tg:${t.bg}`; };
-
-// valeur normale (sans remise) d'un ensemble { service: [options] }
-const itemsValue = items => Object.entries(items).reduce((t, [sid, opts]) => t + svc(sid).base + opts.reduce((u, o) => u + optOf(sid, o)[2], 0), 0);
 
 /* =====================================================================
    ÉTAT
@@ -507,8 +490,7 @@ const VIEWS = {
 };
 
 function render() {
-  if (location.hash === '#admin') return renderAdmin();
-  document.body.classList.remove('admin', 'print-devis');
+  document.body.classList.remove('print-devis');
   // garde le focus clavier sur le même élément après mise à jour
   const a = document.activeElement;
   const key = a && a.name ? `[name="${a.name}"][value="${a.value}"]` : a && a.id && $('app').contains(a) ? '#' + a.id : null;
@@ -604,11 +586,6 @@ function toggle(id) {
   fixMode();
   render();
   toast(adding ? `✓ « ${esc(svc(id).nom)} » ajouté à votre sélection` : `« ${esc(svc(id).nom)} » retiré`);
-}
-function toggleOpt(id, o) {
-  const cur = state.opt[id] || [];
-  state.opt[id] = cur.includes(o) ? cur.filter(x => x !== o) : [...cur, o];
-  render();
 }
 // un pack s'ajoute aux services déjà cochés (un seul pack à la fois)
 function selectPack(id) {
@@ -748,11 +725,6 @@ async function send() {
   if (!d.consent) return error('Merci de cocher la case d’accord pour que nous puissions vous recontacter.');
 
   const lead = buildLead();
-  try {
-    const leads = JSON.parse(localStorage.getItem('itLeads') || '[]');
-    leads.push(lead);
-    localStorage.setItem('itLeads', JSON.stringify(leads));
-  } catch (e) {}
 
   sending = true; renderNav();
   // ① Google (tableau, planning, photo) — en premier, car il peut refuser un créneau devenu complet
@@ -920,61 +892,7 @@ function reset() {
   render();
 }
 
-/* =====================================================================
-   ESPACE PRO (index.html#admin) — planning + demandes
-   ===================================================================== */
-function getLeads() { try { return JSON.parse(localStorage.getItem('itLeads') || '[]'); } catch (e) { return []; } }
-
-function renderAdmin() {
-  document.body.classList.add('admin');
-  const leads = getLeads().slice().reverse();
-  const range = l => Array.isArray(l.estimate) ? eur(l.estimate[0]) : l.estimate ? priceText(l.estimate) : '—';
-  const lieu = l => l.mode === 'site' ? esc(l.commune) : l.mode === 'atelier' ? 'Agence ' + esc(AGENCES[l.agence]?.nom) : l.mode === 'distance' ? 'À distance' : '—';
-  const configured = !!CONFIG.endpoint;
-  const cal = CONFIG.calendarId
-    ? `<iframe class="planning" title="Planning des interventions" src="https://calendar.google.com/calendar/embed?src=${encodeURIComponent(CONFIG.calendarId)}&ctz=America%2FMartinique&mode=WEEK&hl=fr&showPrint=0&showTitle=0"></iframe>`
-    : '';
-  $('steps').hidden = true; $('nav').hidden = true;
-  $('app').innerHTML = `<h2>Espace pro</h2>
-    <p class="notice ${configured ? 'ok' : ''}">${configured
-      ? 'Réception automatique active : chaque demande arrive dans le Google Sheet, dans le planning Google Agenda et par email.'
-      : '<b>Réception automatique non configurée.</b> Les demandes ne vous parviennent que si le client clique sur WhatsApp. Suivez le guide RECEPTION-DEMANDES.txt pour l’activer.'}</p>
-    <div class="actions left">
-      ${CONFIG.sheetUrl ? `<a class="btn btn-primary" href="${esc(CONFIG.sheetUrl)}" target="_blank" rel="noopener">Ouvrir le tableau des demandes</a>` : ''}
-      ${CONFIG.calendarId ? `<a class="btn" href="https://calendar.google.com/calendar/u/0/r/week" target="_blank" rel="noopener">${ico('calendar')} Ouvrir le planning</a>` : ''}
-      <a class="btn" href="#" onclick="location.hash='';return false">Retour au configurateur</a></div>
-    ${cal}
-    <h3>Demandes faites depuis cet appareil (${leads.length})</h3>
-    <div class="actions left"><button type="button" class="btn" onclick="exportCSV()" ${leads.length ? '' : 'disabled'}>Exporter pour Excel (CSV)</button>
-    <button type="button" class="btn" onclick="clearLeads()" ${leads.length ? '' : 'disabled'}>Tout effacer</button></div>
-    <div class="tablewrap"><table class="admin-table"><thead><tr><th>Référence</th><th>Rendez-vous</th><th>Client</th><th>Services</th><th>Lieu</th><th>Agence</th><th>Estimation</th></tr></thead><tbody>
-    ${leads.map(l => `<tr><td class="mono">${esc(l.ref || '—')}</td><td>${l.kind === 'devis' ? 'Devis' : esc(l.dateLabel || l.date || '—')}<br><span class="muted">${esc(l.creneauLabel || '')}</span></td><td>${esc(l.name)}<br><span class="muted">${esc(l.phone)}<br>${esc(l.email)}</span></td>
-      <td>${esc(l.servicesLabel || (l.services || []).map(id => svc(id)?.nom || id).join(', '))}</td><td>${lieu(l)}</td>
-      <td>${esc(AGENCES[l.agence]?.nom || '—')}</td><td>${range(l)}</td></tr>`).join('') || '<tr><td colspan="7" class="muted">Aucune demande sur cet appareil.</td></tr>'}
-    </tbody></table></div>`;
-}
-
-function exportCSV() {
-  const rows = [['Référence', 'Type', 'Date demande', 'Nom', 'Téléphone', 'Email', 'Contact préféré', 'Client', 'Services', 'Mode', 'Commune', 'Agence', 'Date RDV', 'Créneau', 'Délai', 'Min', 'Max', 'Appareil', 'Contrat pro', 'Description']];
-  getLeads().forEach(l => rows.push([l.ref, l.kind === 'devis' ? 'Devis' : 'Rendez-vous', l.date_demande || l.date, l.name, l.phone, l.email, CONTACT_PREF[l.pref] || '', TYPES[l.type] || l.type, l.servicesLabel || (l.services || []).join(' + '), l.mode, l.commune, AGENCES[l.agence]?.nom || '', l.date, l.creneauLabel || '', l.delaiLabel || '', l.estimate?.min ?? l.estimate?.[0], l.estimate?.max ?? l.estimate?.[1], l.appareil || '', l.contrat ? 'oui' : '', l.desc]));
-  const csv = '﻿' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = 'demandes-ilotech.csv';
-  a.click();
-}
-
-function clearLeads() {
-  if (confirm('Effacer définitivement toutes les demandes enregistrées sur cet appareil ?')) {
-    try { localStorage.removeItem('itLeads'); } catch (e) {}
-    renderAdmin();
-  }
-}
-
-window.addEventListener('hashchange', () => {
-  if (location.hash === '#suivi') return openSuivi();
-  if (location.hash === '#admin' || document.body.classList.contains('admin')) render();
-});
+window.addEventListener('hashchange', () => { if (location.hash === '#suivi') openSuivi(); });
 if (location.hash === '#suivi') { state.step = 'suivi'; suivi = { ref: new URLSearchParams(location.search).get('ref') || '' }; }
 setInterval(updateStatus, 60000);
 try { if (localStorage.getItem('itGrand')) setGrand(true); } catch (e) {}

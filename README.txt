@@ -1,80 +1,136 @@
-ILOTECH — SITE DE RENDEZ-VOUS ET DEVIS (Ducos · Le Robert, Martinique)
+ILOTECH — SITE, RENDEZ-VOUS ET PROSPECTION (Ducos · Le Robert, Martinique)
+Guide unique : tout est ici.
 
-AUCUNE INSTALLATION : double-cliquez sur index.html pour l'essayer.
-Mise en ligne gratuite : HEBERGEMENT-GITHUB.txt
-Réception des demandes + gestion des rendez-vous : RECEPTION-DEMANDES.txt
+══════════════════════════════════════════════════════════════
+1. LES PAGES
+══════════════════════════════════════════════════════════════
+Pour les clients
+  Accueil (services, rendez-vous, devis)  https://leer1-web.github.io/it-solution/
+  Services et tarifs                      https://leer1-web.github.io/it-solution/services.html
+  Fiche tarifs (PDF)                      https://leer1-web.github.io/it-solution/fiche-tarifs.html
+  Suivre ma demande                       https://leer1-web.github.io/it-solution/#suivi
+  Mentions légales / Confidentialité      mentions-legales.html · confidentialite.html
 
-LES PAGES
-  index.html          le formulaire client : services à la carte, packs, rendez-vous, devis, WhatsApp
-  services.html       « Services et tarifs » (référencement Google)
-  fiche-tarifs.html   fiche tarifs à imprimer / enregistrer en PDF
-  gestion.html        ESPACE PRO : voir, confirmer, placer / déplacer, annuler les rendez-vous
-  prospection.html    PROSPECTION : trouver, classer et contacter de nouveaux clients pros (voir plus bas)
-  visibilite.html     ÊTRE TROUVÉ : où s'inscrire pour que les particuliers vous trouvent + textes prêts à copier
-  flyer.html          flyers à imprimer (4 par A4, version particuliers ou professionnels, QR code)
-  mentions-legales.html, confidentialite.html   pages légales (zones jaunes à compléter)
+Pour vous (non référencées sur Google)
+  Rendez-vous (planning, confirmer…)      https://leer1-web.github.io/it-solution/gestion.html
+  Prospection (entreprises)               https://leer1-web.github.io/it-solution/prospection.html
+  Être trouvé (particuliers)              https://leer1-web.github.io/it-solution/visibilite.html
+  Flyers à imprimer                       https://leer1-web.github.io/it-solution/flyer.html
 
-UN SEUL FICHIER À MODIFIER : data.js
-  Prix, prestations, packs, onglets, horaires, agences, zones de déplacement, réglages.
-  Le formulaire, la page services ET la fiche tarifs lisent ce même fichier :
-  modifiez un prix ou ajoutez une prestation, tout se met à jour automatiquement.
-  - SERVICES   : chaque prestation = un prix de base (« dès ») + des options
-  - PACKS      : prix fixe ; le « au lieu de » est calculé tout seul
-  - UNIVERS + CATEGORIES : 3 univers et leurs onglets ; « couleur » = thème de chaque catégorie
-      (un pack qui réunit plusieurs catégories prend automatiquement un dégradé de leurs couleurs)
-      Informatique : Ordinateur, Sécurité, Données, Installation, Gaming, Aide & suivi
-      Maison connectée : Caméras, Domotique, Wi-Fi
-      Pro & digital : Web & apps, Cybersécurité, Caisse, Maintenance
-    BIENTOT : la ligne « Bientôt » (mobile & tablette, drone, production, accessoires)
-  - SYMPTOMES  : « Décrivez votre problème »
-  - ZONES, DELAIS, CRENEAUX, HORAIRES, CONFIG (remise étudiant, déplacement offert…)
-  Après une modification : augmentez le numéro ?v= dans les fichiers .html.
+══════════════════════════════════════════════════════════════
+2. INSTALLER LE MOTEUR GOOGLE (15 minutes, une seule fois)
+══════════════════════════════════════════════════════════════
+Le site est une vitrine : il ne peut pas envoyer d'emails ni garder des données communes.
+Le « moteur » est un script gratuit sur votre compte Google qui le fait à sa place :
+  - chaque demande arrive dans un tableau Google + dans un agenda + par email
+  - la page Rendez-vous (gestion.html) fonctionne
+  - les créneaux complets sont grisés, le client peut suivre sa demande, rappels la veille à 18 h
+  - Prospection : prospects partagés entre Ducos et Le Robert, analyse des sites, envoi des emails
 
-TARIFS (octobre 2026) — main d'œuvre, matériel en plus sauf mention
-  Prix « dès » : 25 à 39 € pour la plupart des services (diagnostic + prise en charge).
-  Packs : Rendre mon PC rapide 59 € · Supprimer un virus 49 € · Récupérer mes fichiers 89 €
-          Installer mon nouveau PC 89 € · Sauvegarder mes données 59 € · Wi-Fi partout 149 €
-          Surveiller ma maison 349 € · Équiper mon commerce 590 €
-  Déplacement : agences offert · Centre 10 € · Sud 20 € · Nord 25 € · offert dès 200 €
-  Délai : rapide (sous 48 h) +15 € · urgence jour même +35 € · samedi matin +10 €
-  Étudiants : −15 % sur la main d'œuvre · Abonnement entretien : 9,90 €/mois
+ÉTAPE 1 — Créer le tableau
+  1. Ouvrez https://sheets.google.com avec labicheerwan81@gmail.com
+  2. Cliquez « Feuille de calcul vierge ». Nommez-la « IloTech — Demandes » (en haut à gauche).
 
-LE PARCOURS CLIENT (3 étapes)
-  1. Choix : 3 univers, onglets « à la carte » + 8 packs, ou « Décrivez votre problème ».
-     Tout ce qui est choisi s'affiche à droite dans « Votre sélection » (sur téléphone : en bas),
-     avec ses options à cocher, son prix, et une croix pour le retirer.
-  2. Rendez-vous (lieu, date, créneau) ou Lieu (devis)
-  3. Coordonnées + besoin (type d'appareil, description, photo)
-  -> la demande arrive par email et/ou dans Google (tableau + agenda), le client reçoit un accusé.
+ÉTAPE 2 — Coller le script
+  1. Dans le tableau : menu Extensions > Apps Script. Un éditeur s'ouvre.
+  2. Effacez tout le code présent (Ctrl+A puis Suppr).
+  3. Ouvrez le fichier google-apps-script.gs (dans ce dossier), copiez TOUT (Ctrl+A, Ctrl+C),
+     collez dans l'éditeur (Ctrl+V).
+     Il est déjà réglé : votre email, l'adresse du site et le code de l'espace pro (CLE_GESTION).
+  4. Cliquez l'icône disquette (Enregistrer). Nommez le projet « IloTech ».
 
-FICHIERS
-  data.js / app.js / style.css            formulaire
-  services.js, fiche-tarifs.js/.css       pages tarifs (générées depuis data.js)
-  gestion.js/.css                         espace pro
-  google-apps-script.gs                   script Google — reste sur votre PC (contient CLE_GESTION)
+ÉTAPE 3 — Lancer l'installation
+  1. En haut de l'éditeur, dans la liste des fonctions, choisissez « installer », puis ▶ Exécuter.
+  2. Google demande l'autorisation : « Examiner les autorisations » > votre compte >
+     « Paramètres avancés » > « Accéder à IloTech (non sécurisé) » > « Autoriser ».
+     (C'est normal : c'est votre propre script, Google affiche ce message pour tous les scripts perso.)
+  3. En bas, le journal affiche « Installation terminée ». Le tableau a maintenant les onglets
+     « Demandes » et « Prospects », et l'agenda « IloTech — Interventions » est créé.
 
-PROSPECTION (prospection.html, lien « Prospection » dans l'espace pro)
-  Trouve les entreprises de Martinique qui ont le plus de chances d'avoir besoin de IloTech.
-  Sources publiques et gratuites, sans compte :
-    - Nouvelles entreprises : créations publiées au BODACC (journal officiel), les plus récentes d'abord
-    - Commerces et pros : OpenStreetMap (téléphone, site, email quand ils sont connus)
-    - Annuaire officiel des entreprises : recherche par nom ou activité
-  Chaque prospect reçoit un SCORE sur 100 (activité, entreprise récente, pas de site / site non
-  sécurisé, téléphone connu, taille, proximité d'une agence) avec le détail « Pourquoi ».
-  L'outil propose l'OFFRE adaptée (services du site + formule) et écrit le MESSAGE :
-  WhatsApp, SMS, email, script d'appel avec réponses aux objections, discours de visite.
-  Après chaque envoi, la RELANCE est programmée toute seule (J+3, puis J+10, puis « Sans réponse »).
-  « Aujourd'hui » : relances du jour + plan du jour (N prospects, équilibrés Ducos / Le Robert).
-  Suivi : statuts (À contacter → Contacté → Intéressé → RDV / devis → Client), notes, carte, export Excel.
-  Les prospects sont gardés sur l'appareil ; avec le script Google, ils sont partagés entre les deux
-  agences dans l'onglet « Prospects » du tableau (même code que l'espace pro).
-  Règles : uniquement des professionnels, source des coordonnées citée, « Ne plus contacter » respecté
-  pour toujours, 3 messages maximum sans réponse, aucun envoi automatique en masse.
-  osm-martinique.json : copie de secours d'OpenStreetMap, utilisée si le service ne répond pas.
-  AVEC LE SCRIPT GOOGLE installé, en plus :
-    - « Analyser son site » : trouve l'email et le téléphone affichés sur le site du prospect, et vérifie
-      s'il est sécurisé, adapté au mobile, à jour, ou carrément hors service (argument de vente)
-    - « Envoyer maintenant » / « Envoyer les emails du jour » : les emails partent de votre Gmail
-      (25 par jour conseillé, 100 au maximum), les réponses arrivent dans votre boîte
-  PARTICULIERS : la loi interdit de les démarcher par email, SMS ou téléphone sans leur accord.
-  Ils doivent vous trouver : suivez visibilite.html (fiche Google, Facebook, Leboncoin, annuaires, flyers).
+ÉTAPE 4 — Publier le moteur
+  1. Bouton bleu « Déployer » (en haut à droite) > « Nouveau déploiement ».
+  2. Roue dentée à côté de « Sélectionner le type » > « Application Web ».
+  3. Description : IloTech. Exécuter en tant que : « Moi ». Qui a accès : « Tout le monde ».
+  4. « Déployer » (réautorisez si demandé), puis COPIEZ « l'URL de l'application Web »
+     (elle commence par https://script.google.com/macros/s/ et finit par /exec).
+
+ÉTAPE 5 — Brancher le site
+  Envoyez cette adresse à Claude, ou faites-le vous-même :
+  dans data.js, ligne endpoint: '', collez l'adresse entre les apostrophes, puis publiez (partie 5).
+
+ÉTAPE 6 — Se connecter aux pages pro
+  Ouvrez gestion.html, entrez le code de l'espace pro (CLE_GESTION, en haut du script).
+  Le même code sert à la Prospection (onglet Réglages). Ne le donnez qu'à l'équipe.
+
+Partager le planning avec l'autre agence : https://calendar.google.com > à gauche,
+« IloTech — Interventions » > ⋮ > Paramètres et partage > Partager avec des personnes.
+
+SI VOUS MODIFIEZ LE SCRIPT PLUS TARD
+  Collez la nouvelle version, enregistrez, puis Déployer > Gérer les déploiements > crayon ✎ >
+  Version : « Nouvelle version » > Déployer. L'adresse /exec reste la même.
+
+RÉCEPTION PAR EMAIL SANS LE MOTEUR (déjà activée)
+  data.js contient emailReception: 'labicheerwan81@gmail.com' (service gratuit FormSubmit).
+  À la toute première demande, FormSubmit envoie un email « Activate Form » : cliquez dessus
+  (regardez dans les spams). Faites une demande test depuis le site pour le déclencher.
+  Tant que rien n'est activé, le client est invité à envoyer sa demande par WhatsApp.
+
+══════════════════════════════════════════════════════════════
+3. AU QUOTIDIEN
+══════════════════════════════════════════════════════════════
+RENDEZ-VOUS (gestion.html)
+  « À traiter » : nouvelles demandes, bouton Confirmer (le client reçoit un email).
+  « Planning » : la semaine (bleu = Ducos, orange = Le Robert). Cliquez pour déplacer, changer
+  le statut (Diagnostic, Réparation, Prêt à récupérer, Terminé…) ou annuler.
+  « + RDV téléphone » : ajoutez un rendez-vous pris par téléphone.
+
+PROSPECTION (prospection.html) — entreprises uniquement
+  « Aujourd'hui » : relances du jour + 10 prospects à contacter (le message est déjà écrit).
+  Première fois : « Trouver automatiquement mes 30 meilleurs prospects ».
+  Ouvrez une fiche : score expliqué, offre conseillée, meilleur moment pour appeler,
+  boutons WhatsApp / SMS / Email / Appeler, script d'appel. Après un envoi, la relance se programme
+  toute seule (J+3, puis J+10). Avec le moteur : « Envoyer les emails du jour » et « Analyser son site ».
+  Sources gratuites : nouvelles entreprises (BODACC), OpenStreetMap, annuaire officiel.
+  Règles : professionnels uniquement, 25 emails par jour, « Ne plus contacter » respecté.
+
+ÊTRE TROUVÉ (visibilite.html) — particuliers
+  La loi interdit de démarcher les particuliers par email, SMS ou téléphone sans leur accord :
+  ils doivent vous trouver. Suivez la liste (fiche Google Maps d'abord) : textes prêts à copier.
+  Flyers (flyer.html) : 4 par page A4, version particuliers ou pros, avec QR code.
+
+══════════════════════════════════════════════════════════════
+4. MODIFIER LES PRIX OU LES PRESTATIONS : un seul fichier, data.js
+══════════════════════════════════════════════════════════════
+  Le site, la page Services, la fiche tarifs, les flyers, la prospection et les textes
+  « Être trouvé » lisent tous data.js : une modification se reporte partout.
+  - CONFIG      : email, moteur Google (endpoint), adresse du site, remise étudiant, déplacement offert…
+  - SERVICES    : chaque prestation = un prix « dès » + des options
+  - PACKS       : formules à prix fixe (le « au lieu de » est calculé tout seul)
+  - UNIVERS, CATEGORIES : onglets et couleur de chaque catégorie ; BIENTOT : la ligne « Bientôt »
+  - SYMPTOMES   : « Dites-nous ce qui ne va pas »
+  - ZONES, COMMUNES, HORAIRES, AGENCES, DELAIS, CRENEAUX
+
+══════════════════════════════════════════════════════════════
+5. PUBLIER UNE MODIFICATION
+══════════════════════════════════════════════════════════════
+  Le site est hébergé gratuitement sur GitHub Pages (dépôt LeEr1-web/it-solution).
+  - Le plus simple : demandez à Claude, il modifie et publie.
+  - Sur github.com : ouvrez le dépôt > data.js > crayon ✎ > modifiez > « Commit changes ».
+  - Depuis ce dossier : git add -A && git commit -m "Mise à jour" && git push
+  En ligne en 1 à 2 minutes. Ensuite Ctrl+F5 pour voir la nouvelle version.
+  ⚠ google-apps-script.gs n'est JAMAIS mis en ligne (il contient le code de l'espace pro).
+
+══════════════════════════════════════════════════════════════
+6. LES FICHIERS
+══════════════════════════════════════════════════════════════
+  data.js                  réglages, prix, prestations (le seul fichier à modifier)
+  outils.js                petits outils communs (prix, dates, téléphone)
+  index.html  app.js  style.css          site client
+  services.html  services.js             page Services et tarifs
+  fiche-tarifs.html .js .css             fiche tarifs imprimable
+  gestion.html  gestion.js  gestion.css  page Rendez-vous
+  prospection.html .js .css              prospection
+  visibilite.html  visibilite.js         être trouvé ; flyer.html : flyers
+  osm-martinique.json      copie de secours des commerces (OpenStreetMap)
+  img/                     logo et icônes ; sitemap.xml : plan du site pour Google
+  google-apps-script.gs    le moteur Google (reste sur votre PC)

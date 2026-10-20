@@ -6,15 +6,6 @@
      - Annuaire des entreprises (recherche-entreprises.api.gouv.fr) : recherche par nom ou activité
    Les prospects sont gardés sur cet appareil, et partagés via le script Google si l'espace pro est configuré.
    ===================================================================== */
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const eur = n => (Math.round(Number(n) || 0)).toLocaleString('fr-FR') + ' €';
-const digits = t => String(t || '').replace(/\D/g, '');
-const intl = t => { let d = digits(t); if (d.startsWith('00')) d = d.slice(2); return d.startsWith('596') ? d : '596' + d.replace(/^0/, ''); };
-const iso = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-const parseISO = s => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
-const todayISO = () => iso(new Date());
-const addDays = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return iso(d); };
 const ageJours = s => s ? Math.round((parseISO(todayISO()) - parseISO(s)) / 86400000) : null;
 const frDay = s => parseISO(s).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
 const frDate = s => parseISO(s).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -23,7 +14,6 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const hash = s => [...String(s)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7) >>> 0;
 const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/œ/g, 'oe').replace(/[^a-z0-9]+/g, ' ').trim();
 const normCommune = s => norm(s).replace(/^(l|le|la|les) /, '');
-const SITE = 'https://leer1-web.github.io/it-solution/';
 
 /* ---------- Communes : centre (pour situer les commerces OpenStreetMap) ---------- */
 const CENTRES = [["L'Ajoupa-Bouillon", 14.816, -61.1305], ["Les Anses-d'Arlet", 14.4996, -61.0736], ['Basse-Pointe', 14.841, -61.1237],
@@ -519,7 +509,7 @@ function aActiver() {
   if ($('fiche').open) $('fiche').close();
   alert(CONFIG.endpoint
     ? 'Connectez-vous d’abord avec le code de l’espace pro (onglet Réglages).'
-    : 'Ce bouton fonctionne dès que le « moteur » Google est installé : 15 minutes, une seule fois.\n\nSuivez le guide RECEPTION-DEMANDES.txt (ou demandez à Claude de vous guider), puis envoyez l’adresse qui finit par /exec.');
+    : 'Ce bouton fonctionne dès que le « moteur » Google est installé : 15 minutes, une seule fois.\n\nSuivez README.txt, partie « INSTALLER LE MOTEUR GOOGLE » (ou demandez à Claude de vous guider), puis envoyez l’adresse qui finit par /exec.');
   setVue('reglages');
   return null;
 }
@@ -750,7 +740,7 @@ const VUES = {
         <label>Emails envoyés par jour au maximum<input type="number" min="1" max="60" value="${r.maxEmails || 25}" onchange="db.reglages.maxEmails=Math.min(60,Math.max(1,+this.value||25));sauver()"></label></div>
       <p class="muted small">Gmail autorise environ 100 emails par jour : restez autour de 25 pour que vos messages ne finissent pas en spam.</p>
       <h2>Partage entre Ducos et Le Robert</h2>
-      ${!CONFIG.endpoint ? '<p class="notice">Le script Google n’est pas encore branché : vos prospects restent sur cet appareil. Une fois le script installé (RECEPTION-DEMANDES.txt), ils seront partagés automatiquement dans l’onglet « Prospects » du tableau.</p>'
+      ${!CONFIG.endpoint ? '<p class="notice">Le script Google n’est pas encore branché : vos prospects restent sur cet appareil. Une fois le moteur Google installé (README.txt), ils seront partagés automatiquement dans l’onglet « Prospects » du tableau.</p>'
         : cle ? `<p class="notice ok">Connecté : vos prospects sont partagés dans l’onglet « Prospects » du tableau Google. <button type="button" class="link" onclick="synchroniser()">Synchroniser maintenant</button></p>`
         : `<form class="g-row" onsubmit="event.preventDefault();cle=$('pCle').value.trim();try{localStorage.setItem('itGestionCle',cle)}catch(e){};synchroniser();render()"><input id="pCle" type="password" placeholder="Code de l’espace pro" autocomplete="current-password"><button class="btn btn-primary">Se connecter</button></form>`}
       <h2>Sauvegarde</h2><div class="actions left">

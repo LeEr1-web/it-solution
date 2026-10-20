@@ -1,10 +1,5 @@
 /* Page « Services et tarifs » : générée à partir de data.js (mêmes prix que le formulaire) */
 (function () {
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const eur = n => { const v = Math.round(n * 100) / 100; return (Number.isInteger(v) ? v.toLocaleString('fr-FR') : v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) + ' €'; };
-  const svc = id => SERVICES.find(s => s.id === id);
-  const optOf = (sid, oid) => svc(sid).options.find(o => o[0] === oid);
-  const value = items => Object.entries(items).reduce((t, [sid, opts]) => t + svc(sid).base + opts.reduce((u, o) => u + optOf(sid, o)[2], 0), 0);
   const where = { site: 'chez vous', atelier: 'en agence', distance: 'à distance' };
 
   const block = (s, c) => `
@@ -27,7 +22,7 @@
   if (BIENTOT.length) h += `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.map(esc).join(' · ')}</p>`;
   h += `<h2>Nos packs à prix réduits</h2><table class="price-table packs-table"><thead><tr><th>Pack</th><th>Contenu</th><th>Prix</th></tr></thead><tbody>` +
     PACKS.map(p => {
-      return `<tr><td><b>${esc(p.nom)}</b><br><span class="muted">${esc(p.pour)}</span></td><td>${esc(p.inclus.join(', '))}</td><td class="mono"><s>${eur(value(p.items))}</s> <b>${eur(p.prix)}</b></td></tr>`;
+      return `<tr><td><b>${esc(p.nom)}</b><br><span class="muted">${esc(p.pour)}</span></td><td>${esc(p.inclus.join(', '))}</td><td class="mono"><s>${eur(itemsValue(p.items))}</s> <b>${eur(p.prix)}</b></td></tr>`;
     }).join('') + `</tbody></table>`;
 
   h += `<h2>Zones d'intervention et déplacement</h2>

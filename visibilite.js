@@ -2,10 +2,6 @@
    ÊTRE TROUVÉ : les particuliers ne se démarchent pas, ils doivent nous trouver.
    Liste des endroits où ils cherchent + textes prêts à copier (générés depuis data.js, donc toujours à jour).
    ===================================================================== */
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const eur = n => { const v = Math.round(n * 100) / 100; return (Number.isInteger(v) ? v : v.toFixed(2).replace('.', ',')) + ' €'; };
-const SITE = 'https://leer1-web.github.io/it-solution/';
 const services = SERVICES.filter(s => CATEGORIES.some(c => !c.bientot && c.services.includes(s.id)));
 const prix = s => s.base ? `dès ${eur(s.base)}${s.mensuel ? '/mois' : ''}` : 'gratuit';
 const jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
