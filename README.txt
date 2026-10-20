@@ -62,6 +62,9 @@ Le « moteur » est un script gratuit sur votre compte Google qui le fait à sa 
   Ouvrez gestion.html, entrez le code de l'espace pro (CLE_GESTION, en haut du script).
   Le même code sert à la Prospection (onglet Réglages). Ne le donnez qu'à l'équipe.
 
+Votre tableau : https://docs.google.com/spreadsheets/d/1VhJutv-n4GBF1n6AjSkd1weyt7Bn6nXt9ytpN7X3wkI/edit
+(bouton « Tableau Google » sur la page Rendez-vous ; le script : Extensions > Apps Script)
+
 Partager le planning avec l'autre agence : https://calendar.google.com > à gauche,
 « IloTech — Interventions » > ⋮ > Paramètres et partage > Partager avec des personnes.
 
