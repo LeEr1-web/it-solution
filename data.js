@@ -140,11 +140,11 @@ const SERVICES = [
     options: [['screen', 'Écran cassé (hors pièce)', 45], ['battery', 'Batterie (hors pièce)', 25], ['transfer', 'Transfert vers un nouveau téléphone', 20],
       ['backup', 'Sauvegarde des photos', 15], ['setup', 'Configuration et applications', 15]] },
   // --- Web & apps (pro et particuliers)
-  { id: 'siteweb', icon: 'globe', nom: 'Site web', desc: 'Vitrine, réservation, boutique', base: 390, modes: ['distance', 'site', 'atelier'],
+  { id: 'siteweb', icon: 'globe', nom: 'Développement web', desc: 'Sites et boutiques en ligne', base: 390, modes: ['distance', 'site', 'atelier'],
     note: 'Prix indicatifs : devis précis après un premier échange gratuit. Le site vous appartient.',
     options: [['pages', '5 pages supplémentaires', 90], ['resa', 'Prise de rendez-vous en ligne', 150], ['shop', 'Boutique en ligne', 390],
       ['seo', 'Référencement local (Google)', 120], ['domain', 'Nom de domaine + email pro (1 an)', 49], ['logo', 'Logo simple', 90]] },
-  { id: 'appmobile', icon: 'smartphone', nom: 'Application mobile', desc: 'Appli, espace client, outil métier', base: 990, modes: ['distance', 'site', 'atelier'],
+  { id: 'appmobile', icon: 'smartphone', nom: 'Application mobile', desc: 'Espaces clients, outils métier', base: 990, modes: ['distance', 'site', 'atelier'],
     note: 'Prix indicatifs : nous construisons l’application autour des actions utiles à vos clients. Devis après échange.',
     options: [['client', 'Espace client (compte, historique)', 490], ['rdv', 'Réservation / rendez-vous', 390], ['notif', 'Notifications', 190],
       ['admin', 'Interface de gestion', 490], ['stores', 'Publication App Store / Google Play', 190]] },
@@ -152,18 +152,29 @@ const SERVICES = [
     note: 'Prix par mois : mises à jour, sauvegardes et surveillance du site. Étudié selon votre site.',
     options: [['secu', 'Surveillance sécurité renforcée', 10], ['modifs', '1 h de modifications par mois', 25], ['stats', 'Rapport de visites mensuel', 5]] },
   // --- Cybersécurité (pros)
-  { id: 'cyber', icon: 'lock', nom: 'Audit cybersécurité', desc: 'Vérifications web autorisées', base: 290, modes: ['distance', 'site'],
+  { id: 'cyber', icon: 'lock', nom: 'Audit cybersécurité', desc: 'Vérifications autorisées, corrections', base: 290, modes: ['distance', 'site'],
     note: 'Uniquement sur vos propres systèmes ou avec autorisation écrite. Rapport clair : constats expliqués et corrections ciblées.',
     options: [['site', 'Vérification d’un site web supplémentaire', 150], ['email', 'Sécurité des emails (SPF, DMARC)', 90], ['acces', 'Revue des accès et mots de passe', 120],
       ['fix', 'Corrections ciblées (par heure)', 59], ['form', 'Sensibilisation de l’équipe (1 h)', 99]] },
-  // --- Drone (prêt, encore « Bientôt »)
+  // --- Drone & impression 3D
   { id: 'drone', icon: 'drone', nom: 'Drone', desc: 'Images aériennes, observation', base: 149, modes: ['site'],
-    note: 'Sous réserve de faisabilité (météo, zone autorisée).',
+    note: 'Images aériennes professionnelles et observation visuelle, sous réserve de faisabilité (météo, zone de vol autorisée).',
     options: [['photo', 'Photos aériennes', 0, 'Inclus'], ['video', 'Vidéo aérienne montée', 120], ['inspect', 'Observation toiture / bâtiment', 60]] },
-  // --- Pro
+  { id: 'impression3d', icon: 'box', nom: 'Impression 3D', desc: 'Objets, supports, pièces simples', base: 15, modes: ['atelier', 'distance'],
+    note: 'Une sélection de modèles est en préparation. Fichiers existants et adaptations simples étudiés au cas par cas (prix selon la taille et la matière).',
+    options: [['fichier', 'Impression d’un fichier existant', 0, 'Sur devis'], ['adapt', 'Adaptation simple d’un modèle', 25], ['piece', 'Pièce de remplacement (étude)', 35], ['serie', 'Petite série (5 pièces ou plus)', 0, 'Sur devis']] },
+  // --- Marketing
+  { id: 'marketing', icon: 'megaphone', nom: 'Stratégie marketing', desc: 'Être visible, trouver des clients', base: 149, modes: ['distance', 'site', 'atelier'],
+    note: 'On commence par un bilan de votre visibilité (Google, réseaux, site), puis un plan simple avec les actions qui rapportent le plus.',
+    options: [['google', 'Fiche Google Maps optimisée', 79], ['pub', 'Campagne de publicité Facebook / Instagram', 99], ['contenu', '4 visuels ou vidéos courtes', 149],
+      ['emailing', 'Emailing / newsletter clients', 89], ['form', 'Formation réseaux sociaux (2 h)', 69]] },
+  { id: 'reseaux', icon: 'trending', nom: 'Gestion des réseaux sociaux', desc: 'Publications chaque semaine', base: 149, mensuel: true, modes: ['distance'],
+    note: 'Prix par mois : nous préparons et publions vos contenus, et vous envoyons un bilan mensuel.',
+    options: [['videos', '4 vidéos courtes par mois', 99], ['pubs', 'Suivi de vos publicités', 49], ['avis', 'Réponses aux avis Google', 29]] },
+  // --- Entreprises
   { id: 'pos', icon: 'receipt', nom: 'Caisse enregistreuse', desc: 'Pour commerces', base: 149, modes: ['site'],
     options: [['touch', 'Écran tactile', 190], ['drawer', 'Tiroir-caisse', 79], ['scanner', 'Lecteur code-barres', 59], ['printer', 'Imprimante ticket', 79], ['stock', 'Gestion des stocks', 49], ['tpe', 'Liaison terminal CB', 39]] },
-  { id: 'maintenance', icon: 'tools', nom: 'Maintenance', desc: 'Entretien régulier du parc', base: 49, remise: true, modes: ['site', 'distance'], appareil: true,
+  { id: 'maintenance', icon: 'tools', nom: 'Maintenance informatique', desc: 'Assistance et entretien du parc', base: 49, remise: true, modes: ['site', 'distance'], appareil: true,
     options: [['pc', 'Entretien des postes', 30], ['security', 'Antivirus des postes', 25], ['server', 'Serveur', 89], ['check', 'Bilan de santé du parc', 19]] }
 ];
 
@@ -172,33 +183,38 @@ const SERVICES = [
 // bientot : true = onglet affiché mais pas encore disponible
 // Univers : regroupent les onglets (ligne du titre « À la carte »)
 const UNIVERS = [
-  { id: 'info',   nom: 'Informatique',     icon: 'monitor', couleur: '#2b8cff' },
-  { id: 'maison', nom: 'Maison connectée', icon: 'home',    couleur: '#22c55e' },
-  { id: 'pro',    nom: 'Pro & digital',    icon: 'globe',   couleur: '#8b5cf6' }
+  { id: 'info',   nom: 'Informatique',     icon: 'monitor',   couleur: '#2b8cff', desc: 'Dépannage, installation, sécurité, fichiers et cours, chez vous, en agence ou à distance.' },
+  { id: 'maison', nom: 'Maison connectée', icon: 'home',      couleur: '#22c55e', desc: 'Caméras, alarme, domotique et Wi-Fi dans toute la maison.' },
+  { id: 'web',    nom: 'Web & marketing',  icon: 'globe',     couleur: '#6366f1', desc: 'Sites web, boutiques en ligne, applications et stratégie pour trouver des clients.' },
+  { id: 'pro',    nom: 'Entreprises',      icon: 'briefcase', couleur: '#8b5cf6', desc: 'Maintenance informatique, cybersécurité et caisse pour les commerces et les bureaux.' },
+  { id: 'crea',   nom: 'Drone & 3D',       icon: 'drone',     couleur: '#38bdf8', desc: 'Images aériennes et impression 3D, étudiées au cas par cas.' }
 ];
 
 const CATEGORIES = [
-  { id: 'ordi',     univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    couleur: '#2b8cff', services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
-  { id: 'securite', univers: 'info',   nom: 'Sécurité',      icon: 'shield',     couleur: '#ef4444', services: ['antivirus', 'comptes'] },
-  { id: 'donnees',  univers: 'info',   nom: 'Fichiers',      icon: 'database',   couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
-  { id: 'install',  univers: 'info',   nom: 'Installation',  icon: 'printer',    couleur: '#a78bfa', services: ['install', 'printer', 'ups'] },
-  { id: 'gaming',   univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    couleur: '#e040fb', services: ['console', 'emulation', 'gamer'] },
-  { id: 'aide',     univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      couleur: '#f59e0b', services: ['cours', 'abonnement'] },
-  { id: 'camera',   univers: 'maison', nom: 'Caméras',       icon: 'camera',     couleur: '#fb923c', services: ['camera', 'alarme'] },
-  { id: 'domo',     univers: 'maison', nom: 'Domotique',     icon: 'home',       couleur: '#22c55e', services: ['domotique'] },
-  { id: 'wifi',     univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       couleur: '#22d3ee', services: ['network'] },
-  { id: 'web',      univers: 'pro',    nom: 'Web & apps',    icon: 'globe',      couleur: '#6366f1', services: ['siteweb', 'appmobile', 'maintweb'] },
-  { id: 'cyber',    univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       couleur: '#f43f5e', services: ['cyber'] },
-  { id: 'caisse',   univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    couleur: '#facc15', services: ['pos'] },
-  { id: 'pro',      univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      couleur: '#94a3b8', services: ['maintenance'] },
-  // pas encore ouverts : retirez « bientot: true » (et la ligne dans BIENTOT) pour les ouvrir
-  { id: 'mobile',   univers: 'info',   nom: 'Mobile',        icon: 'smartphone', couleur: '#c084fc', services: ['mobile'], bientot: true },
-  { id: 'drone',    univers: 'maison', nom: 'Drone',         icon: 'drone',      couleur: '#38bdf8', services: ['drone'],  bientot: true }
+  { id: 'ordi',      univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    couleur: '#2b8cff', services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
+  { id: 'securite',  univers: 'info',   nom: 'Sécurité',      icon: 'shield',     couleur: '#ef4444', services: ['antivirus', 'comptes'] },
+  { id: 'donnees',   univers: 'info',   nom: 'Fichiers',      icon: 'database',   couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
+  { id: 'install',   univers: 'info',   nom: 'Installation',  icon: 'printer',    couleur: '#a78bfa', services: ['install', 'printer', 'ups'] },
+  { id: 'gaming',    univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    couleur: '#e040fb', services: ['console', 'emulation', 'gamer'] },
+  { id: 'aide',      univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      couleur: '#f59e0b', services: ['cours', 'abonnement'] },
+  { id: 'camera',    univers: 'maison', nom: 'Caméras',       icon: 'camera',     couleur: '#fb923c', services: ['camera', 'alarme'] },
+  { id: 'domo',      univers: 'maison', nom: 'Domotique',     icon: 'home',       couleur: '#22c55e', services: ['domotique'] },
+  { id: 'wifi',      univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       couleur: '#22d3ee', services: ['network'] },
+  { id: 'web',       univers: 'web',    nom: 'Site web',      icon: 'globe',      couleur: '#6366f1', services: ['siteweb', 'maintweb'] },
+  { id: 'appli',     univers: 'web',    nom: 'Application',   icon: 'smartphone', couleur: '#ec4899', services: ['appmobile'] },
+  { id: 'marketing', univers: 'web',    nom: 'Marketing',     icon: 'megaphone',  couleur: '#84cc16', services: ['marketing', 'reseaux'] },
+  { id: 'pro',       univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      couleur: '#8b5cf6', services: ['maintenance'] },
+  { id: 'cyber',     univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       couleur: '#f43f5e', services: ['cyber'] },
+  { id: 'caisse',    univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    couleur: '#facc15', services: ['pos'] },
+  { id: 'drone',     univers: 'crea',   nom: 'Drone',         icon: 'drone',      couleur: '#38bdf8', services: ['drone'] },
+  { id: 'print3d',   univers: 'crea',   nom: 'Impression 3D', icon: 'box',        couleur: '#10b981', services: ['impression3d'] },
+  // pas encore ouvert : retirez « bientot: true » (et la ligne dans BIENTOT) pour l'ouvrir
+  { id: 'mobile',    univers: 'info',   nom: 'Mobile',        icon: 'smartphone', couleur: '#c084fc', services: ['mobile'], bientot: true }
 ];
 
 // Annoncés sous les onglets (« Bientôt ») — retirez une ligne quand le service est lancé.
 // Pour ouvrir le mobile : retirez « bientot: true » de la catégorie « mobile » ci-dessus et la ligne correspondante ici.
-const BIENTOT = ['Réparation mobile & tablette', 'Drone : images aériennes', 'Production', 'Vente d’accessoires'];
+const BIENTOT = ['Réparation mobile & tablette', 'Vente d’accessoires'];
 
 // Type d'appareil demandé à l'étape « Situation » (pré-rempli selon les services choisis)
 const APPAREILS = { fixe: 'PC fixe', portable: 'PC portable', aio: 'PC tout-en-un', mac: 'Mac', console: 'Console de jeux', autre: 'Autre' };
@@ -261,6 +277,10 @@ const SYMPTOMES = [
   { id: 'site',    label: 'Je veux un site web pour mon activité',    items: { siteweb: [] } },
   { id: 'appli',   label: 'Je veux une application pour mes clients', items: { appmobile: [] } },
   { id: 'audit',   label: 'Je veux vérifier la sécurité de mon site', items: { cyber: [] } },
+  { id: 'clients', label: 'Je veux plus de clients / être plus visible', items: { marketing: ['google'] } },
+  { id: 'reseau',  label: 'Je n’ai pas le temps de gérer mes réseaux',  items: { reseaux: [] } },
+  { id: 'droneph', label: 'Je veux des photos ou vidéos par drone',     items: { drone: ['photo'] } },
+  { id: 'objet3d', label: 'Je veux faire imprimer un objet en 3D',      items: { impression3d: ['fichier'] } },
   { id: 'gamer',   label: 'Je veux un PC pour jouer',                 items: { gamer: ['build', 'windows'] } },
   { id: 'aide',    label: "J'ai besoin d'aide pour utiliser mon PC",  items: { cours: [] } },
   { id: 'vieux',   label: 'Je veux me débarrasser de mon ancien PC',  items: { recyclage: ['wipe', 'recycle'] } }
@@ -330,6 +350,9 @@ const ICONS = {
   recycle: '<path d="M7 19H4.8a1.8 1.8 0 0 1-1.6-2.7L7.3 9"/><path d="M11 19h8.2a1.8 1.8 0 0 0 1.6-2.7l-1.2-2"/><path d="m14 16-3 3 3 3"/><path d="M8.3 13.6 7.3 9l-4.6 1"/><path d="m9.3 5.7 1-1.8a1.8 1.8 0 0 1 3.1 0l4 6.8"/><path d="m13.4 9.5 4.6 1 1-4.6"/>',
   home: '<path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/>',
+  megaphone: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+  trending: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
   globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',
   drone: '<circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/>',
   printer: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',

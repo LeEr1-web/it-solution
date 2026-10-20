@@ -9,7 +9,7 @@ const horaires = [1, 2, 3, 4, 5, 6].map(j => `${jours[j]} : ${HORAIRES[j] ? HORA
 const ag = Object.values(AGENCES);
 
 const TEXTES = {
-  gDescription: `IloTech, c'est le dépannage et l'installation informatique en Martinique, avec deux agences, à Ducos et au Robert. Nous intervenons chez vous, en agence ou à distance : ordinateur lent ou en panne, virus, récupération de fichiers, Wi-Fi qui ne capte pas, caméras de surveillance, domotique, caisse enregistreuse pour les commerces, sites internet et maintenance pour les professionnels. Diagnostic gratuit, prix annoncés à l'avance (dépannage dès ${eur(SERVICES.find(s => s.id === 'repair').base)}), −${CONFIG.remiseEtudiant} % pour les étudiants. Prenez rendez-vous en ligne ou écrivez-nous sur WhatsApp.`,
+  gDescription: `IloTech, c'est le dépannage et l'installation informatique en Martinique, avec deux agences, à Ducos et au Robert. Nous intervenons chez vous, en agence ou à distance : ordinateur lent ou en panne, virus, récupération de fichiers, Wi-Fi qui ne capte pas, caméras et domotique, sites web, applications et stratégie marketing, maintenance et cybersécurité pour les entreprises, drone et impression 3D. Diagnostic gratuit, prix annoncés à l'avance (dépannage dès ${eur(SERVICES.find(s => s.id === 'repair').base)}), −${CONFIG.remiseEtudiant} % pour les étudiants. Prenez rendez-vous en ligne ou écrivez-nous sur WhatsApp.`,
   gServices: services.map(s => `${s.nom} — ${prix(s)}\n${s.desc}`).join('\n\n'),
   gHoraires: horaires,
   gZone: COMMUNES.map(c => c[0]).join(', '),

@@ -167,6 +167,8 @@ function offreDe(p) {
   if (!p.site && !ids.includes('siteweb')) ids.unshift('siteweb');
   if (!p.site && ids.includes('siteweb')) ids = ['siteweb', ...ids.filter(x => x !== 'siteweb')];
   if (siteFaible(p)) ids = ['siteweb', 'maintweb', ...ids.filter(x => x !== 'siteweb')];
+  // entreprise récente : elle doit se faire connaître
+  if (ageJours(p.creation) !== null && ageJours(p.creation) <= 365) ids.splice(1, 0, 'marketing');
   const pk = seg.pack && PACKS.find(x => x.id === seg.pack);
   const inPack = pk ? Object.keys(pk.items) : [];
   ids = [...new Set(ids)].filter(id => SERVICES.find(s => s.id === id) && !inPack.includes(id)).slice(0, 4);

@@ -106,7 +106,9 @@ PROSPECTION (prospection.html) — entreprises uniquement
   - CONFIG      : email, moteur Google (endpoint), adresse du site, remise étudiant, déplacement offert…
   - SERVICES    : chaque prestation = un prix « dès » + des options
   - PACKS       : formules à prix fixe (le « au lieu de » est calculé tout seul)
-  - UNIVERS, CATEGORIES : onglets et couleur de chaque catégorie ; BIENTOT : la ligne « Bientôt »
+  - UNIVERS     : les 5 pôles (Informatique, Maison connectée, Web & marketing, Entreprises, Drone & 3D)
+  - CATEGORIES  : les onglets de chaque pôle et leur couleur ; BIENTOT : la ligne « Bientôt »
+    Lien direct vers un pôle : index.html?pole=web (ou ?cat=drone pour un onglet)
   - SYMPTOMES   : « Dites-nous ce qui ne va pas »
   - ZONES, COMMUNES, HORAIRES, AGENCES, DELAIS, CRENEAUX
 

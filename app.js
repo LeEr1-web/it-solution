@@ -395,11 +395,11 @@ const VIEWS = {
         <div class="help-row"><button type="button" class="btn btn-help" onclick="setTab('symptomes')">${ico('search')}<span>Dites-nous ce qui ne va pas</span></button>
         <button type="button" class="btn btn-help call" onclick="openHelp()">${ico('phone')}<span>Appeler un technicien</span></button></div></div>
       <h3 class="sec">${ico('grid')} Choisissez un service
-        <span class="univers" role="tablist" aria-label="Univers">${UNIVERS.map(u => {
+        <span class="univers" role="tablist" aria-label="Pôles">${UNIVERS.map(u => {
           const n = CATEGORIES.filter(c => c.univers === u.id && !c.bientot).flatMap(c => c.services).filter((id, i, a) => a.indexOf(id) === i && state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
-          return `<button type="button" role="tab" style="--t:${u.couleur}" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
+          return `<button type="button" role="tab" style="--t:${u.couleur}" title="${esc(u.desc)}" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
         }).join('')}</span>
-        <span class="sec-links"><button type="button" class="link" onclick="help()">${ico('help')} Je ne sais pas quoi choisir</button></span></h3>
+</h3>
       <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot && c.univers === univOf(state.cat)).map(c => {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
         return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
@@ -894,6 +894,11 @@ function reset() {
 
 window.addEventListener('hashchange', () => { if (location.hash === '#suivi') openSuivi(); });
 if (location.hash === '#suivi') { state.step = 'suivi'; suivi = { ref: new URLSearchParams(location.search).get('ref') || '' }; }
+// lien direct vers un pôle ou un onglet : index.html?pole=web ou ?cat=drone (boutons « Découvrir » de la page Services)
+(q => {
+  const c = CATEGORIES.find(x => !x.bientot && (x.id === q.get('cat') || (!q.get('cat') && x.univers === q.get('pole'))));
+  if (c) { state.cat = c.id; state.step = 1; state.tab = 'services'; }
+})(new URLSearchParams(location.search));
 setInterval(updateStatus, 60000);
 try { if (localStorage.getItem('itGrand')) setGrand(true); } catch (e) {}
 renderStatic();
