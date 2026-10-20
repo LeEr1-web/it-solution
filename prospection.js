@@ -514,8 +514,18 @@ function contacte(id, mode) {
 }
 /* ---------- Automatique (via le script Google) : analyse des sites, envoi des emails ---------- */
 const scriptPret = () => !!(CONFIG.endpoint && cle);
+// bouton automatique cliqué alors que le script n'est pas installé : on explique comment l'activer
+function aActiver() {
+  if ($('fiche').open) $('fiche').close();
+  alert(CONFIG.endpoint
+    ? 'Connectez-vous d’abord avec le code de l’espace pro (onglet Réglages).'
+    : 'Ce bouton fonctionne dès que le « moteur » Google est installé : 15 minutes, une seule fois.\n\nSuivez le guide RECEPTION-DEMANDES.txt (ou demandez à Claude de vous guider), puis envoyez l’adresse qui finit par /exec.');
+  setVue('reglages');
+  return null;
+}
 async function analyser(id, silencieux) {
-  const p = parId(id); if (!p || !p.site || !scriptPret()) return null;
+  if (!scriptPret()) return silencieux ? null : aActiver();
+  const p = parId(id); if (!p || !p.site) return null;
   if (!silencieux) toast('Analyse du site en cours…');
   try { p.analyse = { ...(await api('prospects_site', { site: p.site })), quand: todayISO() }; }
   catch (e) { p.analyse = { ok: false, reason: e.message, quand: todayISO() }; }
@@ -530,6 +540,7 @@ async function analyser(id, silencieux) {
 }
 const aAnalyser = () => db.prospects.filter(p => p.site && !p.analyse && !['stop', 'perdu', 'client'].includes(p.statut));
 async function completerEmails() {
+  if (!scriptPret()) return aActiver();
   const list = aAnalyser().slice(0, 40);
   let n = 0;
   for (let i = 0; i < list.length; i++) {
@@ -540,6 +551,7 @@ async function completerEmails() {
   chargement = ''; toast(`${list.length} sites analysés : ${n} emails trouvés`); render();
 }
 async function envoyerEmail(id, silencieux) {
+  if (!scriptPret()) return silencieux ? false : aActiver();
   const p = parId(id); if (!p || !p.email) return false;
   const m = messages(p);
   const sujet = !silencieux && $('fSujet') ? $('fSujet').value : m.email.sujet;
@@ -557,6 +569,7 @@ async function envoyerEmail(id, silencieux) {
 // emails du jour : relances dues + nouveaux prospects du plan qui ont un email (séquence pas terminée)
 const emailsDuJour = () => { const { relances, choix } = plan(); return [...relances, ...choix].filter(p => p.email && (p.etape || 0) < 3).slice(0, db.reglages.maxEmails || 25); };
 async function envoyerEmailsDuJour() {
+  if (!scriptPret()) return aActiver();
   const list = emailsDuJour();
   if (!list.length || !confirm(`Envoyer ${list.length} emails personnalisés maintenant ?\n\n${list.map(p => '• ' + p.nom).join('\n')}\n\nChaque message est écrit pour le prospect, et la relance suivante est programmée.`)) return;
   let ok = 0;
@@ -659,11 +672,11 @@ const VUES = {
       ${(() => {
         const mails = emailsDuJour(), sites = aAnalyser().length;
         if (!mails.length && !sites) return '';
+        const off = scriptPret() ? '' : ' btn-off';
         return `<div class="p-auto"><b>${ico('zap')} En automatique</b>
-          ${scriptPret()
-            ? `${mails.length ? `<button type="button" class="btn btn-primary" onclick="envoyerEmailsDuJour()" ${chargement ? 'disabled' : ''}>Envoyer les ${mails.length} emails du jour</button>` : ''}
-               ${sites ? `<button type="button" class="btn" onclick="completerEmails()" ${chargement ? 'disabled' : ''}>Chercher les emails sur ${Math.min(sites, 40)} sites</button>` : ''}`
-            : `<span class="muted">${mails.length ? `${mails.length} emails pourraient partir en un clic` : ''}${mails.length && sites ? ', et ' : ''}${sites ? `${sites} sites pourraient être analysés pour trouver l’email` : ''} : il suffit d’installer le script Google (RECEPTION-DEMANDES.txt) puis de se connecter dans Réglages.</span>`}</div>`;
+          ${mails.length ? `<button type="button" class="btn btn-primary${off}" onclick="envoyerEmailsDuJour()" ${chargement ? 'disabled' : ''}>Envoyer les ${mails.length} emails du jour</button>` : ''}
+          ${sites ? `<button type="button" class="btn${off}" onclick="completerEmails()" ${chargement ? 'disabled' : ''}>Chercher les emails sur ${Math.min(sites, 40)} sites</button>` : ''}
+          ${scriptPret() ? '' : '<span class="muted small">🔒 À activer : installez une fois le script Google (cliquez sur un bouton pour voir comment).</span>'}</div>`;
       })()}
       ${relances.length ? `<h2>${ico('repeat')} À relancer aujourd’hui (${relances.length})</h2><div class="p-list">${relances.map(ligne).join('')}</div>` : ''}
       <h2>${ico('zap')} Votre plan du jour : ${choix.length} prospect${choix.length > 1 ? 's' : ''} à contacter</h2>
@@ -778,8 +791,8 @@ function renderFiche() {
   const actions = {
     whatsapp: mobile ? `<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/${intl(p.tel)}?text=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','WhatsApp'),300)">${ico('chat')} Ouvrir WhatsApp avec ce message</a>` : '<p class="muted">WhatsApp : il faut un numéro de portable (0696 / 0697).</p>',
     sms: p.tel ? `<a class="btn" href="sms:+${intl(p.tel)}?body=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','SMS'),300)">Envoyer par SMS</a>` : '<p class="muted">Ajoutez un téléphone.</p>',
-    email: p.email ? `${scriptPret() ? `<button type="button" class="btn btn-primary" onclick="envoyerEmail('${esc(p.id)}')">Envoyer maintenant à ${esc(p.email)}</button>` : ''}<a class="btn ${scriptPret() ? '' : 'btn-primary'}" href="mailto:${esc(p.email)}?subject=${encodeURIComponent(m.email.sujet)}&body=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','Email'),300)">Ouvrir dans ma messagerie</a>`
-      : p.site && scriptPret() ? `<button type="button" class="btn btn-primary" onclick="analyser('${esc(p.id)}')">Chercher l’email sur son site</button>` : '<p class="muted">Ajoutez une adresse email (voir « Chercher sur Google » à droite).</p>',
+    email: p.email ? `<button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerEmail('${esc(p.id)}')">Envoyer maintenant à ${esc(p.email)}</button><a class="btn" href="mailto:${esc(p.email)}?subject=${encodeURIComponent(m.email.sujet)}&body=${encodeURIComponent(txt)}" onclick="setTimeout(()=>contacte('${esc(p.id)}','Email'),300)">Ouvrir dans ma messagerie</a>`
+      : p.site ? `<button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="analyser('${esc(p.id)}')">Chercher l’email sur son site</button>` : '<p class="muted">Ajoutez une adresse email (voir « Chercher sur Google » à droite).</p>',
     appel: p.tel ? `<a class="btn btn-primary" href="tel:+${intl(p.tel)}" onclick="setTimeout(()=>appeler('${esc(p.id)}'),300)">${ico('phone')} Appeler le ${esc(p.tel)}</a>` : '<p class="muted">Ajoutez un téléphone.</p>',
     visite: `<button type="button" class="btn" onclick="noter(parId('${esc(p.id)}'),'Visite sur place');if(parId('${esc(p.id)}').statut==='nouveau')parId('${esc(p.id)}').statut='contacte';sauver(parId('${esc(p.id)}'));renderFiche();render()">J’y suis passé</button>`
   };
@@ -813,7 +826,7 @@ function renderFiche() {
           <label>Relance le<input type="date" value="${esc(p.relance || '')}" onchange="majChamp('${esc(p.id)}','relance',this.value)"></label></div>
         ${p.site ? `<div class="p-analyse">${(() => {
           const a = p.analyse;
-          if (!a) return scriptPret() ? `<button type="button" class="btn btn-sm" onclick="analyser('${esc(p.id)}')">${ico('search')} Analyser son site (email, téléphone, mobile)</button>` : '<span class="muted small">Analyse automatique du site : disponible avec le script Google.</span>';
+          if (!a) return `<button type="button" class="btn btn-sm${scriptPret() ? '' : ' btn-off'}" onclick="analyser('${esc(p.id)}')">${ico('search')} Analyser son site (email, téléphone, mobile)</button>`;
           if (!a.ok) return `<span class="p-ok ko">⚠ Le site ne s’ouvre plus (vérifié le ${frDate(a.quand)})</span> ${scriptPret() ? `<button type="button" class="link" onclick="analyser('${esc(p.id)}')">Réessayer</button>` : ''}`;
           const etat = (bon, oui, non) => `<span class="p-ok ${bon ? '' : 'ko'}">${bon ? '✓ ' + oui : '⚠ ' + non}</span>`;
           return `${etat(a.https, 'Sécurisé', 'Non sécurisé')}${etat(a.mobile, 'Adapté au mobile', 'Mal affiché sur mobile')}${a.annee ? etat(a.annee > new Date().getFullYear() - 3, 'À jour (' + a.annee + ')', 'Ancien (' + a.annee + ')') : ''}
