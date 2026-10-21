@@ -91,7 +91,7 @@ const SEGMENTS = {
 };
 // Activités sans besoin informatique réel : écartées automatiquement (sociétés civiles immobilières, holdings…)
 const EXCLUS_NAF = /^(68\.20|64\.|70\.10|84\.|01\.|02\.|03\.)/;
-const EXCLUS_MOTS = /societe civile immobiliere|\bsci\b|holding|prise de participation|location de biens immobiliers|location de terrains|gestion de patrimoine|location de logement|acquisition.*immeubles|centre hospitalier|\bchu\b|hopital|mairie|prefecture|collectivite territoriale|gendarmerie|commissariat|securite sociale|france travail/;
+const EXCLUS_MOTS = /societe civile immobiliere|\bsci\b|holding|prise de participation|location de biens immobiliers|location de terrains|gestion de patrimoine|location de logement|acquisition.*immeubles|centre hospitalier|\bchu\b|hopital|mairie|prefecture|collectivite territoriale|gendarmerie|commissariat|securite sociale|france travail|vaccination|ville de|centre communal|communaute d agglomeration|conseil (departemental|regional)|ctm|cpam|caf/;
 
 function segmentDe({ naf = '', texte = '' }) {
   const t = norm(texte);
