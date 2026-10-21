@@ -131,3 +131,9 @@ button.p-chip:hover{border-color:var(--primary)}
 .v-texte textarea{width:100%;border:0;border-radius:0;font-size:14px;line-height:1.5;resize:vertical;background:#fff}
 .btn-off{opacity:.7;border-style:dashed!important}
 .btn-off::after{content:"à activer";margin-left:6px;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:8px;background:#fff3c4;color:#7a4b00}
+
+/* Emails envoyés */
+.p-envoyes td{font-size:13.5px}
+.p-envoyes .link{font-weight:700;text-align:left}
+.p-auto-etat{padding:12px 14px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+.p-auto-etat p{margin:4px 0}

@@ -404,6 +404,7 @@ const VIEWS = {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
         return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
       }).join('')}</div>
+      ${(c => `<div class="cat-hero" style="--t:${c.couleur}">${illustration(c)}<div><b>${esc(c.accroche)}</b><small>${c.services.map(id => esc(svc(id).nom)).join(' · ')}</small></div></div>`)(CATEGORIES.find(c => c.id === state.cat))}
       <div class="grid g5 services" role="tabpanel">${CATEGORIES.find(c => c.id === state.cat).services.map(id => {
           const x = svc(id);
           const inPack = packValid() && pack(state.pack).items[x.id];
@@ -412,8 +413,13 @@ const VIEWS = {
             sub: inPack ? '✓ Inclus dans votre formule' : `${x.desc}<span class="price-row"><span class="mono">${fromPrice(x)}</span><span class="add">${state.sel.includes(x.id) ? '✓ Ajouté' : '+ Ajouter'}</span></span>`,
             icon: x.icon, theme: themeOf(x.id), cls: 'service' + (inPack ? ' included' : ''), onchange: `toggle('${x.id}')` });
         }).join('')}</div>
-      <h3 class="sec">${ico('box')} Ou une formule tout compris <span class="muted">plusieurs services ensemble, à prix fixe et moins cher</span></h3>
-      <div class="grid g4 packs">${PACKS.map(p => packCard(p, state.pack === p.id && packValid(), `selectPack('${p.id}')`)).join('')}</div>
+      ${(() => {
+        const u = UNIVERS.find(x => x.id === univOf(state.cat));
+        const list = state.toutes ? PACKS : PACKS.filter(p => p.univers === u.id || (state.pack === p.id && packValid()));
+        return `<h3 class="sec">${ico('box')} Ou une formule tout compris <span class="muted">${state.toutes ? 'toutes les formules' : esc(u.nom)} · à prix fixe et moins cher</span>
+          <button type="button" class="link sec-toggle" onclick="state.toutes=!state.toutes;render()">${state.toutes ? 'Seulement ' + esc(u.nom) : `Voir toutes les formules (${PACKS.length})`}</button></h3>
+        <div class="grid g4 packs">${list.map(p => packCard(p, state.pack === p.id && packValid(), `selectPack('${p.id}')`)).join('')}</div>`;
+      })()}
       ${BIENTOT.length ? `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.join(' · ')}</p>` : ''}`;
   },
   2() {

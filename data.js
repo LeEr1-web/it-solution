@@ -124,6 +124,10 @@ const SERVICES = [
     note: 'Matériel non inclus : nous vous conseillons des équipements compatibles entre eux (sur devis).',
     options: [['hub', 'Box domotique / assistant vocal', 29], ['light', 'Éclairage connecté (par pièce)', 19], ['plug', 'Prises connectées et programmation', 15],
       ['clim', 'Clim et volets pilotés au téléphone', 35], ['scenes', 'Scénarios automatiques (départ, nuit)', 25], ['energy', 'Suivi de la consommation électrique', 29]] },
+  // --- TV & multimédia
+  { id: 'multimedia', icon: 'tv', nom: 'TV, box & multimédia', desc: 'Installation et réglages', base: 29, modes: ['site'],
+    options: [['tv', 'Installation et réglage TV connectée', 25], ['box', 'Box internet / TV et chaînes', 20], ['son', 'Barre de son / home cinéma', 35],
+      ['proj', 'Vidéoprojecteur', 35], ['cast', 'Afficher le téléphone sur la TV', 15], ['mural', 'Fixation murale de la TV (hors support)', 39]] },
   // --- Wi-Fi
   { id: 'network', icon: 'wifi', nom: 'Internet et Wi-Fi', desc: 'Réseau maison ou bureau', base: 49, remise: true, modes: ['site'],
     options: [['audit', 'Diagnostic Wi-Fi', 35], ['wifi', 'Amélioration Wi-Fi', 49], ['mesh', 'Wi-Fi dans toute la maison', 99], ['router', 'Configuration box / routeur', 35], ['cabling', 'Câblage', 99], ['pro', 'Réseau professionnel', 199]] },
@@ -135,10 +139,12 @@ const SERVICES = [
   { id: 'abonnement', icon: 'repeat', nom: 'Abonnement entretien', desc: 'Suivi mensuel de votre PC', base: 9.9, mensuel: true, modes: ['distance', 'site'],
     note: 'Inclus chaque mois : contrôle de votre PC à distance, suivi de vos sauvegardes et tarif réduit sur les dépannages.',
     options: [['pc2', 'Ordinateur supplémentaire', 4.9], ['visite', 'Visite annuelle à domicile', 5], ['prio', 'Intervention prioritaire', 3]] },
-  // --- Mobile (prêt, onglet encore « Bientôt »)
-  { id: 'mobile', icon: 'smartphone', nom: 'Smartphone & tablette', desc: 'Écran, batterie, transfert', base: 25, remise: true, modes: ['atelier'], appareil: true,
-    options: [['screen', 'Écran cassé (hors pièce)', 45], ['battery', 'Batterie (hors pièce)', 25], ['transfer', 'Transfert vers un nouveau téléphone', 20],
-      ['backup', 'Sauvegarde des photos', 15], ['setup', 'Configuration et applications', 15]] },
+  // --- Mobile & tablette
+  { id: 'mobile', icon: 'smartphone', nom: 'Smartphone & tablette', desc: 'Réparation, transfert, réglages', base: 25, remise: true, modes: ['atelier', 'site'], appareil: true,
+    note: 'Pièces (écran, batterie) en supplément : prix confirmé avant la réparation selon le modèle.',
+    options: [['screen', 'Écran cassé (hors pièce)', 45], ['battery', 'Batterie qui ne tient plus (hors pièce)', 25], ['eau', 'Tombé dans l’eau : diagnostic', 25],
+      ['transfer', 'Transfert vers un nouveau téléphone', 20], ['backup', 'Sauvegarde des photos et contacts', 15], ['setup', 'Configuration et applications', 15],
+      ['parent', 'Contrôle parental', 15]] },
   // --- Web & apps (pro et particuliers)
   { id: 'siteweb', icon: 'globe', nom: 'Développement web', desc: 'Sites et boutiques en ligne', base: 390, modes: ['distance', 'site', 'atelier'],
     note: 'Prix indicatifs : devis précis après un premier échange gratuit. Le site vous appartient.',
@@ -163,6 +169,11 @@ const SERVICES = [
   { id: 'impression3d', icon: 'box', nom: 'Impression 3D', desc: 'Objets, supports, pièces simples', base: 15, modes: ['atelier', 'distance'],
     note: 'Une sélection de modèles est en préparation. Fichiers existants et adaptations simples étudiés au cas par cas (prix selon la taille et la matière).',
     options: [['fichier', 'Impression d’un fichier existant', 0, 'Sur devis'], ['adapt', 'Adaptation simple d’un modèle', 25], ['piece', 'Pièce de remplacement (étude)', 35], ['serie', 'Petite série (5 pièces ou plus)', 0, 'Sur devis']] },
+  // --- Programmation
+  { id: 'devsurmesure', icon: 'code', nom: 'Programmation sur mesure', desc: 'Automatisation, outils, logiciels', base: 190, modes: ['distance', 'site', 'atelier'],
+    note: 'Devis après un premier échange gratuit : nous partons de votre besoin réel, et le programme vous appartient.',
+    options: [['excel', 'Automatisation Excel / Google Sheets', 90], ['script', 'Script ou petit outil sur mesure', 190], ['logiciel', 'Logiciel métier (gestion, stocks, planning)', 890],
+      ['api', 'Connexion entre vos outils (API)', 290], ['bot', 'Assistant / chatbot pour vos clients', 390]] },
   // --- Marketing
   { id: 'marketing', icon: 'megaphone', nom: 'Stratégie marketing', desc: 'Être visible, trouver des clients', base: 149, modes: ['distance', 'site', 'atelier'],
     note: 'On commence par un bilan de votre visibilité (Google, réseaux, site), puis un plan simple avec les actions qui rapportent le plus.',
@@ -172,6 +183,14 @@ const SERVICES = [
     note: 'Prix par mois : nous préparons et publions vos contenus, et vous envoyons un bilan mensuel.',
     options: [['videos', '4 vidéos courtes par mois', 99], ['pubs', 'Suivi de vos publicités', 49], ['avis', 'Réponses aux avis Google', 29]] },
   // --- Entreprises
+  { id: 'reseaupro', icon: 'network', nom: 'Réseau d’entreprise', desc: 'Câblage, Wi-Fi pro, serveur', base: 79, modes: ['site'],
+    note: 'Matériel (switch, bornes, NAS) conseillé et chiffré séparément.',
+    options: [['cablage', 'Câblage RJ45 (par prise)', 39], ['baie', 'Baie de brassage et switch', 149], ['wifipro', 'Wi-Fi professionnel multi-bornes', 149],
+      ['vpn', 'Accès à distance / télétravail (VPN)', 99], ['nas', 'Serveur de fichiers partagé (NAS)', 129], ['invite', 'Wi-Fi invités séparé', 49]] },
+  { id: 'cloudpro', icon: 'mail', nom: 'Emails pro & Microsoft 365', desc: 'Adresses à votre nom, cloud', base: 49, modes: ['distance', 'site'],
+    note: 'Abonnements Microsoft 365 ou Google Workspace non inclus (à partir de quelques euros par utilisateur et par mois).',
+    options: [['domaine', 'Adresses email à votre nom (domaine)', 49], ['m365', 'Mise en place Microsoft 365 ou Google Workspace', 79], ['migration', 'Transfert des anciens emails', 59],
+      ['partage', 'Agendas et fichiers partagés', 39], ['postes', 'Configuration des ordinateurs et téléphones (par poste)', 15]] },
   { id: 'pos', icon: 'receipt', nom: 'Caisse enregistreuse', desc: 'Pour commerces', base: 149, modes: ['site'],
     options: [['touch', 'Écran tactile', 190], ['drawer', 'Tiroir-caisse', 79], ['scanner', 'Lecteur code-barres', 59], ['printer', 'Imprimante ticket', 79], ['stock', 'Gestion des stocks', 49], ['tpe', 'Liaison terminal CB', 39]] },
   { id: 'maintenance', icon: 'tools', nom: 'Maintenance informatique', desc: 'Assistance et entretien du parc', base: 49, remise: true, modes: ['site', 'distance'], appareil: true,
@@ -183,38 +202,63 @@ const SERVICES = [
 // bientot : true = onglet affiché mais pas encore disponible
 // Univers : regroupent les onglets (ligne du titre « À la carte »)
 const UNIVERS = [
-  { id: 'info',   nom: 'Informatique',     icon: 'monitor',   couleur: '#2b8cff', desc: 'Dépannage, installation, sécurité, fichiers et cours, chez vous, en agence ou à distance.' },
-  { id: 'maison', nom: 'Maison connectée', icon: 'home',      couleur: '#22c55e', desc: 'Caméras, alarme, domotique et Wi-Fi dans toute la maison.' },
-  { id: 'web',    nom: 'Web & marketing',  icon: 'globe',     couleur: '#6366f1', desc: 'Sites web, boutiques en ligne, applications et stratégie pour trouver des clients.' },
-  { id: 'pro',    nom: 'Entreprises',      icon: 'briefcase', couleur: '#8b5cf6', desc: 'Maintenance informatique, cybersécurité et caisse pour les commerces et les bureaux.' },
-  { id: 'crea',   nom: 'Drone & 3D',       icon: 'drone',     couleur: '#38bdf8', desc: 'Images aériennes et impression 3D, étudiées au cas par cas.' }
+  { id: 'info',   nom: 'Informatique',     icon: 'monitor',   badge: 'tools',    couleur: '#2b8cff', desc: 'Dépannage, installation, sécurité, fichiers et cours, chez vous, en agence ou à distance.' },
+  { id: 'maison', nom: 'Maison connectée', icon: 'home',      badge: 'wifi',     couleur: '#22c55e', desc: 'Caméras, alarme, domotique et Wi-Fi dans toute la maison.' },
+  { id: 'web',    nom: 'Web & marketing',  icon: 'globe',     badge: 'trending', couleur: '#6366f1', desc: 'Sites web, boutiques en ligne, applications et stratégie pour trouver des clients.' },
+  { id: 'pro',    nom: 'Entreprises',      icon: 'briefcase', badge: 'shield',   couleur: '#8b5cf6', desc: 'Maintenance informatique, cybersécurité et caisse pour les commerces et les bureaux.' },
+  { id: 'crea',   nom: 'Drone & 3D',       icon: 'drone',     badge: 'camera',   couleur: '#38bdf8', desc: 'Images aériennes et impression 3D, étudiées au cas par cas.' }
 ];
 
+// accroche : la phrase qui parle au client ; badge : petit pictogramme de l'illustration
 const CATEGORIES = [
-  { id: 'ordi',      univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    couleur: '#2b8cff', services: ['repair', 'boost', 'hwfixe', 'hwportable'] },
-  { id: 'securite',  univers: 'info',   nom: 'Sécurité',      icon: 'shield',     couleur: '#ef4444', services: ['antivirus', 'comptes'] },
-  { id: 'donnees',   univers: 'info',   nom: 'Fichiers',      icon: 'database',   couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'] },
-  { id: 'install',   univers: 'info',   nom: 'Installation',  icon: 'printer',    couleur: '#a78bfa', services: ['install', 'printer', 'ups'] },
-  { id: 'gaming',    univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    couleur: '#e040fb', services: ['console', 'emulation', 'gamer'] },
-  { id: 'aide',      univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      couleur: '#f59e0b', services: ['cours', 'abonnement'] },
-  { id: 'camera',    univers: 'maison', nom: 'Caméras',       icon: 'camera',     couleur: '#fb923c', services: ['camera', 'alarme'] },
-  { id: 'domo',      univers: 'maison', nom: 'Domotique',     icon: 'home',       couleur: '#22c55e', services: ['domotique'] },
-  { id: 'wifi',      univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       couleur: '#22d3ee', services: ['network'] },
-  { id: 'web',       univers: 'web',    nom: 'Site web',      icon: 'globe',      couleur: '#6366f1', services: ['siteweb', 'maintweb'] },
-  { id: 'appli',     univers: 'web',    nom: 'Application',   icon: 'smartphone', couleur: '#ec4899', services: ['appmobile'] },
-  { id: 'marketing', univers: 'web',    nom: 'Marketing',     icon: 'megaphone',  couleur: '#84cc16', services: ['marketing', 'reseaux'] },
-  { id: 'pro',       univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      couleur: '#8b5cf6', services: ['maintenance'] },
-  { id: 'cyber',     univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       couleur: '#f43f5e', services: ['cyber'] },
-  { id: 'caisse',    univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    couleur: '#facc15', services: ['pos'] },
-  { id: 'drone',     univers: 'crea',   nom: 'Drone',         icon: 'drone',      couleur: '#38bdf8', services: ['drone'] },
-  { id: 'print3d',   univers: 'crea',   nom: 'Impression 3D', icon: 'box',        couleur: '#10b981', services: ['impression3d'] },
-  // pas encore ouvert : retirez « bientot: true » (et la ligne dans BIENTOT) pour l'ouvrir
-  { id: 'mobile',    univers: 'info',   nom: 'Mobile',        icon: 'smartphone', couleur: '#c084fc', services: ['mobile'], bientot: true }
+  { id: 'ordi',      univers: 'info',   nom: 'Ordinateur',    icon: 'monitor',    badge: 'tools',      couleur: '#2b8cff', services: ['repair', 'boost', 'hwfixe', 'hwportable'],
+    accroche: 'Votre ordinateur rame, plante ou ne démarre plus ? On le remet en forme.' },
+  { id: 'securite',  univers: 'info',   nom: 'Sécurité',      icon: 'shield',     badge: 'lock',       couleur: '#ef4444', services: ['antivirus', 'comptes'],
+    accroche: 'Virus, publicités, compte piraté ? On sécurise tout, sans jargon.' },
+  { id: 'donnees',   univers: 'info',   nom: 'Fichiers',      icon: 'database',   badge: 'cloud',      couleur: '#14b8a6', services: ['sauvegarde', 'recup', 'stockage', 'recyclage'],
+    accroche: 'Vos photos et documents sont précieux : on les sauve et on les protège.' },
+  { id: 'install',   univers: 'info',   nom: 'Installation',  icon: 'printer',    badge: 'zap',        couleur: '#a78bfa', services: ['install', 'printer', 'ups'],
+    accroche: 'Nouveau PC, imprimante, onduleur : on installe, vous profitez.' },
+  { id: 'mobile',    univers: 'info',   nom: 'Mobile & tablette', icon: 'smartphone', badge: 'tools',  couleur: '#c084fc', services: ['mobile'],
+    accroche: 'Téléphone ou tablette cassé, lent ou tout neuf ? On s’en occupe.' },
+  { id: 'gaming',    univers: 'info',   nom: 'Gaming',        icon: 'gamepad',    badge: 'zap',        couleur: '#e040fb', services: ['console', 'emulation', 'gamer'],
+    accroche: 'Console qui chauffe, PC gamer à monter, jeux rétro : on règle tout.' },
+  { id: 'aide',      univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      badge: 'chat',       couleur: '#f59e0b', services: ['cours', 'abonnement'],
+    accroche: 'Apprenez à votre rythme, avec quelqu’un de patient, chez vous.' },
+  { id: 'camera',    univers: 'maison', nom: 'Caméras',       icon: 'camera',     badge: 'shield',     couleur: '#fb923c', services: ['camera', 'alarme'],
+    accroche: 'Surveillez votre maison depuis votre téléphone, de jour comme de nuit.' },
+  { id: 'domo',      univers: 'maison', nom: 'Domotique',     icon: 'home',       badge: 'smartphone', couleur: '#22c55e', services: ['domotique'],
+    accroche: 'Pilotez lumières, clim et volets depuis votre téléphone.' },
+  { id: 'wifi',      univers: 'maison', nom: 'Wi-Fi',         icon: 'wifi',       badge: 'home',       couleur: '#22d3ee', services: ['network'],
+    accroche: 'Le Wi-Fi partout dans la maison, sans coupure.' },
+  { id: 'multimedia', univers: 'maison', nom: 'TV & multimédia', icon: 'tv',      badge: 'zap',        couleur: '#f472b6', services: ['multimedia'],
+    accroche: 'Votre TV, votre box et votre son bien installés, sans prise de tête.' },
+  { id: 'web',       univers: 'web',    nom: 'Site web',      icon: 'globe',      badge: 'search',     couleur: '#6366f1', services: ['siteweb', 'maintweb'],
+    accroche: 'Un site qui présente votre activité et vous apporte des demandes.' },
+  { id: 'appli',     univers: 'web',    nom: 'Application',   icon: 'smartphone', badge: 'users',      couleur: '#ec4899', services: ['appmobile'],
+    accroche: 'Une application à votre nom, pensée pour vos clients.' },
+  { id: 'prog',      univers: 'web',    nom: 'Programmation', icon: 'code',       badge: 'zap',        couleur: '#0ea5e9', services: ['devsurmesure'],
+    accroche: 'Gagnez du temps : on automatise vos tâches répétitives.' },
+  { id: 'marketing', univers: 'web',    nom: 'Marketing',     icon: 'megaphone',  badge: 'trending',   couleur: '#84cc16', services: ['marketing', 'reseaux'],
+    accroche: 'Plus de visibilité, plus de clients : on vous aide à être trouvé.' },
+  { id: 'pro',       univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      badge: 'shield',     couleur: '#8b5cf6', services: ['maintenance'],
+    accroche: 'Une informatique qui tourne, pour vous concentrer sur votre métier.' },
+  { id: 'reseau',    univers: 'pro',    nom: 'Réseau',        icon: 'network',    badge: 'wifi',       couleur: '#06b6d4', services: ['reseaupro'],
+    accroche: 'Un réseau rapide et fiable pour toute l’équipe.' },
+  { id: 'cloud',     univers: 'pro',    nom: 'Emails & cloud', icon: 'mail',      badge: 'cloud',      couleur: '#3b82f6', services: ['cloudpro'],
+    accroche: 'Des emails à votre nom et des fichiers partagés, partout.' },
+  { id: 'cyber',     univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       badge: 'search',     couleur: '#f43f5e', services: ['cyber'],
+    accroche: 'Vérifiez vos accès et vos sites avant qu’un pirate ne le fasse.' },
+  { id: 'caisse',    univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    badge: 'zap',        couleur: '#facc15', services: ['pos'],
+    accroche: 'Une caisse simple, rapide et fiable pour votre commerce.' },
+  { id: 'drone',     univers: 'crea',   nom: 'Drone',         icon: 'drone',      badge: 'camera',     couleur: '#38bdf8', services: ['drone'],
+    accroche: 'Votre maison, votre commerce ou votre événement vus du ciel.' },
+  { id: 'print3d',   univers: 'crea',   nom: 'Impression 3D', icon: 'box',        badge: 'tools',      couleur: '#10b981', services: ['impression3d'],
+    accroche: 'Un objet, un support, une pièce : on l’imprime en 3D.' }
 ];
 
 // Annoncés sous les onglets (« Bientôt ») — retirez une ligne quand le service est lancé.
-// Pour ouvrir le mobile : retirez « bientot: true » de la catégorie « mobile » ci-dessus et la ligne correspondante ici.
-const BIENTOT = ['Réparation mobile & tablette', 'Vente d’accessoires'];
+const BIENTOT = ['Vente d’accessoires'];
 
 // Type d'appareil demandé à l'étape « Situation » (pré-rempli selon les services choisis)
 const APPAREILS = { fixe: 'PC fixe', portable: 'PC portable', aio: 'PC tout-en-un', mac: 'Mac', console: 'Console de jeux', autre: 'Autre' };
@@ -223,33 +267,45 @@ const APPAREILS = { fixe: 'PC fixe', portable: 'PC portable', aio: 'PC tout-en-u
 //   nom    : ce que le client veut obtenir, avec ses mots
 //   pour   : à qui il s'adresse (Ordinateur, Maison, Commerce)
 //   inclus : 3 lignes simples affichées au client
-//   items  : services + options correspondants (sert au calcul « au lieu de » et à l'étape Détails)
+//   items  : services + options correspondants (sert au calcul « au lieu de »)
+//   univers: le pôle où la formule est proposée
 //   remise : true = la remise étudiant s'applique aussi au pack
 const PACKS = [
-  { id: 'boost',   icon: 'zap',      pour: 'Ordinateur', populaire: true, nom: 'Rendre mon PC rapide', prix: 59, remise: true,
-    inclus: ['Nettoyage de Windows', 'Démarrage plus rapide', 'Mises à jour et pilotes'],
-    items: { boost: ['startup', 'clean', 'drivers', 'bloat'] } },
-  { id: 'virus',   icon: 'shield',   pour: 'Sécurité', nom: 'Supprimer un virus', prix: 49, remise: true,
-    inclus: ['Virus et pubs supprimés', 'Antivirus installé', 'Analyse complète du PC'],
-    items: { antivirus: ['virus', 'install', 'scan'] } },
-  { id: 'donnees', icon: 'database', pour: 'Données', nom: 'Récupérer mes fichiers', prix: 89, remise: true,
-    inclus: ['Diagnostic du disque', 'Photos et fichiers sauvés', 'Copiés sur clé ou disque'],
-    items: { recup: ['disk', 'deleted'] } },
-  { id: 'newpc',   icon: 'laptop',   pour: 'Installation', nom: 'Installer mon nouveau PC', prix: 89, remise: true,
-    inclus: ['PC prêt à l’emploi', 'Fichiers transférés', 'Office, mails, imprimante'],
-    items: { install: ['newpc', 'transfer', 'office'], printer: [] } },
-  { id: 'backup',  icon: 'cloud',    pour: 'Données', nom: 'Sauvegarder mes données', prix: 59, remise: true,
-    inclus: ['Sauvegarde automatique', 'Copie en ligne (cloud)', 'Restauration expliquée'],
-    items: { sauvegarde: ['auto', 'cloud'] } },
-  { id: 'wifi',    icon: 'wifi',     pour: 'Maison', nom: 'Wi-Fi partout chez moi', prix: 149, remise: true,
-    inclus: ['Signal mesuré partout', 'Wi-Fi dans chaque pièce', 'Box et appareils réglés'],
-    items: { network: ['audit', 'mesh', 'router'] } },
-  { id: 'video',   icon: 'camera',   pour: 'Maison', nom: 'Surveiller ma maison', prix: 349, remise: false,
-    inclus: ['2 caméras installées', 'Vision de nuit', 'Vue sur smartphone'],
-    items: { camera: ['cam2', 'night', 'remote'] } },
-  { id: 'shop',    icon: 'receipt',  pour: 'Commerce', nom: 'Équiper mon commerce', prix: 590, remise: false,
-    inclus: ['Caisse + tiroir-caisse', 'Lecteur et tickets', 'Terminal CB relié'],
-    items: { pos: ['touch', 'drawer', 'scanner', 'printer', 'tpe'], network: ['router'] } }
+  // Informatique
+  { id: 'boost',   univers: 'info', icon: 'zap',      pour: 'Ordinateur', populaire: true, nom: 'Rendre mon PC rapide', prix: 59, remise: true,
+    inclus: ['Nettoyage de Windows', 'Démarrage plus rapide', 'Mises à jour et pilotes'], items: { boost: ['startup', 'clean', 'drivers', 'bloat'] } },
+  { id: 'virus',   univers: 'info', icon: 'shield',   pour: 'Sécurité', nom: 'Supprimer un virus', prix: 49, remise: true,
+    inclus: ['Virus et pubs supprimés', 'Antivirus installé', 'Analyse complète du PC'], items: { antivirus: ['virus', 'install', 'scan'] } },
+  { id: 'donnees', univers: 'info', icon: 'database', pour: 'Fichiers', nom: 'Récupérer mes fichiers', prix: 89, remise: true,
+    inclus: ['Diagnostic du disque', 'Photos et fichiers sauvés', 'Copiés sur clé ou disque'], items: { recup: ['disk', 'deleted'] } },
+  { id: 'backup',  univers: 'info', icon: 'cloud',    pour: 'Fichiers', nom: 'Sauvegarder mes données', prix: 59, remise: true,
+    inclus: ['Sauvegarde automatique', 'Copie en ligne (cloud)', 'Restauration expliquée'], items: { sauvegarde: ['auto', 'cloud'] } },
+  { id: 'newpc',   univers: 'info', icon: 'laptop',   pour: 'Installation', nom: 'Installer mon nouveau PC', prix: 89, remise: true,
+    inclus: ['PC prêt à l’emploi', 'Fichiers transférés', 'Office, mails, imprimante'], items: { install: ['newpc', 'transfer', 'office'], printer: [] } },
+  { id: 'phone',   univers: 'info', icon: 'smartphone', pour: 'Mobile', nom: 'Mon téléphone comme neuf', prix: 39, remise: true,
+    inclus: ['Transfert de l’ancien téléphone', 'Photos et contacts sauvegardés', 'Applications réglées'], items: { mobile: ['transfer', 'backup', 'setup'] } },
+  // Maison connectée
+  { id: 'wifi',    univers: 'maison', icon: 'wifi',   pour: 'Maison', nom: 'Wi-Fi partout chez moi', prix: 149, remise: true,
+    inclus: ['Signal mesuré partout', 'Wi-Fi dans chaque pièce', 'Box et appareils réglés'], items: { network: ['audit', 'mesh', 'router'] } },
+  { id: 'video',   univers: 'maison', icon: 'camera', pour: 'Maison', nom: 'Surveiller ma maison', prix: 349, remise: false,
+    inclus: ['2 caméras installées', 'Vision de nuit', 'Vue sur smartphone'], items: { camera: ['cam2', 'night', 'remote'] } },
+  { id: 'tv',      univers: 'maison', icon: 'tv',     pour: 'Maison', nom: 'Ma TV et ma box bien installées', prix: 59, remise: true,
+    inclus: ['TV connectée réglée', 'Box et chaînes', 'Téléphone affiché sur la TV'], items: { multimedia: ['tv', 'box', 'cast'] } },
+  // Web & marketing
+  { id: 'lancer',  univers: 'web', icon: 'globe',     pour: 'Entreprise', nom: 'Lancer mon activité en ligne', prix: 590, remise: false,
+    inclus: ['Site vitrine à votre nom', 'Fiche Google Maps optimisée', 'Référencement local'], items: { siteweb: ['domain', 'seo'], marketing: ['google'] } },
+  { id: 'clients', univers: 'web', icon: 'megaphone', pour: 'Entreprise', nom: 'Trouver plus de clients', prix: 299, remise: false,
+    inclus: ['Bilan et plan d’action', 'Fiche Google optimisée', 'Publicité + 4 visuels'], items: { marketing: ['google', 'pub', 'contenu'] } },
+  // Entreprises
+  { id: 'shop',    univers: 'pro', icon: 'receipt',   pour: 'Commerce', nom: 'Équiper mon commerce', prix: 590, remise: false,
+    inclus: ['Caisse + tiroir-caisse', 'Lecteur et tickets', 'Terminal CB relié'], items: { pos: ['touch', 'drawer', 'scanner', 'printer', 'tpe'], network: ['router'] } },
+  { id: 'bureau',  univers: 'pro', icon: 'briefcase', pour: 'Bureau', nom: 'Équiper mon bureau', prix: 349, remise: false,
+    inclus: ['Réseau et Wi-Fi pro', 'Emails à votre nom', 'Microsoft 365 ou Google'], items: { reseaupro: ['cablage', 'wifipro'], cloudpro: ['domaine', 'm365'] } },
+  { id: 'secupro', univers: 'pro', icon: 'shield',    pour: 'Entreprise', nom: 'Protéger mon entreprise', prix: 390, remise: false,
+    inclus: ['Audit des accès et emails', 'Sauvegarde automatique', 'Rapport clair'], items: { cyber: ['email', 'acces'], sauvegarde: ['auto', 'cloud'] } },
+  // Drone & 3D
+  { id: 'aerien',  univers: 'crea', icon: 'drone',    pour: 'Drone', nom: 'Vue aérienne de mon bien', prix: 229, remise: false,
+    inclus: ['Photos aériennes HD', 'Vidéo montée', 'Idéal location, vente, commerce'], items: { drone: ['photo', 'video'] } }
 ];
 
 // « Décrire mon problème » : chaque situation sélectionne un pack, ou des services / options
@@ -281,6 +337,12 @@ const SYMPTOMES = [
   { id: 'reseau',  label: 'Je n’ai pas le temps de gérer mes réseaux',  items: { reseaux: [] } },
   { id: 'droneph', label: 'Je veux des photos ou vidéos par drone',     items: { drone: ['photo'] } },
   { id: 'objet3d', label: 'Je veux faire imprimer un objet en 3D',      items: { impression3d: ['fichier'] } },
+  { id: 'tel',     label: 'L’écran de mon téléphone est cassé',      items: { mobile: ['screen'] } },
+  { id: 'newtel',  label: 'J’ai un nouveau téléphone à installer',   pack: 'phone' },
+  { id: 'tv',      label: 'Ma TV ou ma box ne marche pas bien',       items: { multimedia: ['box'] } },
+  { id: 'mails',   label: 'Je veux des emails à mon nom (entreprise)', items: { cloudpro: ['domaine'] } },
+  { id: 'cable',   label: 'Je veux câbler ou équiper mon bureau',     pack: 'bureau' },
+  { id: 'auto',    label: 'Je veux automatiser une tâche répétitive', items: { devsurmesure: ['excel'] } },
   { id: 'gamer',   label: 'Je veux un PC pour jouer',                 items: { gamer: ['build', 'windows'] } },
   { id: 'aide',    label: "J'ai besoin d'aide pour utiliser mon PC",  items: { cours: [] } },
   { id: 'vieux',   label: 'Je veux me débarrasser de mon ancien PC',  items: { recyclage: ['wipe', 'recycle'] } }
@@ -353,6 +415,10 @@ const ICONS = {
   briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/>',
   megaphone: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
   trending: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  tv: '<rect x="2" y="7" width="20" height="13" rx="2"/><path d="m17 2-5 5-5-5"/>',
+  network: '<rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M12 8v4M5 16v-2h14v2"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/>',
+  code: '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',
   globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',
   drone: '<circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/>',
   printer: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',

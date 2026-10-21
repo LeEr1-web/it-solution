@@ -29,3 +29,18 @@ const iso = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '
 const parseISO = s => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
 const todayISO = () => iso(new Date());
 const addDays = (s, n) => { const dt = parseISO(s); dt.setDate(dt.getDate() + n); return iso(dt); };
+
+// Illustration d'une catégorie ou d'un pôle : fond à sa couleur, grand pictogramme, badge (SVG, aucun fichier image)
+function illustration({ id, icon, badge, couleur }, cls = '') {
+  const g = 'il-' + id + cls.replace(/\W/g, '');
+  const points = [0, 1, 2].flatMap(x => [0, 1, 2].map(y => `<circle cx="${16 + x * 9}" cy="${16 + y * 9}" r="1.6"/>`)).join('');
+  return `<svg class="illu ${cls}" viewBox="0 0 160 110" aria-hidden="true" focusable="false">
+    <defs><linearGradient id="${g}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${couleur}" stop-opacity=".95"/><stop offset="1" stop-color="${couleur}" stop-opacity=".25"/></linearGradient></defs>
+    <rect width="160" height="110" rx="16" fill="#0b1324"/><rect width="160" height="110" rx="16" fill="url(#${g})" opacity=".7"/>
+    <circle cx="138" cy="16" r="36" fill="#fff" opacity=".08"/><circle cx="14" cy="104" r="30" fill="#fff" opacity=".07"/>
+    <g fill="#fff" opacity=".35">${points}</g>
+    <ellipse cx="80" cy="92" rx="36" ry="5" fill="#000" opacity=".22"/>
+    <g transform="translate(50 22) scale(2.5)" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICONS[icon] || ''}</g>
+    ${badge ? `<circle cx="120" cy="76" r="18" fill="#fff"/><g transform="translate(110 66) scale(.84)" fill="none" stroke="${couleur}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ICONS[badge] || ''}</g>` : ''}
+  </svg>`;
+}

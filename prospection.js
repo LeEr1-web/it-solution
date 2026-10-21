@@ -467,7 +467,7 @@ function contexte(p) {
   const bonjour = p.prenom ? `Bonjour ${p.prenom}` : 'Bonjour';
   const moi = db.reglages.signature || 'Erwan';
   const source = SOURCE_PHRASE[p.source] ? `J’ai trouvé vos coordonnées sur ${SOURCE_PHRASE[p.source]}. ` : '';
-  const offre = pk ? ` Par exemple notre formule « ${pk.nom} » à ${eur(pk.prix)}, prix fixe.` : '';
+  const offre = pk ? ` Par exemple notre formule « ${pk.nom} », à prix fixe annoncé à l’avance.` : '';
   return { seg, ag, nomCourt, bonjour, moi, accroche, source, offre, signature: `${moi} — IloTech, agence ${ag.de} · ${ag.tel}` };
 }
 function messages(p) {
@@ -475,15 +475,15 @@ function messages(p) {
   const etape = p.etape || 0;
   const optout = `${c.source}Si vous ne souhaitez pas être recontacté, dites-le moi simplement.`;
   let court;
-  if (etape === 0) court = `${c.bonjour},\n\n${c.accroche}\n\nJe suis ${c.moi}, technicien informatique chez IloTech (${c.ag.nom}). Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.${c.offre}\n\nJe vous propose un diagnostic gratuit et sans engagement. Seriez-vous disponible 10 minutes cette semaine ?\n\n${c.signature}\n${SITE}\n\n${optout}`;
+  if (etape === 0) court = `${c.bonjour},\n\n${c.accroche}\n\nJe suis ${c.moi}, technicien informatique chez IloTech (${c.ag.nom}). Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.${c.offre}\n\nJe vous propose un diagnostic gratuit et sans engagement. Seriez-vous disponible 10 minutes cette semaine ?\n\nNotre présentation : ${SITE}plaquette.html\n\n${c.signature}\n\n${optout}`;
   else if (etape === 1) court = `${c.bonjour}, je me permets de revenir vers vous au sujet de mon message pour ${c.nomCourt}. Le diagnostic informatique reste offert : un créneau cette semaine vous conviendrait-il ?\n\n${c.signature}`;
   else court = `${c.bonjour}, dernier petit message de ma part pour ${c.nomCourt} : si un jour vous avez besoin d’un informaticien qui se déplace en Martinique (${c.seg.argument.split(',')[0]}), gardez simplement ce numéro. Bonne continuation !\n\n${c.signature}`;
   const sujet = etape === 0 ? (hash(p.id) % 2 ? `${c.nomCourt} : diagnostic informatique offert` : `Une question pour ${c.nomCourt}`) : etape === 1 ? `Re : ${c.nomCourt}, diagnostic offert` : `Dernier message — ${c.nomCourt}`;
   const services = (p.offre?.services || []).map(id => SERVICES.find(s => s.id === id)).filter(Boolean);
   const email = etape === 0
-    ? `${c.bonjour},\n\n${c.accroche}\n\nJe suis ${c.moi}, technicien chez IloTech, entreprise informatique martiniquaise basée à Ducos et au Robert. Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.\n\nCe que nous pourrions faire pour vous :\n${services.map(s => `- ${s.nom} : ${s.desc.toLowerCase()} (dès ${eur(s.base)}${s.mensuel ? '/mois' : ''})`).join('\n')}\n${c.offre ? '\n' + c.offre.trim() + '\n' : ''}\nLe diagnostic est gratuit, sur place ou à distance, et le prix est confirmé avant toute intervention.\n\nSeriez-vous disponible pour un court échange cette semaine ? Vous pouvez aussi voir nos tarifs ici : ${SITE}services.html\n\nBien cordialement,\n${c.signature}\n\n—\n${c.source}Pour ne plus recevoir de message de notre part, répondez simplement STOP.`
-    : court + `\n\n—\nPour ne plus recevoir de message de notre part, répondez STOP.`;
-  const appel = `PRÉSENTATION\n« ${c.bonjour}, ${c.moi} de IloTech, informaticien à ${c.ag.nom}. Je vous dérange deux minutes ? »\n\nACCROCHE\n« ${c.accroche} »\n\nQUESTIONS\n${c.seg.questions.map(q => '• ' + q).join('\n')}\n\nPROPOSITION\n« Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je peux passer faire un diagnostic gratuit, sans engagement.${c.offre} »\n\nOBJECTIONS\n• « J’ai déjà quelqu’un » → « Très bien ! Gardez notre numéro pour les urgences : nous intervenons sous 48 h. »\n• « Pas le temps » → « Je comprends. Quel moment vous arrangerait pour 10 minutes ? »\n• « C’est trop cher » → « Le diagnostic est gratuit et nos prix sont fixés à l’avance : vous savez tout avant. »\n• « Envoyez-moi un email » → « Avec plaisir, à quelle adresse ? »\n\nCONCLURE\nFixer un rendez-vous (jour + heure) ou une date de rappel.`;
+    ? `${c.bonjour},\n\n${c.accroche}\n\nJe suis ${c.moi}, de IloTech, entreprise informatique martiniquaise installée à Ducos et au Robert. Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.\n\nCe que nous pourrions vous apporter :\n${services.map(s => `• ${s.nom} : ${s.desc.toLowerCase()}`).join('\n')}\n${c.offre ? '\n' + c.offre.trim() + '\n' : ''}\nLe premier diagnostic est offert, sur place ou à distance, sans engagement. Vous trouverez notre présentation ici : ${SITE}plaquette.html\n\nSeriez-vous disponible pour un échange de 10 minutes cette semaine ?\n\nBien cordialement,\n${c.moi}\nIloTech — Informatique, réseaux, web et sécurité\nAgence ${c.ag.de} · ${c.ag.tel}\n${SITE}\n\n—\n${c.source}Pour ne plus recevoir de message de notre part, répondez simplement STOP.`
+    : court + `\n\n—\nPour ne plus recevoir de message de notre part, répondez simplement STOP.`;
+  const appel = `PRÉSENTATION\n« ${c.bonjour}, ${c.moi} de IloTech, informaticien à ${c.ag.nom}. Je vous dérange deux minutes ? »\n\nACCROCHE\n« ${c.accroche} »\n\nQUESTIONS\n${c.seg.questions.map(q => '• ' + q).join('\n')}\n\nPROPOSITION\n« Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je peux passer faire un diagnostic gratuit, sans engagement.${c.offre} »\n\nOBJECTIONS\n• « J’ai déjà quelqu’un » → « Très bien ! Gardez notre numéro pour les urgences : nous intervenons sous 48 h. »\n• « Pas le temps » → « Je comprends. Quel moment vous arrangerait pour 10 minutes ? »\n• « C’est trop cher » → « Le diagnostic est gratuit et le prix est annoncé avant toute intervention : vous savez tout avant. »\n• « Envoyez-moi un email » → « Avec plaisir, à quelle adresse ? »\n\nCONCLURE\nFixer un rendez-vous (jour + heure) ou une date de rappel.`;
   const visite = `À dire en arrivant (30 secondes) :\n« ${c.bonjour}, ${c.moi} de IloTech, l’informaticien de ${c.ag.nom}. ${c.accroche} Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je vous laisse ma carte : le diagnostic est gratuit, il suffit d’un message WhatsApp au ${c.ag.tel}. »\n\nÀ regarder sur place : caisse, Wi-Fi client, caméras, ordinateur de l’accueil, présence sur Google Maps.`;
   return { whatsapp: court, sms: court.replace(/\n\n/g, '\n').slice(0, 600), email: { sujet, corps: email }, appel, visite };
 }
@@ -549,12 +549,13 @@ async function envoyerEmail(id, silencieux) {
   const sujet = !silencieux && $('fSujet') ? $('fSujet').value : m.email.sujet;
   const corps = !silencieux && $('fMsg') ? $('fMsg').value : m.email.corps;
   try {
-    await api('prospects_envoyer', { to: p.email, sujet, corps });
+    await api('prospects_envoyer', { to: p.email, sujet, corps, id: p.id, nom: p.nom, commune: p.commune, etape: ['1er message', 'relance', 'dernière relance'][Math.min(p.etape || 0, 2)] });
+    p.dernierEnvoi = new Date().toISOString();
     contacte(id, 'Email envoyé');
     if (!silencieux) toast(`Email envoyé à ${p.email}`);
     return true;
   } catch (e) {
-    if (!silencieux) toast(e.message === 'quota' ? 'Limite Gmail du jour atteinte : réessayez demain' : e.message === 'email' ? 'Adresse email invalide' : 'Envoi impossible pour le moment', true);
+    if (!silencieux) toast(e.message === 'quota' ? 'Limite Gmail du jour atteinte : réessayez demain' : e.message === 'email' ? 'Adresse email invalide' : e.message === 'domaine' ? 'Cette adresse ne reçoit pas d’emails (domaine inexistant)' : 'Envoi impossible pour le moment', true);
     return e.message === 'quota' ? 'quota' : false;
   }
 }
@@ -573,6 +574,37 @@ async function envoyerEmailsDuJour() {
     await sleep(1500);
   }
   chargement = ''; toast(`${ok} email${ok > 1 ? 's' : ''} envoyé${ok > 1 ? 's' : ''}`); render();
+}
+
+async function relancerTous() {
+  if (!scriptPret()) return aActiver();
+  const t = todayISO();
+  const list = db.prospects.filter(p => p.email && p.statut === 'contacte' && !p.repondu && p.relance && p.relance <= t && (p.etape || 0) < 3);
+  if (!list.length || !confirm(`Relancer ${list.length} entreprises qui n’ont pas répondu ?`)) return;
+  let ok = 0;
+  for (let i = 0; i < list.length; i++) { chargement = `Relances : ${i + 1} / ${list.length}…`; renderChargement(); if (await envoyerEmail(list[i].id, true) === true) ok++; await sleep(1200); }
+  chargement = ''; toast(`${ok} relance${ok > 1 ? 's' : ''} envoyée${ok > 1 ? 's' : ''}`); render();
+}
+let auto = null;
+function autoHTML() {
+  if (!scriptPret()) return '<p class="muted">Disponible quand le moteur Google est connecté (code de l’espace pro ci-dessous).</p>';
+  if (!auto) { chargerAuto(); return '<p class="muted">Chargement…</p>'; }
+  const b = auto.bilan;
+  return `<p>${auto.actif ? '<span class="p-ok">✓ Active</span> chaque jour ouvré à 9 h' : '<span class="p-late">Arrêtée</span> (AUTO_PROSPECTION dans le script)'} · ${auto.parJour} emails par jour au maximum.</p>
+    ${b ? `<p class="muted">Dernier passage le ${new Date(b.date).toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })} : ${b.envoyes} nouvelles entreprises contactées, ${b.relances} relances, ${b.reponses} réponses, ${b.analyses} sites analysés (${b.emailsTrouves} emails trouvés).</p>` : '<p class="muted">Pas encore de passage.</p>'}
+    <p class="muted small">Elle cherche des entreprises (OpenStreetMap), trouve leur email sur leur site, envoie un email sans prix avec votre plaquette, relance sans réponse (J+4, J+7), s’arrête dès qu’une entreprise répond ou demande STOP, et vous envoie un bilan.</p>
+    <button type="button" class="btn" onclick="lancerAuto()" ${chargement ? 'disabled' : ''}>Lancer maintenant</button>`;
+}
+async function chargerAuto() {
+  try { auto = await api('prospects_auto_etat'); } catch (e) { auto = { actif: false, parJour: 0, bilan: null }; }
+  const el = $('autoEtat'); if (el) el.innerHTML = autoHTML();
+}
+async function lancerAuto() {
+  if (!confirm('Lancer la prospection automatique maintenant ? (1 à 5 minutes)')) return;
+  chargement = 'Prospection automatique en cours (1 à 5 minutes)…'; render();
+  try { const r = await api('prospects_auto_lancer'); auto = null; toast(r.bilan ? `${r.bilan.envoyes} emails envoyés, ${r.bilan.relances} relances, ${r.bilan.reponses} réponses` : 'Terminé'); await synchroniser(); }
+  catch (e) { toast('La prospection automatique n’a pas pu se lancer', true); }
+  chargement = ''; render();
 }
 
 function appeler(id) { const p = parId(id); noter(p, 'Appel passé'); if (p.statut === 'nouveau') p.statut = 'contacte'; p.relance = p.relance || addDays(todayISO(), 2); sauver(p); renderFiche(); render(); }
@@ -734,6 +766,27 @@ const VUES = {
     return `<div class="p-legende">${Object.entries(STATUTS).filter(([k]) => k !== 'stop').map(([k, s]) => `<span><i style="background:${s.c}"></i>${s.nom}</span>`).join('')}<span class="muted">· taille = score</span></div>
       <div id="carte" class="p-carte"></div><p class="muted small">© contributeurs OpenStreetMap. Les prospects sans adresse précise sont placés au centre de leur commune.</p>`;
   },
+  envoyes() {
+    const estEmail = h => /^Email envoyé/.test(h.t) || /^Email —/.test(h.t);
+    const list = db.prospects.map(p => ({ p, envois: (p.historique || []).filter(estEmail) })).filter(x => x.envois.length)
+      .sort((a, b) => b.envois.slice(-1)[0].d.localeCompare(a.envois.slice(-1)[0].d));
+    const t = todayISO(), semaine = addDays(t, -7);
+    const nb = list.reduce((s, x) => s + x.envois.length, 0);
+    const rep = list.filter(x => x.p.repondu || ['interesse', 'rdv', 'client'].includes(x.p.statut));
+    const aRelancer = list.filter(x => x.p.statut === 'contacte' && !x.p.repondu && x.p.relance && x.p.relance <= t && (x.p.etape || 0) < 3);
+    const etat = p => p.statut === 'stop' ? '<span class="p-late">STOP — ne plus contacter</span>' : p.repondu || ['interesse', 'rdv', 'client'].includes(p.statut) ? '<span class="p-ok">✓ A répondu</span>'
+      : p.statut === 'sansrep' ? '<span class="muted">Sans réponse (séquence terminée)</span>' : p.relance ? (p.relance <= t ? '<span class="p-due">Relance due</span>' : `<span class="muted">Relance le ${frDay(p.relance)}</span>`) : '';
+    return `<div class="g-stats p-kpi"><span><b>${list.length}</b> entreprises contactées par email</span><span><b>${nb}</b> emails envoyés</span>
+        <span><b>${list.filter(x => x.envois.some(h => h.d.slice(0, 10) >= semaine)).length}</b> cette semaine</span><span><b>${rep.length}</b> réponses</span><span><b>${aRelancer.length}</b> à relancer</span></div>
+      ${aRelancer.length ? `<div class="p-auto"><b>${ico('repeat')} Sans réponse</b><button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="relancerTous()">Relancer ${aRelancer.length > 1 ? `les ${aRelancer.length} entreprises` : "l’entreprise"} sans réponse</button><span class="muted small">Relance polie, sans prix ; 3 messages au maximum.</span></div>` : ''}
+      <p class="muted">Tous les emails, envoyés depuis cette page ou par la prospection automatique. Le détail complet est aussi dans l’onglet « Emails envoyés » du tableau Google.</p>
+      <div class="tablewrap"><table class="admin-table p-envoyes"><thead><tr><th>Entreprise</th><th>Email</th><th>Envois</th><th>Dernier envoi</th><th>Suivi</th><th></th></tr></thead><tbody>
+      ${list.map(({ p, envois }) => `<tr><td><button type="button" class="link" onclick="ouvrir('${esc(p.id)}')">${esc(p.nom)}</button><br><span class="muted small">${esc(p.commune || '')}${p.auto ? ' · automatique' : ''}</span></td>
+        <td>${esc(p.email || p.emailInvalide || '')}</td><td>${envois.map(h => esc(h.t.replace(/^Email envoyé( \(automatique\))? — /, '').replace(/^Email — /, ''))).join(' → ')}</td>
+        <td>${new Date(envois.slice(-1)[0].d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</td><td>${etat(p)}</td>
+        <td>${p.statut === 'contacte' && !p.repondu && (p.etape || 0) < 3 ? `<button type="button" class="btn btn-sm${scriptPret() ? '' : ' btn-off'}" onclick="envoyerEmail('${esc(p.id)}')">Relancer</button>` : ''}</td></tr>`).join('')
+        || '<tr><td colspan="6" class="muted">Aucun email envoyé pour l’instant.</td></tr>'}</tbody></table></div>`;
+  },
   reglages() {
     const r = db.reglages;
     return `<h2>Réglages</h2><div class="p-filtres">
@@ -741,6 +794,8 @@ const VUES = {
         <label>Prospects à contacter par jour<input type="number" min="1" max="50" value="${r.parJour}" onchange="db.reglages.parJour=Math.max(1,+this.value||10);sauver()"></label>
         <label>Emails envoyés par jour au maximum<input type="number" min="1" max="60" value="${r.maxEmails || 25}" onchange="db.reglages.maxEmails=Math.min(60,Math.max(1,+this.value||25));sauver()"></label></div>
       <p class="muted small">Gmail autorise environ 100 emails par jour : restez autour de 25 pour que vos messages ne finissent pas en spam.</p>
+      <h2>Prospection automatique</h2>
+      <div id="autoEtat" class="p-auto-etat">${autoHTML()}</div>
       <h2>Partage entre Ducos et Le Robert</h2>
       ${!CONFIG.endpoint ? '<p class="notice">Le script Google n’est pas encore branché : vos prospects restent sur cet appareil. Une fois le moteur Google installé (README.txt), ils seront partagés automatiquement dans l’onglet « Prospects » du tableau.</p>'
         : cle ? `<p class="notice ok">Connecté : vos prospects sont partagés dans l’onglet « Prospects » du tableau Google. <button type="button" class="link" onclick="synchroniser()">Synchroniser maintenant</button></p>`
@@ -764,7 +819,7 @@ const VUES = {
 
 function render() {
   const n = db.prospects.length, rel = plan().relances.length;
-  $('pTabs').innerHTML = [['jour', `Aujourd’hui${rel ? ` <em>${rel}</em>` : ''}`], ['trouver', 'Trouver des prospects'], ['liste', `Mes prospects (${n})`], ['carte', 'Carte'], ['reglages', 'Réglages']]
+  $('pTabs').innerHTML = [['jour', `Aujourd’hui${rel ? ` <em>${rel}</em>` : ''}`], ['trouver', 'Trouver des prospects'], ['liste', `Mes prospects (${n})`], ['envoyes', 'Emails envoyés'], ['carte', 'Carte'], ['reglages', 'Réglages']]
     .map(([k, l]) => `<button type="button" class="${vue === k ? 'on' : ''}" onclick="setVue('${k}')">${l}</button>`).join('');
   $('pVue').innerHTML = (vue !== 'trouver' ? `<p id="chargement" class="p-load">${esc(chargement)}</p>` : '') + VUES[vue]();
   renderSync();

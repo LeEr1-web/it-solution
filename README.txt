@@ -16,6 +16,7 @@ Pour vous (non référencées sur Google)
   Prospection (entreprises)               https://leer1-web.github.io/it-solution/prospection.html
   Être trouvé (particuliers)              https://leer1-web.github.io/it-solution/visibilite.html
   Flyers à imprimer                       https://leer1-web.github.io/it-solution/flyer.html
+  Plaquette (présentation, sans prix)     https://leer1-web.github.io/it-solution/plaquette.html
 
 ══════════════════════════════════════════════════════════════
 2. INSTALLER LE MOTEUR GOOGLE (15 minutes, une seule fois)
@@ -86,6 +87,15 @@ RENDEZ-VOUS (gestion.html)
   « Planning » : la semaine (bleu = Ducos, orange = Le Robert). Cliquez pour déplacer, changer
   le statut (Diagnostic, Réparation, Prêt à récupérer, Terminé…) ou annuler.
   « + RDV téléphone » : ajoutez un rendez-vous pris par téléphone.
+
+PROSPECTION AUTOMATIQUE (moteur Google, chaque jour ouvré à 9 h)
+  Cherche des entreprises (OpenStreetMap), trouve leur email sur leur site, vérifie que l'adresse
+  existe, envoie un email personnalisé SANS PRIX avec le lien de la plaquette, relance sans réponse
+  (J+4 puis J+7, 3 messages au maximum), s'arrête dès qu'une entreprise répond ou écrit STOP
+  (lecture de votre Gmail), et vous envoie un bilan par email.
+  Tout est visible : page Prospection > onglet « Emails envoyés », et onglets « Prospects » /
+  « Emails envoyés » du tableau. Réglages en haut du script : AUTO_PROSPECTION (true/false),
+  AUTO_PAR_JOUR (15), SIGNATURE. Bouton « Lancer maintenant » dans Prospection > Réglages.
 
 PROSPECTION (prospection.html) — entreprises uniquement
   « Aujourd'hui » : relances du jour + 10 prospects à contacter (le message est déjà écrit).
