@@ -30,7 +30,25 @@
         <div class="svc-list">${c.services.map(id => block(svc(id), c)).join('')}</div>`).join('')}
     </section>`).join('');
 
-  // 3. Packs, zones, agences
+  // 3. Questions fréquentes (aussi lues par Google : données structurées FAQPage)
+  const z = ZONES, d = DELAIS;
+  const faq = [
+    ['Intervenez-vous partout en Martinique ?', `Oui. Nos agences de Ducos et du Robert couvrent toute l’île. Le déplacement est offert dans les communes d’agence, puis coûte ${eur(z.centre.prix)} (Centre), ${eur(z.sud.prix)} (Sud) ou ${eur(z.nord.prix)} (Nord), et il est offert dès ${eur(CONFIG.deplacementOffertDes)} de prestation.`],
+    ['Le devis est-il gratuit ?', 'Oui, le devis est gratuit et sans engagement. Le prix est confirmé avant toute intervention : vous savez tout avant de dire oui.'],
+    ['En combien de temps intervenez-vous ?', `Sous 3 jours en temps normal. Une intervention sous 24 à 48 h coûte ${eur(d.rapide.prix)} de plus, et le jour même ${eur(d.urgence.prix)} de plus, selon disponibilité.`],
+    ['Puis-je déposer mon matériel en agence ?', 'Oui, sans frais de déplacement, à Ducos ou au Robert. Vous pouvez aussi être dépanné à distance quand c’est possible.'],
+    ['Avez-vous des tarifs pour les étudiants ?', `Oui : −${CONFIG.remiseEtudiant} % sur la main d’œuvre, sur présentation de la carte étudiant.`],
+    ['Travaillez-vous avec les entreprises ?', 'Oui : maintenance du parc, réseau et Wi-Fi professionnel, emails à votre nom (Microsoft 365), cybersécurité, caisse, sites web et marketing.'],
+    ['Mes données restent-elles confidentielles ?', 'Oui. Nous n’accédons qu’à ce qui est nécessaire à l’intervention, et vos fichiers ne sont ni copiés ni conservés sans votre accord.'],
+    ['Comment suivre ma réparation ?', 'Avec la référence reçue après votre demande, sur la page « Suivre ma demande » du site, ou en écrivant à votre agence sur WhatsApp.']
+  ];
+  h += `<h2>Questions fréquentes</h2><div class="faq">${faq.map(([q, r]) => `<details><summary>${esc(q)}</summary><p>${esc(r)}</p></details>`).join('')}</div>`;
+  const ld = document.createElement('script');
+  ld.type = 'application/ld+json';
+  ld.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, r]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: r } })) });
+  document.head.appendChild(ld);
+
+  // 4. Packs, zones, agences
   h += `<h2>Nos formules à prix fixe</h2><table class="price-table packs-table"><thead><tr><th>Formule</th><th>Contenu</th><th>Prix</th></tr></thead><tbody>` +
     PACKS.map(p => `<tr><td><b>${esc(p.nom)}</b><br><span class="muted">${esc(p.pour)}</span></td><td>${esc(p.inclus.join(', '))}</td><td class="mono"><s>${eur(itemsValue(p.items))}</s> <b>${eur(p.prix)}</b></td></tr>`).join('') +
     `</tbody></table>`;

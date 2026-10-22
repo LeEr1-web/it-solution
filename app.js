@@ -394,12 +394,10 @@ const VIEWS = {
     return `<div class="pick-head"><h2 id="stepTitle">De quoi avez-vous besoin ?</h2>
         <div class="help-row"><button type="button" class="btn btn-help" onclick="setTab('symptomes')">${ico('search')}<span>Dites-nous ce qui ne va pas</span></button>
         <button type="button" class="btn btn-help call" onclick="openHelp()">${ico('phone')}<span>Appeler un technicien</span></button></div></div>
-      <h3 class="sec">${ico('grid')} Choisissez un service
-        <span class="univers" role="tablist" aria-label="Pôles">${UNIVERS.map(u => {
+      <div class="univers-row"><span class="univers" role="tablist" aria-label="Pôles">${UNIVERS.map(u => {
           const n = CATEGORIES.filter(c => c.univers === u.id && !c.bientot).flatMap(c => c.services).filter((id, i, a) => a.indexOf(id) === i && state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
           return `<button type="button" role="tab" style="--t:${u.couleur}" title="${esc(u.desc)}" aria-selected="${univOf(state.cat) === u.id}" onclick="setUniv('${u.id}')">${ico(u.icon)}${u.nom}${n ? `<em class="count">${n}</em>` : ''}</button>`;
-        }).join('')}</span>
-</h3>
+        }).join('')}</span></div>
       <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot && c.univers === univOf(state.cat)).map(c => {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
         return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
@@ -415,12 +413,14 @@ const VIEWS = {
         }).join('')}</div>
       ${(() => {
         const u = UNIVERS.find(x => x.id === univOf(state.cat));
-        const list = state.toutes ? PACKS : PACKS.filter(p => p.univers === u.id || (state.pack === p.id && packValid()));
+        const duPole = PACKS.filter(p => p.univers === u.id || (state.pack === p.id && packValid()));
+        const list = state.toutes ? PACKS : duPole.slice(0, 4);
+        if (!state.toutes && state.pack && !list.some(p => p.id === state.pack) && packValid()) list[3] = pack(state.pack);
         return `<h3 class="sec">${ico('box')} Ou une formule tout compris <span class="muted">${state.toutes ? 'toutes les formules' : esc(u.nom)} · à prix fixe et moins cher</span>
           <button type="button" class="link sec-toggle" onclick="state.toutes=!state.toutes;render()">${state.toutes ? 'Seulement ' + esc(u.nom) : `Voir toutes les formules (${PACKS.length})`}</button></h3>
         <div class="grid g4 packs">${list.map(p => packCard(p, state.pack === p.id && packValid(), `selectPack('${p.id}')`)).join('')}</div>`;
       })()}
-      ${BIENTOT.length ? `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.join(' · ')}</p>` : ''}`;
+`;
   },
   2() {
     const { d } = state;
@@ -510,6 +510,7 @@ function render() {
 }
 
 function renderStatic() {
+  if ($('bientotNote')) $('bientotNote').innerHTML = BIENTOT.length ? `<span class="soon">Bientôt</span> ${BIENTOT.map(esc).join(' · ')}` : '';
   $('offertZones').textContent = CONFIG.deplacementOffertDes;
   $('tarifs').innerHTML = Object.entries(ZONES).map(([k, z]) => `<tr><td><span class="dot" style="--z:var(--z-${k})"></span>${z.nom}</td><td>${z.prix ? z.prix + ' €' : 'Offert'}</td></tr>`).join('')
     + `<tr><td>En agence ou à distance</td><td>Gratuit</td></tr>`;

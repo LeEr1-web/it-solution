@@ -6,11 +6,11 @@ const CONFIG = {
   // ① Réception par EMAIL (le plus simple) : votre adresse. Chaque demande vous est envoyée par email
   //    via le service gratuit FormSubmit. La 1re fois, FormSubmit vous envoie un email d'activation à valider.
   //    Ensuite, vous pouvez remplacer l'adresse par l'alias secret fourni par FormSubmit (voir README.txt).
-  emailReception: 'labicheerwan81@gmail.com',
+  emailReception: 'ilotech.contact@gmail.com',
   // ② Réception GOOGLE (tableau + planning + rappels + suivi de réparation) : URL du script (README.txt, « INSTALLER LE MOTEUR GOOGLE »).
   //    Les deux peuvent fonctionner ensemble. Si aucun n'est rempli, les demandes partent par WhatsApp.
   endpoint: 'https://script.google.com/macros/s/AKfycbwI0iBEOSKBvkjPyeaPokpQdzBI5IhhVdsyLIqWKE-ewoOhhqRAC45-giEi3e_V_LPlWQ/exec',
-  email: 'labicheerwan81@gmail.com', // adresse de contact affichée aux clients
+  email: 'ilotech.contact@gmail.com', // adresse de contact affichée aux clients
   avisGoogleUrl: '',// lien « Laisser un avis » de votre fiche Google Business (affiché s'il est rempli)
   mentionPrix: '',  // ex : 'Prix TTC' ou 'TVA non applicable, art. 293 B du CGI' — affiché sur les devis
   agenceDistance: 'ducos',   // agence qui traite les interventions à distance
