@@ -107,6 +107,8 @@ PROSPECTION AUTOMATIQUE (moteur Google, chaque jour ouvré à 9 h)
                     « Voir l'email », « Envoyer », « Écarter », « Tout envoyer »
     - Arrêt       : rien d'automatique (les commandes manuelles restent disponibles)
   Réglage du nombre d'emails par jour et bouton « Lancer maintenant » au même endroit.
+  ENVOI À PLUSIEURS ENTREPRISES : onglet « Mes prospects » (ou la liste « À valider ») : cochez une ou
+  plusieurs entreprises (filtres + « Avec email seulement » + « Tout sélectionner »), puis « Envoyer l'email ».
   Tout est visible : page Prospection > onglet « Emails envoyés », et onglets « Prospects » /
   « Emails envoyés » du tableau. Réglages en haut du script : AUTO_PROSPECTION (true/false),
   AUTO_PAR_JOUR (15), SIGNATURE. Bouton « Lancer maintenant » dans Prospection > Réglages.

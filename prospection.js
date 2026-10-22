@@ -708,6 +708,44 @@ function ligne(p) {
     <span class="p-sig">${signaux(p)}</span>
     <span class="p-side">${chipStatut(p.statut)}${relanceTxt(p)}</span></button>`;
 }
+/* ---------- Sélection de plusieurs entreprises pour leur envoyer un email ---------- */
+const selection = new Set();
+const envoyable = p => !!(p && p.email && !['stop', 'client', 'perdu'].includes(p.statut) && (p.etape || 0) < 3);
+const etapeNom = p => ['1er message', 'relance', 'dernière relance'][Math.min(p.etape || 0, 2)];
+function toggleSel(id) { selection.has(id) ? selection.delete(id) : selection.add(id); render(); }
+function selTout(ids, on) { ids.forEach(id => on ? selection.add(id) : selection.delete(id)); render(); }
+function ligneSel(p, contenu) {
+  const ok = envoyable(p), on = selection.has(p.id);
+  return `<div class="p-selrow ${on ? 'coche' : ''}">
+    <label class="p-coche" title="${ok ? 'Sélectionner pour l’envoi' : 'Pas d’email, STOP ou 3 messages déjà envoyés'}"><input type="checkbox" ${on ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="toggleSel('${esc(p.id)}')" aria-label="Sélectionner ${esc(p.nom)}"></label>
+    ${contenu || ligne(p)}</div>`;
+}
+function barreSel(visibles) {
+  const ok = visibles.filter(envoyable);
+  const n = [...selection].filter(id => envoyable(parId(id))).length;
+  const tous = ok.length && ok.every(p => selection.has(p.id));
+  return `<div class="p-selbar">
+    <label class="p-check"><input type="checkbox" ${tous ? 'checked' : ''} ${ok.length ? '' : 'disabled'} onchange="selTout([${ok.map(p => `'${esc(p.id)}'`).join(',')}], this.checked)"> Tout sélectionner <span class="muted">(${ok.length} avec email)</span></label>
+    <span class="p-selnb">${n} sélectionnée${n > 1 ? 's' : ''}</span>
+    ${n ? `<button type="button" class="link" onclick="selection.clear();render()">Vider</button>
+      <button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerSelection()">${ico('mail')} Envoyer l’email à ${n} entreprise${n > 1 ? 's' : ''}</button>` : '<span class="muted small">Cochez une ou plusieurs entreprises.</span>'}</div>`;
+}
+async function envoyerSelection() {
+  if (!scriptPret()) return aActiver();
+  const list = [...selection].map(parId).filter(envoyable);
+  if (!list.length) return;
+  if (!confirm(`Envoyer un email à ${list.length} entreprise${list.length > 1 ? 's' : ''} ?\n\n${list.map(p => `• ${p.nom} — ${p.email} (${etapeNom(p)})`).join('\n')}\n\nChaque email est personnalisé, sans prix, envoyé depuis ${CONFIG.email || 'votre adresse'}. La relance suivante est programmée toute seule.`)) return;
+  let ok = 0;
+  for (let i = 0; i < list.length; i++) {
+    chargement = `Envoi : ${i + 1} / ${list.length}…`; renderChargement();
+    const r = await envoyerEmail(list[i].id, true);
+    if (r === 'quota') { toast('Limite Gmail du jour atteinte : la suite demain', true); break; }
+    if (r === true) { ok++; selection.delete(list[i].id); }
+    await sleep(1200);
+  }
+  chargement = ''; toast(`${ok} email${ok > 1 ? 's' : ''} envoyé${ok > 1 ? 's' : ''}`); render();
+}
+
 function plan() {
   const t = todayISO();
   const relances = db.prospects.filter(p => ACTIFS.includes(p.statut) && p.relance && p.relance <= t).sort((a, b) => a.relance.localeCompare(b.relance) || b.score - a.score);
@@ -735,12 +773,13 @@ const VUES = {
     return `<section class="p-pilotage"><h2>${ico('zap')} Pilotage de la prospection</h2><div class="auto-etat">${autoHTML()}</div></section>
       ${attente.length ? `<h2>${ico('mail')} À valider : ${attente.length} email${attente.length > 1 ? 's' : ''} prêt${attente.length > 1 ? 's' : ''}
           <button type="button" class="btn btn-primary btn-sm p-toutenvoyer${scriptPret() ? '' : ' btn-off'}" onclick="envoyerValides()">Tout envoyer</button></h2>
-        <div class="p-list">${attente.map(p => `<div class="p-row res">${badgeScore(p.score)}
+        ${barreSel(attente)}
+        <div class="p-list">${attente.map(p => ligneSel(p, `<div class="p-row res">${badgeScore(p.score)}
           <span class="p-main"><b>${esc(p.nom)}</b><small>${chipSeg(p.segment)} ${esc(p.commune || '')} · ${esc(p.email)}</small></span>
           <span class="p-sig"></span>
           <span class="p-side p-valider"><button type="button" class="btn btn-sm" onclick="canalOuvrir('${esc(p.id)}','email')">Voir l’email</button>
             <button type="button" class="btn btn-sm btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerEmail('${esc(p.id)}')">Envoyer</button>
-            <button type="button" class="link" onclick="ecarter('${esc(p.id)}')">Écarter</button></span></div>`).join('')}</div>` : ''}
+            <button type="button" class="link" onclick="ecarter('${esc(p.id)}')">Écarter</button></span></div>`)).join('')}</div>` : ''}
       <div class="g-stats p-kpi">
         <span><b>${P.filter(p => p.statut === 'nouveau').length}</b> à contacter</span>
         <span><b>${relances.length}</b> relance${relances.length > 1 ? 's' : ''} aujourd’hui</span>
@@ -800,7 +839,7 @@ const VUES = {
   },
   liste() {
     const f = filtre, t = todayISO();
-    let list = db.prospects.filter(p => (!f.statut || p.statut === f.statut) && (!f.segment || p.segment === f.segment) && (!f.agence || agenceDe(p) === f.agence)
+    let list = db.prospects.filter(p => (!f.email || p.email) && (!f.statut || p.statut === f.statut) && (!f.segment || p.segment === f.segment) && (!f.agence || agenceDe(p) === f.agence)
       && (!f.q || norm(`${p.nom} ${p.commune} ${p.tel} ${p.activite}`).includes(norm(f.q))));
     list.sort(f.tri === 'relance' ? (a, b) => (a.relance || '9999').localeCompare(b.relance || '9999') : f.tri === 'recent' ? (a, b) => (b.maj || '').localeCompare(a.maj || '') : (a, b) => b.score - a.score);
     const nb = k => db.prospects.filter(p => p.statut === k).length;
@@ -810,10 +849,12 @@ const VUES = {
         <label>Activité<select onchange="filtre.segment=this.value;render()"><option value="">Toutes</option>${Object.entries(SEGMENTS).map(([k, s]) => `<option value="${k}" ${f.segment === k ? 'selected' : ''}>${s.nom}</option>`).join('')}</select></label>
         <label>Agence<select onchange="filtre.agence=this.value;render()"><option value="">Les deux</option>${Object.entries(AGENCES).map(([k, a]) => `<option value="${k}" ${f.agence === k ? 'selected' : ''}>${a.nom}</option>`).join('')}</select></label>
         <label>Trier par<select onchange="filtre.tri=this.value;render()">${Object.entries({ score: 'Score', relance: 'Date de relance', recent: 'Derniers modifiés' }).map(([k, l]) => `<option value="${k}" ${f.tri === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label class="p-check"><input type="checkbox" ${f.email ? 'checked' : ''} onchange="filtre.email=this.checked;render()"> Avec email seulement</label>
         <button type="button" class="btn" onclick="exporterCSV()">Exporter (Excel)</button>
       </div>
       <p class="muted">${list.length} prospect${list.length > 1 ? 's' : ''}${list.some(p => p.relance && p.relance <= t) ? ' · les relances dues sont en orange' : ''}</p>
-      <div class="p-list">${list.map(ligne).join('') || '<p class="muted">Aucun prospect ici.</p>'}</div>`;
+      ${barreSel(list)}
+      <div class="p-list">${list.map(p => ligneSel(p)).join('') || '<p class="muted">Aucun prospect ici.</p>'}</div>`;
   },
   carte() {
     setTimeout(dessinerCarte, 0);
