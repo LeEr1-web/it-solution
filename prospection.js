@@ -551,6 +551,7 @@ async function envoyerEmail(id, silencieux) {
   try {
     await api('prospects_envoyer', { to: p.email, sujet, corps, id: p.id, nom: p.nom, commune: p.commune, etape: ['1er message', 'relance', 'dernière relance'][Math.min(p.etape || 0, 2)] });
     p.dernierEnvoi = new Date().toISOString();
+    p.aValider = false;
     contacte(id, 'Email envoyé');
     if (!silencieux) toast(`Email envoyé à ${p.email}`);
     return true;
@@ -586,25 +587,68 @@ async function relancerTous() {
   chargement = ''; toast(`${ok} relance${ok > 1 ? 's' : ''} envoyée${ok > 1 ? 's' : ''}`); render();
 }
 let auto = null;
+const MODES_AUTO = {
+  auto:       ['Automatique', 'Chaque jour ouvré à 9 h : cherche des entreprises, écrit et relance tout seul.'],
+  validation: ['Validation', 'Chaque jour ouvré à 9 h : cherche et prépare les emails, mais n’envoie rien sans votre accord.'],
+  arret:      ['Arrêt', 'Rien n’est fait automatiquement. Vous gardez les commandes manuelles.']
+};
 function autoHTML() {
-  if (!scriptPret()) return '<p class="muted">Disponible quand le moteur Google est connecté (code de l’espace pro ci-dessous).</p>';
+  if (!scriptPret()) return '<p class="muted">Disponible quand le moteur Google est connecté (code de l’espace pro dans Réglages).</p>';
   if (!auto) { chargerAuto(); return '<p class="muted">Chargement…</p>'; }
-  const b = auto.bilan;
-  return `<p>${auto.actif ? '<span class="p-ok">✓ Active</span> chaque jour ouvré à 9 h' : '<span class="p-late">Arrêtée</span> (AUTO_PROSPECTION dans le script)'} · ${auto.parJour} emails par jour au maximum.</p>
-    ${b ? `<p class="muted">Dernier passage le ${new Date(b.date).toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })} : ${b.envoyes} nouvelles entreprises contactées, ${b.relances} relances, ${b.reponses} réponses, ${b.analyses} sites analysés (${b.emailsTrouves} emails trouvés).</p>` : '<p class="muted">Pas encore de passage.</p>'}
-    <p class="muted small">Elle cherche des entreprises (OpenStreetMap), trouve leur email sur leur site, envoie un email sans prix avec votre plaquette, relance sans réponse (J+4, J+7), s’arrête dès qu’une entreprise répond ou demande STOP, et vous envoie un bilan.</p>
-    <button type="button" class="btn" onclick="lancerAuto()" ${chargement ? 'disabled' : ''}>Lancer maintenant</button>`;
+  if (auto.erreur) return '<p class="notice">Moteur Google injoignable pour le moment (connexion, ou moteur pas à jour). <button type="button" class="link" onclick="auto=null;render()">Réessayer</button></p>';
+  const b = auto.bilan, mode = auto.mode || (auto.actif ? 'auto' : 'arret');
+  return `<div class="p-pilote">
+      <div class="p-modes" role="radiogroup" aria-label="Mode de prospection">${Object.entries(MODES_AUTO).map(([k, [l]]) =>
+        `<button type="button" role="radio" aria-checked="${mode === k}" class="${mode === k ? 'on m-' + k : ''}" onclick="reglerAuto('${k}')">${l}</button>`).join('')}</div>
+      <label class="p-parjour">Emails par jour <input type="number" min="1" max="60" value="${auto.parJour}" onchange="reglerAuto(null, this.value)"></label>
+      <button type="button" class="btn btn-sm" onclick="lancerAuto()" ${chargement ? 'disabled' : ''}>${ico('zap')} Lancer maintenant</button>
+    </div>
+    <p class="muted small">${MODES_AUTO[mode][1]} Les réponses et les « STOP » sont détectés tout seuls ; jamais d’envoi le week-end ; aucun prix dans les emails.</p>
+    ${b ? `<p class="muted small">Dernier passage : ${new Date(b.date).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} —
+      ${b.mode === 'validation' ? `${b.aValider || 0} emails préparés` : `${b.envoyes} nouveaux emails, ${b.relances} relances`}, ${b.reponses} réponses, ${b.analyses} sites analysés (${b.emailsTrouves} emails trouvés).</p>` : '<p class="muted small">Pas encore de passage.</p>'}`;
 }
 async function chargerAuto() {
-  try { auto = await api('prospects_auto_etat'); } catch (e) { auto = { actif: false, parJour: 0, bilan: null }; }
-  const el = $('autoEtat'); if (el) el.innerHTML = autoHTML();
+  try { auto = await api('prospects_auto_etat'); } catch (e) { auto = { erreur: true }; }
+  document.querySelectorAll('.auto-etat').forEach(el => { el.innerHTML = autoHTML(); });
+}
+async function reglerAuto(mode, parJour) {
+  if (mode === 'auto' && !confirm('Mode automatique : les emails partiront tout seuls chaque jour ouvré à 9 h. Continuer ?')) return;
+  try { auto = await api('prospects_auto_regler', { mode: mode || undefined, parJour: parJour || undefined }); toast(mode ? `Mode « ${MODES_AUTO[mode][0]} » enregistré` : 'Réglage enregistré'); }
+  catch (e) { toast('Réglage impossible (moteur à jour ?)', true); }
+  render();
 }
 async function lancerAuto() {
-  if (!confirm('Lancer la prospection automatique maintenant ? (1 à 5 minutes)')) return;
-  chargement = 'Prospection automatique en cours (1 à 5 minutes)…'; render();
-  try { const r = await api('prospects_auto_lancer'); auto = null; toast(r.bilan ? `${r.bilan.envoyes} emails envoyés, ${r.bilan.relances} relances, ${r.bilan.reponses} réponses` : 'Terminé'); await synchroniser(); }
-  catch (e) { toast('La prospection automatique n’a pas pu se lancer', true); }
+  const mode = auto?.mode || 'auto';
+  if (!confirm(mode === 'auto' ? 'Chercher des entreprises et envoyer les emails maintenant ? (1 à 5 minutes)' : 'Chercher des entreprises et préparer les emails maintenant (sans les envoyer) ? (1 à 5 minutes)')) return;
+  chargement = 'Prospection en cours (1 à 5 minutes)…'; render();
+  try {
+    const r = await api('prospects_auto_lancer'); auto = null;
+    const b = r.bilan || {};
+    toast(b.mode === 'validation' ? `${b.aValider || 0} emails prêts à valider` : `${b.envoyes || 0} emails envoyés, ${b.relances || 0} relances`);
+    await synchroniser();
+  } catch (e) { toast('La prospection n’a pas pu se lancer', true); }
   chargement = ''; render();
+}
+// emails préparés par le moteur, en attente de votre accord
+const aValider = () => db.prospects.filter(p => p.aValider && p.email && p.statut === 'nouveau').sort((a, b) => (b.score || 0) - (a.score || 0));
+function ecarter(id) {
+  const p = parId(id); if (!p) return;
+  p.aValider = false; p.statut = 'perdu'; noter(p, 'Écarté à la validation (pas envoyé)');
+  sauver(p); render();
+}
+async function envoyerValides() {
+  if (!scriptPret()) return aActiver();
+  const list = aValider();
+  if (!list.length || !confirm(`Envoyer les ${list.length} emails préparés ?\n\n${list.map(p => '• ' + p.nom + ' — ' + p.email).join('\n')}`)) return;
+  let ok = 0;
+  for (let i = 0; i < list.length; i++) {
+    chargement = `Envoi : ${i + 1} / ${list.length}…`; renderChargement();
+    const r = await envoyerEmail(list[i].id, true);
+    if (r === 'quota') { toast('Limite Gmail du jour atteinte : la suite demain', true); break; }
+    if (r === true) ok++;
+    await sleep(1200);
+  }
+  chargement = ''; toast(`${ok} email${ok > 1 ? 's' : ''} envoyé${ok > 1 ? 's' : ''}`); render();
 }
 
 function appeler(id) { const p = parId(id); noter(p, 'Appel passé'); if (p.statut === 'nouveau') p.statut = 'contacte'; p.relance = p.relance || addDays(todayISO(), 2); sauver(p); renderFiche(); render(); }
@@ -667,7 +711,7 @@ function ligne(p) {
 function plan() {
   const t = todayISO();
   const relances = db.prospects.filter(p => ACTIFS.includes(p.statut) && p.relance && p.relance <= t).sort((a, b) => a.relance.localeCompare(b.relance) || b.score - a.score);
-  const neufs = db.prospects.filter(p => p.statut === 'nouveau' && (p.tel || p.email)).sort((a, b) => b.score - a.score);
+  const neufs = db.prospects.filter(p => p.statut === 'nouveau' && !p.aValider && (p.tel || p.email)).sort((a, b) => b.score - a.score);
   const n = Math.max(0, (db.reglages.parJour || 10) - relances.length);
   const ag = { ducos: neufs.filter(p => agenceDe(p) === 'ducos'), robert: neufs.filter(p => agenceDe(p) === 'robert') };
   const choix = [];
@@ -687,7 +731,17 @@ const VUES = {
       <p>L’outil cherche pour vous les entreprises de Martinique qui ont le plus de chances d’avoir besoin de IloTech : nouvelles entreprises, commerces, cabinets, hôtels… Il les classe par score, propose le bon message et vous rappelle quand relancer.</p>
       <button type="button" class="btn btn-primary big" onclick="remplirAuto()" ${chargement ? 'disabled' : ''}>${ico('search')} Trouver automatiquement mes 30 meilleurs prospects</button>
       <p class="muted">Ou <button type="button" class="link" onclick="setVue('trouver')">choisir moi-même la source</button>.</p></div>`;
-    return `<div class="g-stats p-kpi">
+    const attente = aValider();
+    return `<section class="p-pilotage"><h2>${ico('zap')} Pilotage de la prospection</h2><div class="auto-etat">${autoHTML()}</div></section>
+      ${attente.length ? `<h2>${ico('mail')} À valider : ${attente.length} email${attente.length > 1 ? 's' : ''} prêt${attente.length > 1 ? 's' : ''}
+          <button type="button" class="btn btn-primary btn-sm p-toutenvoyer${scriptPret() ? '' : ' btn-off'}" onclick="envoyerValides()">Tout envoyer</button></h2>
+        <div class="p-list">${attente.map(p => `<div class="p-row res">${badgeScore(p.score)}
+          <span class="p-main"><b>${esc(p.nom)}</b><small>${chipSeg(p.segment)} ${esc(p.commune || '')} · ${esc(p.email)}</small></span>
+          <span class="p-sig"></span>
+          <span class="p-side p-valider"><button type="button" class="btn btn-sm" onclick="canalOuvrir('${esc(p.id)}','email')">Voir l’email</button>
+            <button type="button" class="btn btn-sm btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerEmail('${esc(p.id)}')">Envoyer</button>
+            <button type="button" class="link" onclick="ecarter('${esc(p.id)}')">Écarter</button></span></div>`).join('')}</div>` : ''}
+      <div class="g-stats p-kpi">
         <span><b>${P.filter(p => p.statut === 'nouveau').length}</b> à contacter</span>
         <span><b>${relances.length}</b> relance${relances.length > 1 ? 's' : ''} aujourd’hui</span>
         <span><b>${enCours.length}</b> en discussion · ${eur(enCours.reduce((s, p) => s + (p.offre?.valeur || 0), 0))}</span>
@@ -795,7 +849,7 @@ const VUES = {
         <label>Emails envoyés par jour au maximum<input type="number" min="1" max="60" value="${r.maxEmails || 25}" onchange="db.reglages.maxEmails=Math.min(60,Math.max(1,+this.value||25));sauver()"></label></div>
       <p class="muted small">Gmail autorise environ 100 emails par jour : restez autour de 25 pour que vos messages ne finissent pas en spam.</p>
       <h2>Prospection automatique</h2>
-      <div id="autoEtat" class="p-auto-etat">${autoHTML()}</div>
+      <div class="p-auto-etat auto-etat">${autoHTML()}</div>
       <h2>Partage entre Ducos et Le Robert</h2>
       ${!CONFIG.endpoint ? '<p class="notice">Le script Google n’est pas encore branché : vos prospects restent sur cet appareil. Une fois le moteur Google installé (README.txt), ils seront partagés automatiquement dans l’onglet « Prospects » du tableau.</p>'
         : cle ? `<p class="notice ok">Connecté : vos prospects sont partagés dans l’onglet « Prospects » du tableau Google. <button type="button" class="link" onclick="synchroniser()">Synchroniser maintenant</button></p>`
@@ -827,6 +881,7 @@ function render() {
 function setVue(v) { vue = v; render(); window.scrollTo(0, 0); }
 
 /* ---------- Fiche prospect ---------- */
+function canalOuvrir(id, c) { ouvrir(id); canal = c; renderFiche(); }
 function ouvrir(id) { fiche = id; canal = 'whatsapp'; renderFiche(); const d = $('fiche'); if (!d.open) d.showModal(); }
 function renderFiche() {
   const p = parId(fiche); if (!p) return;

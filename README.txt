@@ -101,6 +101,12 @@ PROSPECTION AUTOMATIQUE (moteur Google, chaque jour ouvré à 9 h)
   existe, envoie un email personnalisé SANS PRIX avec le lien de la plaquette, relance sans réponse
   (J+4 puis J+7, 3 messages au maximum), s'arrête dès qu'une entreprise répond ou écrit STOP
   (lecture de votre Gmail), et vous envoie un bilan par email.
+  3 MODES, à choisir sur la page Prospection > Aujourd'hui > « Pilotage de la prospection » :
+    - Automatique : cherche, écrit et relance tout seul chaque jour ouvré à 9 h
+    - Validation  : cherche et prépare les emails, mais n'envoie rien : liste « À valider » avec
+                    « Voir l'email », « Envoyer », « Écarter », « Tout envoyer »
+    - Arrêt       : rien d'automatique (les commandes manuelles restent disponibles)
+  Réglage du nombre d'emails par jour et bouton « Lancer maintenant » au même endroit.
   Tout est visible : page Prospection > onglet « Emails envoyés », et onglets « Prospects » /
   « Emails envoyés » du tableau. Réglages en haut du script : AUTO_PROSPECTION (true/false),
   AUTO_PAR_JOUR (15), SIGNATURE. Bouton « Lancer maintenant » dans Prospection > Réglages.

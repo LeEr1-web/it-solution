@@ -137,3 +137,18 @@ button.p-chip:hover{border-color:var(--primary)}
 .p-envoyes .link{font-weight:700;text-align:left}
 .p-auto-etat{padding:12px 14px;border-radius:10px;background:#fff;border:1px solid var(--line)}
 .p-auto-etat p{margin:4px 0}
+
+/* Pilotage de la prospection */
+.p-pilotage{margin:6px 0 10px;padding:12px 16px;border-radius:12px;background:#fff;border:1.5px solid var(--primary)}
+.p-pilotage h2{margin:0 0 8px!important}
+.p-pilote{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.p-modes{display:inline-flex;padding:3px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.p-modes button{border:0;background:none;padding:7px 14px;border-radius:8px;font:700 14px var(--sans);color:var(--muted);cursor:pointer}
+.p-modes button.on{color:#fff}
+.p-modes .m-auto{background:#16a34a}.p-modes .m-validation{background:#f59e0b;color:#1a1000}.p-modes .m-arret{background:#64748b}
+.p-parjour{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.p-parjour input{width:70px;min-height:36px;padding:4px 8px}
+.p-valider{grid-auto-flow:column;align-items:center;gap:8px;justify-content:end}
+.p-toutenvoyer{margin-left:auto}
+@media (max-width:900px){.p-valider{justify-content:start}}
+.p-valider .btn{white-space:nowrap}
