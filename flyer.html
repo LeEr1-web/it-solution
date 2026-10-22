@@ -55,8 +55,8 @@
   </div>
   <p class="aide">Imprimez sur du papier un peu épais (160 g ou plus), puis découpez le long des pointillés. En boîte aux lettres, respectez les « Stop pub ». Les prix sont repris du site et restent toujours à jour.</p>
   <div class="feuille" id="feuille"></div>
-  <script src="data.js?v=57"></script>
-  <script src="outils.js?v=57"></script>
+  <script src="data.js?v=58"></script>
+  <script src="outils.js?v=58"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     const s = svc, p = pack;
@@ -66,12 +66,12 @@
           ['PC lent, en panne, virus', dès('repair')], ['Photos et fichiers perdus', dès('recup')],
           [`Wi-Fi dans toute la maison`, eur(p('wifi').prix)], ['Caméras de surveillance', dès('camera')],
           ['Installation PC et imprimante', dès('install')], ['Cours débutants et seniors', dès('cours')]],
-        plus: `Diagnostic gratuit · Prix annoncé avant · −${CONFIG.remiseEtudiant} % étudiants`, qr: 'Rendez-vous en ligne' },
+        plus: `Devis gratuit · Prix annoncé avant · −${CONFIG.remiseEtudiant} % étudiants`, qr: 'Rendez-vous en ligne' },
       pro: { titre: 'Commerces, cabinets, entreprises : une informatique qui marche.', lignes: [
           ['Caisse enregistreuse complète', `${eur(p('shop').prix)}`], ['Caméras et alarme', dès('camera')],
           ['Site internet + Google', dès('siteweb')], ['Maintenance du parc', dès('maintenance')],
           ['Sauvegardes automatiques', dès('sauvegarde')], ['Audit cybersécurité', dès('cyber')]],
-        plus: 'Diagnostic gratuit · Intervention rapide · Prix fixés à l’avance', qr: 'Devis et rendez-vous' }
+        plus: 'Devis gratuit · Intervention rapide · Prix fixés à l’avance', qr: 'Devis et rendez-vous' }
     };
     let version = new URLSearchParams(location.search).get('v') === 'pro' ? 'pro' : 'part';
     function flyer(v) {
@@ -89,7 +89,7 @@
       document.getElementById('bPro').classList.toggle('on', v === 'pro');
       document.getElementById('feuille').innerHTML = flyer(VERSIONS[v]).repeat(4);
       document.querySelectorAll('.code').forEach(el => {
-        if (window.QRCode) new QRCode(el, { text: SITE + (v === 'pro' ? 'services.html' : ''), width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
+        if (window.QRCode) new QRCode(el, { text: SITE + (v === 'pro' ? 'services.html?src=flyer-pro' : '?src=flyer'), width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
         else el.textContent = SITE;
       });
     }

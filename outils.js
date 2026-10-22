@@ -44,3 +44,26 @@ function illustration({ id, icon, badge, couleur }, cls = '') {
     ${badge ? `<circle cx="120" cy="76" r="18" fill="#fff"/><g transform="translate(110 66) scale(.84)" fill="none" stroke="${couleur}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ICONS[badge] || ''}</g>` : ''}
   </svg>`;
 }
+
+// ---------- Statistiques de visite anonymes (sans cookie, sans nom ni adresse IP) -> onglet « Visites » du tableau Google
+function stat(e, detail) {
+  try {
+    if (!CONFIG.endpoint || location.protocol === 'file:' || /gestion|prospection|visibilite/.test(location.pathname)) return;
+    const q = new URLSearchParams(location.search);
+    const ref = document.referrer && !document.referrer.includes(location.host) ? new URL(document.referrer).hostname.replace(/^www\./, '') : '';
+    const page = (location.pathname.split('/').pop() || 'index').replace('.html', '') || 'index';
+    navigator.sendBeacon(CONFIG.endpoint, JSON.stringify({ action: 'stat', e, d: String(detail || '').slice(0, 60), p: page,
+      a: innerWidth <= 900 ? 'mobile' : 'ordinateur', s: (q.get('src') || q.get('utm_source') || ref || 'direct').slice(0, 40) }));
+  } catch (x) {}
+}
+(() => {
+  try { if (!sessionStorage.getItem('itVisite')) { sessionStorage.setItem('itVisite', '1'); stat('visite'); } } catch (x) {}
+  stat('vue');
+  // clics WhatsApp et téléphone, sur toutes les pages
+  document.addEventListener('click', ev => {
+    const a = ev.target.closest && ev.target.closest('a[href]');
+    if (!a) return;
+    if (/wa\.me/.test(a.href)) stat('whatsapp', a.textContent.trim().slice(0, 30));
+    else if (/^tel:/.test(a.href)) stat('appel', a.href.slice(4));
+  });
+})();

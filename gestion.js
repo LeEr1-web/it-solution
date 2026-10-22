@@ -87,6 +87,52 @@ function carte(d) {
     </div></article>`;
 }
 
+/* ---------- Statistiques du site (30 derniers jours) ---------- */
+let stats = null;
+const EVTS = { visite: 'Visites', vue: 'Pages vues', pole: 'Pôles ouverts', service: 'Services choisis', pack: 'Formules choisies', symptome: 'Problèmes décrits',
+  etape: 'Réservations commencées', demande: 'Demandes envoyées', whatsapp: 'Clics WhatsApp', appel: 'Clics téléphone', aide: 'Aide ouverte' };
+async function chargerStats() {
+  try { stats = await api('stats'); } catch (e) { stats = { erreur: true }; }
+  render();
+}
+function vueStats() {
+  if (!stats) { chargerStats(); return '<p class="muted">Chargement des statistiques…</p>'; }
+  if (stats.erreur) return '<p class="notice">Statistiques indisponibles : le moteur Google doit être à jour (nouvelle version du script).</p>';
+  const t = stats.total || {}, nb = k => t[k] || 0;
+  const taux = nb('visite') ? Math.round(nb('demande') / nb('visite') * 1000) / 10 : 0;
+  const nomOf = id => (typeof svc === 'function' && svc(id)?.nom) || (PACKS.find(p => p.id === id)?.nom) || id;
+  const tableau = (titre, rows, fmt = x => esc(x)) => `<div class="g-stat-bloc"><h3>${titre}</h3>${rows.length
+    ? `<table class="admin-table">${rows.map(([k, v]) => `<tr><td>${fmt(k)}</td><td class="mono">${v}</td></tr>`).join('')}</table>` : '<p class="muted">Pas encore de données.</p>'}</div>`;
+  const cols = ['visite', 'vue', 'etape', 'demande', 'whatsapp', 'appel'];
+  return `<h2>Statistiques du site — 30 derniers jours</h2>
+    <div class="g-stats g-stats-big">
+      <span><b>${nb('visite')}</b> visites</span><span><b>${nb('vue')}</b> pages vues</span><span><b>${nb('demande')}</b> demandes envoyées</span>
+      <span><b>${taux} %</b> des visites deviennent une demande</span><span><b>${nb('whatsapp')}</b> clics WhatsApp</span><span><b>${nb('appel')}</b> appels</span></div>
+    <div class="actions left"><button type="button" class="btn btn-sm" onclick="exporterStats()">Télécharger (CSV / Excel)</button>
+      <button type="button" class="btn btn-sm" onclick="stats=null;render()">↻ Actualiser</button>
+      <span class="muted small">Le détail de chaque visite est dans l’onglet « Visites » du tableau Google, et les calculs dans l’onglet « Statistiques ».</span></div>
+    <div class="g-stat-grid">
+      ${tableau('Services les plus choisis', stats.services, nomOf)}
+      ${tableau('D’où viennent les visiteurs', stats.sources)}
+      ${tableau('Formules choisies', stats.packs, nomOf)}
+      ${tableau('Appareils', stats.appareils)}
+      ${tableau('Pages vues', stats.pages)}
+    </div>
+    <h3>Jour par jour</h3>
+    <div class="tablewrap"><table class="admin-table"><thead><tr><th>Jour</th>${cols.map(c => `<th>${EVTS[c]}</th>`).join('')}</tr></thead><tbody>
+      ${stats.jours.map(j => `<tr><td>${frDay(j.jour)}</td>${cols.map(c => `<td class="mono">${j[c] || 0}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${cols.length + 1}" class="muted">Pas encore de visites enregistrées.</td></tr>`}
+    </tbody></table></div>`;
+}
+function exporterStats() {
+  const cols = Object.keys(EVTS);
+  const rows = [['Jour', ...cols.map(c => EVTS[c])], ...stats.jours.map(j => [j.jour, ...cols.map(c => j[c] || 0)])];
+  const csv = '\uFEFF' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `statistiques-ilotech-${todayISO()}.csv`;
+  a.click();
+}
+
 function vueTraiter() {
   const list = filtres(demandes).filter(d => d.statut === 'Nouveau' || (!d.date && !['Annulé', 'Terminé'].includes(d.statut)));
   list.sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
@@ -201,7 +247,7 @@ function render() {
     jour: actifs.filter(d => d.date === todayISO()).length,
     semaine: actifs.filter(d => d.date >= mondayOf(todayISO()) && d.date <= addDays(mondayOf(todayISO()), 6)).length
   };
-  const tabs = [['traiter', `À traiter <em>${n.traiter}</em>`], ['planning', 'Planning'], ['toutes', 'Toutes les demandes'], ['ajouter', '+ RDV téléphone']];
+  const tabs = [['traiter', `À traiter <em>${n.traiter}</em>`], ['planning', 'Planning'], ['toutes', 'Toutes les demandes'], ['ajouter', '+ RDV téléphone'], ['stats', 'Statistiques']];
   $('g').innerHTML = `
     <div class="g-bar">
       <div class="g-stats"><span><b>${n.traiter}</b> à traiter</span><span><b>${n.jour}</b> aujourd'hui</span><span><b>${n.semaine}</b> cette semaine</span></div>
@@ -213,7 +259,7 @@ function render() {
     </div>
     ${erreur ? `<p class="notice">${esc(erreur)}</p>` : ''}
     <nav class="g-tabs">${tabs.map(([k, l]) => `<button class="${vue === k ? 'on' : ''}" onclick="setVue('${k}')">${l}</button>`).join('')}</nav>
-    <section class="g-view">${{ traiter: vueTraiter, planning: vuePlanning, toutes: vueToutes, ajouter: vueAjouter }[vue]()}</section>`;
+    <section class="g-view">${{ traiter: vueTraiter, planning: vuePlanning, toutes: vueToutes, ajouter: vueAjouter, stats: vueStats }[vue]()}</section>`;
   const s = document.querySelector('.g-filters input[type=search]');
   if (s && document.activeElement === document.body && recherche) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
 }

@@ -88,6 +88,14 @@ RENDEZ-VOUS (gestion.html)
   le statut (Diagnostic, Réparation, Prêt à récupérer, Terminé…) ou annuler.
   « + RDV téléphone » : ajoutez un rendez-vous pris par téléphone.
 
+STATISTIQUES (anonymes, sans cookie : pas de bandeau à afficher)
+  Page Rendez-vous > onglet « Statistiques » : visites, pages vues, demandes, taux de demande,
+  clics WhatsApp / téléphone, services et formules choisis, provenance, appareils, jour par jour,
+  bouton « Télécharger (CSV / Excel) ».
+  Dans le tableau Google : onglet « Visites » (une ligne par événement) et onglet « Statistiques »
+  (calculs automatiques). Provenance marquée : QR des flyers (flyer, flyer-pro), plaquette,
+  emails (email, email-auto), Leboncoin, Facebook ; ajoutez ?src=nom à un lien pour le suivre.
+
 PROSPECTION AUTOMATIQUE (moteur Google, chaque jour ouvré à 9 h)
   Cherche des entreprises (OpenStreetMap), trouve leur email sur leur site, vérifie que l'adresse
   existe, envoie un email personnalisé SANS PRIX avec le lien de la plaquette, relance sans réponse

@@ -553,7 +553,7 @@ function setDate(v) {
   fetchSlots(v);
 }
 function setTab(t) { state.tab = t; render(); }
-function openHelp() { $('helpDialog').showModal(); }
+function openHelp() { $('helpDialog').showModal(); stat('aide'); }
 let toastTimer;
 function toast(msg) {
   const t = $('toast'); if (!t) return;
@@ -567,7 +567,7 @@ function setGrand(on) {
 }
 function showSel() { document.querySelector('.summary').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 const univOf = cat => (CATEGORIES.find(c => c.id === cat) || CATEGORIES[0]).univers;
-function setUniv(u) { const c = CATEGORIES.find(x => x.univers === u && !x.bientot); if (c) { state.cat = c.id; render(); } }
+function setUniv(u) { const c = CATEGORIES.find(x => x.univers === u && !x.bientot); if (c) { state.cat = c.id; render(); stat('pole', u); } }
 function setCat(c) { if (CATEGORIES.find(x => x.id === c && !x.bientot)) { state.cat = c; render(); } }
 function setKind(k) {
   state.kind = k;
@@ -577,6 +577,7 @@ function setKind(k) {
 function start(kind) {
   if (!state.sel.length) return error('Choisissez d’abord un service ou un pack.');
   state.kind = kind;
+  stat('etape', kind);
   goTo(2);
 }
 function home() { state.step = 1; state.tab = 'services'; render(); $('app').scrollTop = 0; }
@@ -588,6 +589,7 @@ function toggle(id) {
   const { sel } = state;
   const adding = !sel.includes(id);
   state.sel = adding ? [...sel, id] : sel.filter(x => x !== id);
+  if (adding) stat('service', id);
   if (!packValid()) state.pack = null;
   state.symptoms = [];
   fixMode();
@@ -603,7 +605,7 @@ function selectPack(id) {
   const wasOn = state.pack === id && packValid();
   if (packValid()) removeItems(pack(state.pack).items);
   state.pack = null;
-  if (!wasOn) { state.pack = id; applyItems(pack(id).items); }
+  if (!wasOn) { state.pack = id; applyItems(pack(id).items); stat('pack', id); }
   state.symptoms = [];
   fixMode();
   render();
@@ -612,6 +614,7 @@ function selectPack(id) {
 function toggleSymptom(id) {
   const cur = state.symptoms;
   state.symptoms = cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id];
+  if (!cur.includes(id)) stat('symptome', id);
   state.sel = []; state.opt = {}; state.pack = null;
   state.symptoms.forEach(sid => {
     const s = SYMPTOMES.find(x => x.id === sid);
@@ -752,6 +755,7 @@ async function send() {
   const mailed = CONFIG.emailReception ? await sendByEmail(lead, !!(google && google.ok)) : false;
   sending = false;
   const result = { ok: !!(google && google.ok) || mailed, google: !!(google && google.ok) };
+  stat('demande', lead.kind);
   lead.kind === 'devis' ? renderDevis(lead, result.ok, result.google) : renderSuccess(lead, result.ok, result.google);
 }
 

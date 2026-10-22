@@ -60,21 +60,21 @@
 <body>
   <div class="barre"><b>Plaquette IloTech</b><button type="button" class="imp" onclick="print()">Imprimer / PDF</button><a href="index.html">Prendre rendez-vous</a></div>
   <article class="page" id="plaquette"></article>
-  <script src="data.js?v=57"></script>
-  <script src="outils.js?v=57"></script>
+  <script src="data.js?v=58"></script>
+  <script src="outils.js?v=58"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     (function () {
       const poles = UNIVERS.map(u => ({ ...u, cats: CATEGORIES.filter(c => c.univers === u.id && !c.bientot) }));
       const atouts = [
         ['Une équipe locale', 'Deux agences, à Ducos et au Robert, et des déplacements dans toute la Martinique.'],
-        ['Diagnostic offert', 'Le premier diagnostic est gratuit, sur place ou à distance, sans engagement.'],
+        ['Devis gratuit', 'Nous étudions votre besoin et vous remettons un devis gratuit, sans engagement.'],
         ['Prix annoncé à l’avance', 'Vous validez une proposition claire avant toute intervention.'],
         ['Un seul interlocuteur', 'Du dépannage au site internet : un contact qui connaît votre installation.'],
         ['Réactivité', 'Intervention rapide, en agence, chez vous ou à distance selon le besoin.'],
         ['Discrétion et sécurité', 'Vos données et vos accès sont traités avec soin et confidentialité.']
       ];
-      const etapes = [['On échange', 'Vous nous expliquez votre besoin, par téléphone, WhatsApp ou en ligne.'], ['Diagnostic offert', 'Nous regardons la situation, sur place ou à distance.'],
+      const etapes = [['On échange', 'Vous nous expliquez votre besoin, par téléphone, WhatsApp ou en ligne.'], ['Devis gratuit', 'Nous regardons la situation, sur place ou à distance, et chiffrons la solution.'],
         ['Proposition claire', 'Une solution et un prix annoncés avant de commencer.'], ['Intervention et suivi', 'Nous réalisons, expliquons et restons disponibles ensuite.']];
       $('plaquette').innerHTML = `
         <header class="couv"><img src="img/logo-ilo.png" alt="IloTech"><div><h1>Ilo<span>Tech</span></h1>
@@ -87,7 +87,7 @@
           <div class="qr"><div id="qr"></div>Rendez-vous en ligne</div></div>
           <p>${CONFIG.email ? `Email : <b>${esc(CONFIG.email)}</b> · ` : ''}Site : <b>${esc(SITE.replace(/^https:\/\//, ''))}</b></p></section>
         <footer>${esc(ENTREPRISE.nomCommercial)} — ${esc(ENTREPRISE.exploitant)} · SIRET ${esc(ENTREPRISE.siret)} · ${esc(ENTREPRISE.adresse)}</footer>`;
-      if (window.QRCode) new QRCode($('qr'), { text: SITE, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
+      if (window.QRCode) new QRCode($('qr'), { text: SITE + '?src=plaquette', width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
     })();
   </script>
 </body>
