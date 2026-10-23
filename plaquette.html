@@ -26,6 +26,7 @@
     .poles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .pole{display:flex;gap:14px;padding:14px;border:1px solid var(--trait);border-left:5px solid var(--t);border-radius:12px;break-inside:avoid}
     .pole .illu{flex:none;width:108px;height:74px;border-radius:10px}
+    .pole .illu.scene{width:190px;height:auto;aspect-ratio:16/10}
     .pole>div{min-width:0}
     .pole b{display:block;font-size:17px}
     .pole p{margin:2px 0 6px;color:var(--gris);font-size:14px}
@@ -60,8 +61,9 @@
 <body>
   <div class="barre"><b>Plaquette IloTech</b><button type="button" class="imp" onclick="print()">Imprimer / PDF</button><a href="index.html">Prendre rendez-vous</a></div>
   <article class="page" id="plaquette"></article>
-  <script src="data.js?v=63"></script>
-  <script src="outils.js?v=63"></script>
+  <script src="data.js?v=64"></script>
+  <script src="outils.js?v=64"></script>
+  <script src="scenes.js?v=64"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     (function () {
@@ -80,7 +82,7 @@
         <header class="couv"><img src="img/logo-ilo.png" alt="IloTech"><div><h1>Ilo<span>Tech</span></h1>
           <p>Informatique, réseaux, web et sécurité — Martinique</p><span class="tag">DUCOS · LE ROBERT</span></div></header>
         <section><h2>Qui sommes-nous ?</h2><p class="intro">IloTech accompagne les particuliers, les commerces et les entreprises de Martinique dans tout ce qui touche au numérique : dépannage et installation, réseaux et Wi-Fi, maison connectée, sites web, applications et marketing, maintenance et cybersécurité, jusqu’aux images aériennes par drone et à l’impression 3D. Notre engagement : des solutions fiables, expliquées simplement.</p></section>
-        <section><h2>Nos pôles</h2><div class="poles">${poles.map(u => `<div class="pole" style="--t:${u.couleur}">${illustration(u)}<div><b>${esc(u.nom)}</b><p>${esc(u.desc)}</p><ul>${u.cats.map(c => `<li><b style="display:inline;font-size:13.5px">${esc(c.nom)}</b> <small>— ${esc(c.services.map(id => svc(id).nom).join(', '))}</small></li>`).join('')}</ul></div></div>`).join('')}</div></section>
+        <section><h2>Nos pôles</h2><div class="poles">${poles.map(u => `<div class="pole" style="--t:${u.couleur}">${scene(u)}<div><b>${esc(u.nom)}</b><p>${esc(u.desc)}</p><ul>${u.cats.map(c => `<li><b style="display:inline;font-size:13.5px">${esc(c.nom)}</b> <small>— ${esc(c.services.map(id => svc(id).nom).join(', '))}</small></li>`).join('')}</ul></div></div>`).join('')}</div></section>
         <section><h2>Pourquoi IloTech ?</h2><div class="atouts">${atouts.map(([t, d]) => `<div class="atout"><b>${t}</b><span>${d}</span></div>`).join('')}</div></section>
         <section><h2>Comment ça se passe ?</h2><div class="etapes">${etapes.map(([t, d]) => `<div class="etape"><b>${t}</b><span>${d}</span></div>`).join('')}</div></section>
         <section><h2>Nous contacter</h2><div class="contact">${Object.values(AGENCES).map(a => `<div class="agence"><b>Agence ${esc(a.de)}</b><span class="tel">${esc(a.tel)}</span><br><span>Appel ou WhatsApp · ${esc(a.detail)}</span></div>`).join('')}

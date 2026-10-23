@@ -634,3 +634,19 @@ body.grand .g4{grid-template-columns:repeat(3,minmax(0,1fr))}
 .faq details[open] summary{color:var(--primary)}
 .faq p{margin:0 0 12px;color:var(--muted)}
 @media (max-width:600px){.sec-toggle{display:block;margin:2px 0 10px}}
+
+/* Scènes illustrées (scenes.js) : un exemple concret par catégorie */
+.illu.scene{aspect-ratio:16/10;height:auto;border-radius:14px}
+.pole .illu.scene{aspect-ratio:16/10}
+.cat-scene{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:center;margin:0 0 14px}
+.cat-scene .illu.scene{width:100%;box-shadow:0 10px 30px rgba(0,0,0,.35);border:1px solid color-mix(in srgb,var(--t) 40%,var(--line))}
+.cat-scene .cat-accroche{margin:0 0 8px;font-size:16px;color:var(--text)}
+.cat-inclus{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cat-inclus li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:14px}
+.cat-inclus li svg{width:16px;height:16px;color:var(--t);align-self:center}
+.cat-inclus span{color:var(--muted)}
+@media (max-width:760px){.cat-scene{grid-template-columns:minmax(0,1fr)}}
+.cat-hero .illu.scene{width:128px;height:auto;border-radius:10px}
+@media (max-height:780px){.cat-hero .illu.scene{width:96px}}
+@media (max-width:600px){.cat-hero .illu.scene{width:104px}}
+.illu{overflow:hidden}

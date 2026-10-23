@@ -15,7 +15,7 @@
   // 1. Les pôles en un coup d'œil
   let h = `<h2>Nos pôles</h2><div class="poles">${poles.map(u => `
     <a class="pole" href="#pole-${u.id}" style="--t:${u.couleur}">
-      ${illustration(u, 'grand')}<b>${esc(u.nom)}</b><span>${esc(u.desc)}</span>
+      ${scene(u, 'grand')}<b>${esc(u.nom)}</b><span>${esc(u.desc)}</span>
       <small>${u.cats.map(c => esc(c.nom)).join(' · ')}</small><em>Découvrir →</em></a>`).join('')}</div>`;
   if (BIENTOT.length) h += `<p class="bientot"><span class="soon">Bientôt</span> ${BIENTOT.map(esc).join(' · ')}</p>`;
 
@@ -26,7 +26,8 @@
       <p>${esc(u.desc)}</p>
       <div class="actions left"><a class="btn btn-primary" href="index.html?pole=${u.id}">Rendez-vous ou devis : ${esc(u.nom)}</a></div>
       ${u.cats.map(c => `<h3 class="cat-title" style="--t:${c.couleur}">${illustration(c, 'mini')} ${esc(c.nom)}</h3>
-        <p class="cat-accroche">${esc(c.accroche)}</p>
+        <div class="cat-scene" style="--t:${c.couleur}">${scene(c)}<div><p class="cat-accroche">${esc(c.accroche)}</p>
+          <ul class="cat-inclus">${c.services.map(id => `<li>${ico(svc(id).icon)} <b>${esc(svc(id).nom)}</b> <span>${esc(svc(id).desc)}</span></li>`).join('')}</ul></div></div>
         <div class="svc-list">${c.services.map(id => block(svc(id), c)).join('')}</div>`).join('')}
     </section>`).join('');
 
