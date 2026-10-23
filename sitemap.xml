@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://leer1-web.github.io/it-solution/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://leer1-web.github.io/it-solution/services.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://leer1-web.github.io/it-solution/plaquette.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://leer1-web.github.io/it-solution/fiche-tarifs.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://leer1-web.github.io/it-solution/mentions-legales.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
-  <url><loc>https://leer1-web.github.io/it-solution/confidentialite.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/services.html</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/installation-starlink-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/depannage-informatique-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/reparation-ordinateur-portable-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/virus-arnaque-compte-pirate-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/recuperation-donnees-sauvegarde-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/reparation-telephone-tablette-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/installation-wifi-internet-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/installation-camera-surveillance-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/domotique-maison-connectee-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/onduleur-coupure-courant-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/cours-informatique-seniors-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/intelligence-artificielle-ia-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/creation-site-internet-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/application-mobile-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/marketing-digital-reseaux-sociaux-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/maintenance-informatique-entreprise-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/cybersecurite-entreprise-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/caisse-enregistreuse-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/drone-photo-video-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/impression-3d-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/pc-gamer-console-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/installation-tv-box-martinique.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/plaquette.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://leer1-web.github.io/it-solution/fiche-tarifs.html</loc><lastmod>2026-10-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

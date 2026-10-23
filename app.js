@@ -33,7 +33,8 @@ const DEFAULT = {
   d: { appType: '', mode: 'site', commune: '', agence: 'ducos', creneau: '', date: '', type: 'individual', budget: 'medium', appareil: '', desc: '', contrat: false, name: '', email: '', phone: '', address: '', pref: 'whatsapp', consent: false, website: '', chatMsg: MESSAGES_WA[0][1], chatCommune: '', etudiant: false }
 };
 let state = load();
-const slotCache = {};   // créneaux complets, par "date|agence"
+const slotCache = {};   // places restantes par créneau, par "date|agence" : { matin: 2, aprem: 0 }
+const premierJour = () => addDays(todayISO(), CONFIG.delaiMinJours || 0);
 let sending = false;
 let photo = null;        // photo du problème (non sauvegardée dans le navigateur)
 let suivi = {};          // recherche « Suivre ma demande »
@@ -45,7 +46,7 @@ function load() {
       const base = structuredClone(DEFAULT);
       const st = { ...base, ...saved, d: { ...base.d, ...saved.d, consent: false, website: '' } };
       if (typeof st.step === 'number' && st.step > 3) st.step = 1;
-      if (st.kind === 'rdv' && st.step > 2 && (!st.d.date || !CRENEAUX[st.d.creneau] || st.d.date < todayISO())) st.step = 2;
+      if (st.kind === 'rdv' && st.step > 2 && (!st.d.date || !CRENEAUX[st.d.creneau] || st.d.date < premierJour())) st.step = 2;
       if ((typeof st.step !== 'number' && st.step !== 'chat') || st.step < 1) st.step = 1;
       if (!CATEGORIES.find(c => c.id === st.cat && !c.bientot)) st.cat = 'ordi';
       st.sel = st.sel.filter(id => svc(id)); if (st.pack && !PACKS.find(x => x.id === st.pack)) st.pack = null;
@@ -95,21 +96,24 @@ function creneauxFor(date, agence = agenceKey()) {
   const day = parseISO(date).getDay();
   if (!HORAIRES[day]) return [];
   const keys = day === 6 ? ['samedi'] : ['matin', 'aprem'];
-  const full = slotCache[date + '|' + agence] || {};
+  const restants = slotCache[date + '|' + agence] || {};
   const now = new Date();
   return keys.map(k => {
+    if (date < premierJour()) return [k, date === todayISO() ? 'Pas le jour même' : 'Passé'];
     if (date === todayISO() && now.getHours() >= CRENEAUX[k].h[1] - 1) return [k, 'Passé'];
-    if (full[k]) return [k, 'Complet'];
+    if (restants[k] === 0) return [k, 'Complet'];
     return [k, ''];
   });
 }
 
+// places restantes d'un créneau (null = pas encore connu)
+const places = (date, k, agence = agenceKey()) => { const r = slotCache[date + '|' + agence]; return r && typeof r[k] === 'number' ? r[k] : null; };
 function nextFreeSlot() {
-  const t = todayISO();
+  const t = premierJour();
   for (let i = 0; i < 14; i++) {
     const v = addDays(t, i);
     const free = creneauxFor(v, 'ducos').find(([, why]) => !why);
-    if (free) return `${i === 0 ? "Aujourd'hui" : i === 1 ? 'Demain' : shortDate(v)}, ${CRENEAUX[free[0]].label.toLowerCase()}`;
+    if (free) return `${v === addDays(todayISO(), 1) ? 'Demain' : shortDate(v)}, ${CRENEAUX[free[0]].label.toLowerCase()}`;
   }
   return '';
 }
@@ -123,7 +127,12 @@ async function fetchSlots(date) {
   try {
     const res = await fetch(`${CONFIG.endpoint}?action=slots&date=${date}&agence=${agenceKey()}`);
     const data = await res.json();
-    if (data.ok) slotCache[key] = data.complet || {};
+    if (data.ok) {
+      const cap = data.capacite || CONFIG.placesParCreneau;
+      // moteur à jour : places restantes ; ancien moteur : seulement « complet »
+      slotCache[key] = data.restants || Object.fromEntries(Object.keys(CRENEAUX).map(k => [k, (data.complet || {})[k] ? 0 : null]).filter(([, v]) => v !== null));
+      slotCache[key].capacite = cap;
+    }
   } catch (e) { /* hors ligne : tous les créneaux restent proposés */ }
   if (state.step === 2) render();
 }
@@ -400,7 +409,7 @@ const VIEWS = {
         }).join('')}</span></div>
       <div class="cats" role="tablist" aria-label="Type de besoin">${CATEGORIES.filter(c => !c.bientot && c.univers === univOf(state.cat)).map(c => {
         const n = c.services.filter(id => state.sel.includes(id) && !(packValid() && pack(state.pack).items[id])).length;
-        return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : ''}</button>`;
+        return `<button type="button" role="tab" style="--t:${c.couleur}" aria-selected="${state.cat === c.id}" onclick="setCat('${c.id}')">${ico(c.icon)}<span>${c.nom}</span>${n ? `<em class="count">${n}</em>` : c.nouveau ? '<em class="neuf">Nouveau</em>' : ''}</button>`;
       }).join('')}</div>
       ${(c => `<div class="cat-hero" style="--t:${c.couleur}">${scene(c)}<div><b>${esc(c.accroche)}</b><small>${c.services.map(id => esc(svc(id).nom)).join(' · ')}</small></div></div>`)(CATEGORIES.find(c => c.id === state.cat))}
       <div class="grid g5 services" role="tabpanel">${CATEGORIES.find(c => c.id === state.cat).services.map(id => {
@@ -445,25 +454,26 @@ const VIEWS = {
     if (state.kind !== 'rdv') return h;
 
     // Date + créneaux
-    const t = todayISO();
+    const t = premierJour();
     const quick = [];
-    for (let i = 0; quick.length < 4 && i < 10; i++) {
+    for (let i = 0; quick.length < 4 && i < 12; i++) {
       const v = addDays(t, i);
-      if (!creneauxFor(v).some(([, why]) => why !== 'Passé')) continue;
-      quick.push([v, i === 0 ? "Aujourd'hui" : i === 1 ? 'Demain' : shortDate(v)]);
+      if (!creneauxFor(v).some(([, why]) => !why)) continue;
+      quick.push([v, v === addDays(todayISO(), 1) ? 'Demain' : shortDate(v)]);
     }
     h += `<h3>${d.mode === 'atelier' ? 'Quand passez-vous déposer le matériel ?' : 'Quand souhaitez-vous le rendez-vous ?'} <span class="req">*</span></h3>
       <div class="when">
         <div class="chips">${quick.map(([v, l]) => `<button type="button" class="chip ${d.date === v ? 'on' : ''}" onclick="setDate('${v}')">${l}</button>`).join('')}</div>
         <input id="date" type="date" aria-label="Date du rendez-vous" min="${t}" value="${esc(d.date)}" onchange="setDate(this.value)">
-      </div>`;
+      </div>
+      <p class="muted small">Rendez-vous à partir de demain, ${CONFIG.placesParCreneau} clients maximum le matin et l’après-midi pour bien prendre le temps. Urgence aujourd’hui ? <a href="${telUrl(AGENCES[agenceKey()].tel)}">Appelez le ${esc(AGENCES[agenceKey()].tel)}</a>.</p>`;
     if (d.date) {
       const list = creneauxFor(d.date);
       const dk = delaiKey(d.date);
       if (!list.length) h += `<p class="notice">Nous sommes fermés ce jour-là. Choisissez un autre jour.</p>`;
       else h += `<div class="grid g3 slots" role="radiogroup" aria-label="Créneau">${list.map(([k, why]) => tile({
           name: 'creneau', value: k, checked: d.creneau === k && !why, disabled: !!why, title: CRENEAUX[k].label,
-          sub: why ? `<span class="full">${why}</span>` : `<span class="mono">${CRENEAUX[k].heures}</span>`, price: !why && d.mode === 'site' && CRENEAUX[k].prix ? '+' + CRENEAUX[k].prix + ' €' : '',
+          sub: why ? `<span class="full">${why}</span>` : `<span class="mono">${CRENEAUX[k].heures}</span>${(n => n === null ? '' : `<span class="places ${n === 1 ? 'derniere' : ''}">${n === 1 ? 'Dernière place' : n + ' places libres'}</span>`)(places(d.date, k))}`, price: !why && d.mode === 'site' && CRENEAUX[k].prix ? '+' + CRENEAUX[k].prix + ' €' : '',
           onchange: `setD('creneau','${k}')` })).join('')}</div>`;
       if (list.length) h += `<p class="delai delai-${dk}">${frDate(d.date)} · <b>${DELAIS[dk].label}</b>${DELAIS[dk].prix ? ` (+${DELAIS[dk].prix} €)` : ''}</p>`;
     }
@@ -648,7 +658,7 @@ function next() {
     if (d.mode === 'site' && !d.commune) return error('Choisissez votre commune.');
     if (kind === 'rdv') {
       if (!d.date) return error('Choisissez une date.');
-      if (d.date < todayISO()) return error('Cette date est déjà passée.');
+      if (d.date < premierJour()) return error('Les rendez-vous se prennent à partir de demain. Pour une urgence aujourd’hui, appelez-nous.');
       const ok = creneauxFor(d.date).some(([k, why]) => k === d.creneau && !why);
       if (!ok) return error('Choisissez un créneau disponible.');
     }
@@ -745,6 +755,7 @@ async function send() {
       google = await res.json();
     } catch (e) { google = { ok: false, reason: 'reseau' }; }
   }
+  if (google && !google.ok && google.reason === 'delai') { sending = false; goTo(2); return error('Les rendez-vous se prennent à partir de demain. Pour une urgence aujourd’hui, appelez-nous.'); }
   if (google && !google.ok && google.reason === 'complet') {
     sending = false;
     delete slotCache[d.date + '|' + lead.agence];

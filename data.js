@@ -18,7 +18,9 @@ const CONFIG = {
   margeHaute: 1.3,           // fourchette haute = prix de base × margeHaute (hors packs, qui ont un prix fixe)
   validiteDevis: 30,         // jours
   remiseEtudiant: 15,        // % sur la main d'œuvre (services marqués remise: true) — sur présentation de la carte étudiant
-  paiement3fois: 500         // paiement en 3 fois sans frais à partir de ce montant (sites, applications, installations)
+  paiement3fois: 500,        // paiement en 3 fois sans frais à partir de ce montant (sites, applications, installations)
+  placesParCreneau: 3,       // clients max par agence le matin, et autant l'après-midi (même valeur que CAPACITE dans le script Google)
+  delaiMinJours: 1           // pas de rendez-vous le jour même : premier jour réservable = demain
 };
 
 // Identité légale (mentions sur les devis et pages légales)
@@ -116,7 +118,7 @@ const SERVICES = [
       ['cable', 'Gestion des câbles et RGB', 19], ['upgrade', 'Mise à niveau d’un PC existant', 35]] },
   // --- Caméras
   { id: 'camera', icon: 'camera', nom: 'Vidéosurveillance', desc: 'Caméras et accès mobile', base: 120, modes: ['site'],
-    options: [['cam2', '2 caméras', 180], ['cam4', '4 caméras', 340], ['cam6', '6 caméras', 490], ['cam8', '8 caméras', 640], ['night', 'Vision de nuit', 49], ['remote', 'Accès smartphone', 49], ['nvr', 'Enregistreur + stockage', 190]] },
+    options: [['cam2', '2 caméras', 180], ['cam4', '4 caméras', 340], ['cam6', '6 caméras', 490], ['cam8', '8 caméras', 640], ['night', 'Vision de nuit', 49], ['remote', 'Accès smartphone', 49], ['nvr', 'Enregistreur + stockage', 190], ['solaire', 'Caméra solaire 4G (sans prise ni Wi-Fi)', 149]] },
   { id: 'alarme', icon: 'bell', nom: 'Alarme & accès', desc: 'Alarme, visiophone, serrure', base: 39, modes: ['site'],
     note: 'Matériel non inclus : nous vous conseillons des équipements fiables et compatibles (sur devis).',
     options: [['alarm', 'Alarme connectée', 69], ['visio', 'Visiophone / sonnette vidéo', 45], ['lock', 'Serrure connectée', 45],
@@ -131,13 +133,20 @@ const SERVICES = [
     options: [['tv', 'Installation et réglage TV connectée', 25], ['box', 'Box internet / TV et chaînes', 20], ['son', 'Barre de son / home cinéma', 35],
       ['proj', 'Vidéoprojecteur', 35], ['cast', 'Afficher le téléphone sur la TV', 15], ['mural', 'Fixation murale de la TV (hors support)', 39]] },
   // --- Wi-Fi
+  { id: 'starlink', icon: 'satellite', nom: 'Installation Starlink', desc: 'Internet par satellite, partout en Martinique', base: 119, modes: ['site'],
+    note: 'Le kit et l’abonnement se commandent chez Starlink (nous vous aidons à le faire). Nous posons l’antenne au meilleur endroit, sans obstacle, et réglons le Wi-Fi de toute la maison.',
+    compris: ['Repérage de l’emplacement sans obstacle (arbres, mornes, toits)', 'Pose de l’antenne et passage propre du câble', 'Activation et réglage du Wi-Fi', 'Test de débit devant vous'],
+    pasCompris: ['Kit Starlink et abonnement (achetés chez Starlink)', 'Pose en hauteur au-delà d’un étage (sur devis)'],
+    options: [['commande', 'Aide à la commande et à l’activation', 0, 'Offert'], ['toit', 'Fixation sur le toit, un mât ou un pignon', 69], ['cable', 'Câble long ou passage en gaine (jusqu’à 30 m)', 39],
+      ['mesh', 'Wi-Fi dans toute la maison (bornes mesh)', 79], ['secours', 'Secours automatique : box et Starlink ensemble', 59], ['onduleur', 'Internet maintenu pendant les coupures (onduleur)', 59],
+      ['mini', 'Starlink Mini : réglage bateau, véhicule ou chantier', 29]] },
   { id: 'network', icon: 'wifi', nom: 'Internet et Wi-Fi', desc: 'Réseau maison ou bureau', base: 49, remise: true, modes: ['site'],
     options: [['audit', 'Diagnostic Wi-Fi', 35], ['wifi', 'Amélioration Wi-Fi', 49], ['mesh', 'Wi-Fi dans toute la maison', 99], ['router', 'Configuration box / routeur', 35], ['cabling', 'Câblage', 99], ['pro', 'Réseau professionnel', 199]] },
   // --- Aide & suivi
   { id: 'cours', icon: 'users', nom: 'Cours & accompagnement', desc: 'Débutants, seniors, à domicile', base: 35, remise: true, modes: ['site', 'atelier', 'distance'],
     note: 'Séance d’1 h à votre rythme. Cochez les sujets qui vous intéressent.',
     options: [['mail', 'Emails, WhatsApp, appels vidéo', 0, 'Inclus'], ['banque', 'Banque et démarches en ligne', 0, 'Inclus'], ['photos', 'Photos : ranger et partager', 0, 'Inclus'],
-      ['arnaques', 'Repérer les arnaques', 0, 'Inclus'], ['h2', 'Séance de 2 h au lieu d’1 h', 25], ['carnet', 'Carnet de 5 séances', 99]] },
+      ['arnaques', 'Repérer les arnaques', 0, 'Inclus'], ['ia', 'Découvrir l’intelligence artificielle (ChatGPT…) sans risque', 0, 'Inclus'], ['h2', 'Séance de 2 h au lieu d’1 h', 25], ['carnet', 'Carnet de 5 séances', 99]] },
   { id: 'abonnement', icon: 'repeat', nom: 'Abonnement entretien', desc: 'Suivi mensuel de votre PC', base: 9.9, mensuel: true, modes: ['distance', 'site'],
     note: 'Inclus chaque mois : contrôle de votre PC à distance, suivi de vos sauvegardes et tarif réduit sur les dépannages.',
     options: [['pc2', 'Ordinateur supplémentaire', 4.9], ['visite', 'Visite annuelle à domicile', 5], ['prio', 'Intervention prioritaire', 3]] },
@@ -197,7 +206,7 @@ const SERVICES = [
   { id: 'devsurmesure', icon: 'code', nom: 'Programmation sur mesure', desc: 'Automatisation, outils, logiciels', base: 190, modes: ['distance', 'site', 'atelier'],
     note: 'Devis après un premier échange gratuit : nous partons de votre besoin réel, et le programme vous appartient.',
     options: [['excel', 'Automatisation Excel / Google Sheets', 90], ['script', 'Script ou petit outil sur mesure', 190], ['logiciel', 'Logiciel métier (gestion, stocks, planning)', 890],
-      ['api', 'Connexion entre vos outils (API)', 290], ['bot', 'Assistant / chatbot pour vos clients', 390]] },
+      ['api', 'Connexion entre vos outils (API)', 290], ['bot', 'Assistant IA pour répondre à vos clients', 390], ['iaform', 'Former votre équipe à l’IA (2 h)', 149]] },
   // --- Marketing
   { id: 'marketing', icon: 'megaphone', nom: 'Stratégie marketing', desc: 'Être visible, trouver des clients', base: 149, modes: ['distance', 'site', 'atelier'],
     note: 'On commence par un bilan de votre visibilité (Google, réseaux, site), puis un plan simple avec les actions qui rapportent le plus.',
@@ -250,6 +259,8 @@ const CATEGORIES = [
     accroche: 'Console qui chauffe, PC gamer à monter, jeux rétro : on règle tout.' },
   { id: 'aide',      univers: 'info',   nom: 'Aide & suivi',  icon: 'users',      badge: 'chat',       couleur: '#f59e0b', services: ['cours', 'abonnement'],
     accroche: 'Apprenez à votre rythme, avec quelqu’un de patient, chez vous.' },
+  { id: 'starlink',  univers: 'maison', nom: 'Starlink',      icon: 'satellite',  badge: 'wifi',       couleur: '#cbd5e1', services: ['starlink'], nouveau: true,
+    accroche: 'Internet rapide partout, même dans les mornes : on installe votre Starlink.' },
   { id: 'camera',    univers: 'maison', nom: 'Caméras',       icon: 'camera',     badge: 'shield',     couleur: '#fb923c', services: ['camera', 'alarme'],
     accroche: 'Surveillez votre maison depuis votre téléphone, de jour comme de nuit.' },
   { id: 'domo',      univers: 'maison', nom: 'Domotique',     icon: 'home',       badge: 'smartphone', couleur: '#22c55e', services: ['domotique'],
@@ -314,6 +325,8 @@ const PACKS = [
     inclus: ['Signal mesuré partout', 'Wi-Fi dans chaque pièce', 'Box et appareils réglés'], items: { network: ['audit', 'mesh', 'router'] } },
   { id: 'video',   univers: 'maison', icon: 'camera', pour: 'Maison', nom: 'Surveiller ma maison', prix: 349, remise: false,
     inclus: ['2 caméras installées', 'Vision de nuit', 'Vue sur smartphone'], items: { camera: ['cam2', 'night', 'remote'] } },
+  { id: 'starlink', univers: 'maison', icon: 'satellite', pour: 'Starlink', populaire: true, nom: 'Starlink installé, Wi-Fi partout', prix: 229, remise: false,
+    inclus: ['Antenne posée sur le toit', 'Wi-Fi dans toute la maison', 'Test de débit devant vous'], items: { starlink: ['commande', 'toit', 'mesh'] } },
   { id: 'tv',      univers: 'maison', icon: 'tv',     pour: 'Maison', nom: 'Ma TV et ma box bien installées', prix: 59, remise: true,
     inclus: ['TV connectée réglée', 'Box et chaînes', 'Téléphone affiché sur la TV'], items: { multimedia: ['tv', 'box', 'cast'] } },
   // Web & marketing
@@ -349,7 +362,11 @@ const SYMPTOMES = [
   { id: 'courant', label: 'Les coupures de courant abîment mon matériel', items: { ups: ['auto'] } },
   { id: 'emu',     label: 'Je veux jouer à mes anciens jeux',         items: { emulation: ['emu'] } },
   { id: 'consol',  label: 'Ma console chauffe ou rame',               items: { console: ['clean', 'storage'] } },
+  { id: 'starlink', label: 'Je veux Starlink (internet par satellite)', pack: 'starlink' },
+  { id: 'lenteur', label: 'Internet est lent ou coupe souvent chez moi', items: { network: ['audit'] } },
   { id: 'wifi',    label: 'Le Wi-Fi ne capte pas partout',            pack: 'wifi' },
+  { id: 'ia',      label: 'Je veux apprendre à utiliser l’IA (ChatGPT)', items: { cours: ['ia'] } },
+  { id: 'cam4g',   label: 'Je veux une caméra sans Wi-Fi (terrain, chantier)', items: { camera: ['solaire'] } },
   { id: 'net',     label: "Je n'ai plus internet",                    items: { network: ['router'] } },
   { id: 'surv',    label: 'Je veux surveiller ma maison',             pack: 'video' },
   { id: 'alarme',  label: 'Je veux une alarme ou un visiophone',      items: { alarme: ['alarm'] } },
@@ -384,7 +401,7 @@ const MODES = {
 const DELAIS = {
   standard: { label: 'Standard',          desc: '3 jours ou plus',     prix: 0 },
   rapide:   { label: 'Rapide',            desc: 'Sous 24 à 48 h',      prix: 15 },
-  urgence:  { label: 'Urgence jour même', desc: 'Selon disponibilité', prix: 35 }
+  urgence:  { label: 'Urgence jour même', desc: 'Par téléphone uniquement', prix: 35 }
 };
 
 // h : heures de début et de fin (utilisées pour le planning) — samedi uniquement le samedi
@@ -426,6 +443,7 @@ const ICONS = {
   chat: '<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>',
   box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
   grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+  satellite: '<path d="M4 10a9 9 0 0 0 10 10z"/><path d="M9 15l4-4"/><circle cx="13.5" cy="10.5" r="1.2"/><path d="M15 3a6 6 0 0 1 6 6M15 6.5a2.5 2.5 0 0 1 2.5 2.5"/>',
   alert: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',

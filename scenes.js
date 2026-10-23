@@ -126,6 +126,27 @@
       `<path d="M74 150 l10 -76 h34 l10 76 z" fill="${c}"/><path d="M84 74 h34" stroke="#fff" stroke-width="2" opacity=".6"/>` + [96, 110, 124, 138].map(y => `<path d="M${76 + (150 - y) * .13} ${y} h${50 - (150 - y) * .26}" stroke="#000" stroke-opacity=".15"/>`).join('') +
       r(190, 40, 116, 120, '#ffffff', 12) + t(204, 64, 'Vase', { s: 12, b: 1 }) + t(204, 82, 'PLA · vert', { s: 10, c: '#475569' }) + barre(204, 96, 88, 1, c) + t(204, 128, '100 %', { s: 18, b: 1, c }) + t(204, 146, 'Impression terminée', { s: 9, c: '#475569' })
   };
+  Object.assign(S, {
+    starlink: c => `<defs><linearGradient id="sc-nuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs>` +
+      r(14, 14, 180, 172, 'url(#sc-nuit)', 14) + [[40, 34], [70, 52], [150, 30], [170, 60], [110, 40]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.4" fill="#fff"/>`).join('') +
+      `<g transform="translate(150 40) rotate(-20)"><rect x="-10" y="-3" width="20" height="6" rx="1" fill="#e2e8f0"/><rect x="-22" y="-2" width="10" height="4" fill="#60a5fa"/><rect x="12" y="-2" width="10" height="4" fill="#60a5fa"/></g>` +
+      `<path d="M96 104 Q120 70 146 50" stroke="#fde68a" stroke-width="2" stroke-dasharray="4 4" fill="none"/>` +
+      `<path d="M14 160 Q60 120 104 150 T194 140 V186 H14 Z" fill="#16a34a" opacity=".75"/>` +
+      `<path d="M52 150 l40 -30 l40 30 v30 h-80 z" fill="#f8fafc"/><path d="M46 152 l46 -36 l46 36" fill="none" stroke="#b91c1c" stroke-width="6" stroke-linejoin="round"/>` +
+      `<g transform="translate(96 110) rotate(-25)"><rect x="-13" y="-8" width="26" height="16" rx="2" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/><path d="M0 8 v8" stroke="#334155" stroke-width="2"/></g>` +
+      tel(206, 8, t(258, 40, 'Starlink', { s: 12, b: 1, a: 'middle' }) + ok(258, 60) + t(258, 80, 'En ligne', { s: 11, b: 1, a: 'middle', c: '#16a34a' }) +
+        t(258, 106, '180', { s: 22, b: 1, a: 'middle', c: '#0f172a' }) + t(258, 120, 'Mb/s', { s: 9, a: 'middle', c: '#475569' }) +
+        t(222, 146, 'Obstacles', { s: 8.5 }) + t(294, 146, '0 %', { s: 8.5, a: 'end', b: 1, c: '#16a34a' }) + t(222, 162, 'Wi-Fi', { s: 8.5 }) + t(294, 162, 'Partout', { s: 8.5, a: 'end', b: 1, c: '#16a34a' }), 104, 184),
+    onduleur: c => r(18, 26, 150, 148, '#f8fafc', 12) + `<path d="M74 44 l-14 30 h14 l-8 26 l26 -36 h-14 l8 -20 z" fill="#f59e0b"/>` +
+      t(93, 124, 'Coupure de courant', { s: 11, b: 1, a: 'middle' }) + t(93, 142, '14:02 · quartier', { s: 10, a: 'middle', c: '#475569' }) + t(93, 162, 'Rien ne s’éteint', { s: 10, a: 'middle', b: 1, c: '#16a34a' }) +
+      r(180, 26, 124, 148, '#ffffff', 12) + t(194, 50, 'Onduleur', { s: 12, b: 1 }) + barre(194, 60, 96, .7, '#16a34a') + t(194, 84, '18 min d’autonomie', { s: 10, c: '#475569' }) +
+      ok(198, 108) + t(210, 112, 'Ordinateur allumé', { s: 10 }) + ok(198, 130) + t(210, 134, 'Box internet OK', { s: 10 }) + ok(198, 152) + t(210, 156, 'Fichiers sauvés', { s: 10 }),
+    ia: c => fenetre(16, 16, 288, 168, 'Assistant IA', c,
+      r(120, 44, 172, 34, '#e0e7ff', 10) + t(130, 58, 'Rédige une réponse polie', { s: 10 }) + t(130, 71, 'à ce client pour son devis', { s: 10 }) +
+      `<circle cx="38" cy="100" r="10" fill="${c}"/>` + t(38, 104, 'IA', { s: 8, a: 'middle', c: '#fff', b: 1 }) +
+      r(54, 88, 200, 62, '#ffffff', 10, ' stroke="#e2e8f0"') + t(64, 104, 'Bonjour Madame Joseph,', { s: 10 }) + t(64, 119, 'merci pour votre demande. Votre', { s: 10 }) + t(64, 134, 'devis est prêt, le voici…', { s: 10 }) +
+      ok(36, 168) + t(48, 172, 'On vous apprend à l’utiliser, sans risque', { s: 9.5, c: '#475569' }))
+  });
   const POLE = { info: 'ordi', maison: 'camera', web: 'web', pro: 'pro', crea: 'drone' };
 
   window.scene = function (o, cls = '') {

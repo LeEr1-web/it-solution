@@ -140,6 +140,11 @@ PROSPECTION (prospection.html) — entreprises uniquement
     Lien direct vers un pôle : index.html?pole=web (ou ?cat=drone pour un onglet)
   - SYMPTOMES   : « Dites-nous ce qui ne va pas »
   - ZONES, COMMUNES, HORAIRES, AGENCES, DELAIS, CRENEAUX
+  - Rendez-vous : CONFIG.placesParCreneau (3 clients le matin, 3 l'après-midi, par agence ; même
+    valeur que CAPACITE dans le script Google) et CONFIG.delaiMinJours (1 = pas de rendez-vous le jour même).
+  ⚠ Les pages Google (installation-starlink-martinique.html, depannage-informatique-martinique.html…)
+    sont écrites à l'avance pour être bien lues par Google. Après un changement de prix ou de texte :
+    node generer-pages.js   (le contenu de ces pages est dans ce fichier ; il met aussi sitemap.xml à jour)
 
 ══════════════════════════════════════════════════════════════
 5. PUBLIER UNE MODIFICATION
@@ -158,6 +163,8 @@ PROSPECTION (prospection.html) — entreprises uniquement
   outils.js                petits outils communs (prix, dates, téléphone)
   index.html  app.js  style.css          site client
   services.html  services.js             page Services et tarifs
+  scenes.js                              illustrations (un exemple concret par catégorie)
+  generer-pages.js  *-martinique.html  pages-seo.js   pages Google, une par service (générées)
   fiche-tarifs.html .js .css             fiche tarifs imprimable
   gestion.html  gestion.js  gestion.css  page Rendez-vous
   prospection.html .js .css              prospection
