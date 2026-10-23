@@ -17,7 +17,8 @@ const CONFIG = {
   deplacementOffertDes: 200, // déplacement offert à partir de ce montant de prestation (€)
   margeHaute: 1.3,           // fourchette haute = prix de base × margeHaute (hors packs, qui ont un prix fixe)
   validiteDevis: 30,         // jours
-  remiseEtudiant: 15         // % sur la main d'œuvre (services marqués remise: true) — sur présentation de la carte étudiant
+  remiseEtudiant: 15,        // % sur la main d'œuvre (services marqués remise: true) — sur présentation de la carte étudiant
+  paiement3fois: 500         // paiement en 3 fois sans frais à partir de ce montant (sites, applications, installations)
 };
 
 // Identité légale (mentions sur les devis et pages légales)
@@ -67,6 +68,7 @@ const COMMUNES = [
 const SERVICES = [
   // --- Ordinateur : pannes, lenteur, réparations matérielles
   { id: 'repair', icon: 'monitor', nom: 'Dépannage PC', desc: 'Ne démarre plus, plantages', base: 35, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
+    compris: ['Diagnostic de la panne', 'Prix confirmé avant de réparer', 'Vos fichiers préservés'], pasCompris: ['Pièces à remplacer (prix annoncé avant)'],
     options: [['boot', 'Windows ne démarre plus', 35], ['bsod', 'Écran bleu, plantages', 35], ['screen', 'Écran noir au démarrage', 40], ['slow', 'PC très lent', 20], ['reinstall', 'Réinstallation de Windows', 45]] },
   { id: 'boost', icon: 'zap', nom: 'Accélérer Windows', desc: 'Nettoyage et optimisation', base: 39, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
     options: [['startup', 'Démarrage rapide', 15], ['clean', 'Nettoyage Windows', 20], ['drivers', 'Pilotes / mises à jour', 15], ['bloat', 'Logiciels inutiles retirés', 15], ['gaming', 'Optimisation jeux', 30]] },
@@ -146,29 +148,51 @@ const SERVICES = [
       ['transfer', 'Transfert vers un nouveau téléphone', 20], ['backup', 'Sauvegarde des photos et contacts', 15], ['setup', 'Configuration et applications', 15],
       ['parent', 'Contrôle parental', 15]] },
   // --- Web & apps (pro et particuliers)
-  { id: 'siteweb', icon: 'globe', nom: 'Développement web', desc: 'Sites et boutiques en ligne', base: 390, modes: ['distance', 'site', 'atelier'],
-    note: 'Prix indicatifs : devis précis après un premier échange gratuit. Le site vous appartient.',
-    options: [['pages', '5 pages supplémentaires', 90], ['resa', 'Prise de rendez-vous en ligne', 150], ['shop', 'Boutique en ligne', 390],
+  { id: 'siteweb', icon: 'globe', nom: 'Développement web', desc: 'Page unique, site vitrine ou boutique', base: 390, modes: ['distance', 'site', 'atelier'],
+    note: 'Le prix de base est un site d’une page. Le site vous appartient (accès remis), avec 3 mois de maintenance offerts. Paiement en 3 fois sans frais dès 500 €.',
+    compris: ['Site d’une page adapté au téléphone', 'Textes et photos mis en forme', 'Formulaire de contact et bouton WhatsApp', 'Mise en ligne et 2 séries de retouches'],
+    pasCompris: ['Hébergement et nom de domaine (option, ou maintenance)', 'Rédaction complète des textes', 'Photos professionnelles (voir drone)'],
+    options: [['pages', 'Site vitrine complet (jusqu’à 5 pages)', 300], ['resa', 'Prise de rendez-vous en ligne', 290], ['shop', 'Boutique en ligne (jusqu’à 30 produits, paiement par carte)', 790],
       ['seo', 'Référencement local (Google)', 120], ['domain', 'Nom de domaine + email pro (1 an)', 49], ['logo', 'Logo simple', 90]] },
-  { id: 'appmobile', icon: 'smartphone', nom: 'Application mobile', desc: 'Espaces clients, outils métier', base: 990, modes: ['distance', 'site', 'atelier'],
-    note: 'Prix indicatifs : nous construisons l’application autour des actions utiles à vos clients. Devis après échange.',
+  { id: 'appmobile', icon: 'smartphone', nom: 'Application mobile', desc: 'Espaces clients, outils métier', base: 1290, modes: ['distance', 'site', 'atelier'],
+    note: 'Pour décider sans risque : une maquette cliquable à tester sur votre téléphone (290 €), déduite si vous commandez l’application. Paiement en 3 fois sans frais.',
+    compris: ['Application web installable sur téléphone', 'Jusqu’à 5 écrans', 'Code et accès remis', 'Mise en ligne et prise en main'],
+    pasCompris: ['Frais Apple et Google (si publication sur les Stores)', 'Hébergement (quelques euros par mois)', 'Nouvelles fonctions après livraison (sur devis)'],
     options: [['client', 'Espace client (compte, historique)', 490], ['rdv', 'Réservation / rendez-vous', 390], ['notif', 'Notifications', 190],
       ['admin', 'Interface de gestion', 490], ['stores', 'Publication App Store / Google Play', 190]] },
   { id: 'maintweb', icon: 'repeat', nom: 'Maintenance de site', desc: 'Mises à jour, sauvegardes, modifs', base: 29, mensuel: true, modes: ['distance'],
-    note: 'Prix par mois : mises à jour, sauvegardes et surveillance du site. Étudié selon votre site.',
-    options: [['secu', 'Surveillance sécurité renforcée', 10], ['modifs', '1 h de modifications par mois', 25], ['stats', 'Rapport de visites mensuel', 5]] },
+    note: 'Prix par mois, sans engagement. Pour un site fait ailleurs, une première sauvegarde et un bilan sont faits avant tout.',
+    compris: ['Mises à jour du site', 'Sauvegarde chaque semaine, restauration testée', 'Surveillance : alerte si le site tombe', 'Petit rapport chaque mois'],
+    pasCompris: ['Nouvelles pages ou fonctions (option ou devis)', 'Hébergement (option)'],
+    options: [['heberg', 'Hébergement, nom de domaine et cadenas https', 15], ['secu', 'Surveillance sécurité renforcée', 10], ['modifs', '1 h de modifications par mois', 25], ['stats', 'Rapport de visites mensuel', 5]] },
+  { id: 'sitepirate', icon: 'alert', nom: 'Site piraté ou en panne', desc: 'Remise en ligne rapide', base: 149, modes: ['distance'],
+    note: 'Votre site ne s’affiche plus, affiche une erreur ou a été piraté : il est remis en ligne, avec un rapport de ce qui s’est passé. Prix fixe annoncé avant.',
+    compris: ['Diagnostic de la panne', 'Remise en ligne du site', 'Rapport simple : la cause et quoi faire'],
+    pasCompris: ['Refonte du site (voir Développement web)'],
+    options: [['nettoyage', 'Nettoyage du piratage et faille fermée', 100], ['lent', 'Site trop lent (images, cache)', 49], ['sauvegarde', 'Mise en place d’une sauvegarde automatique', 39]] },
   // --- Cybersécurité (pros)
+  { id: 'cyberexpress', icon: 'search', nom: 'Contrôle sécurité express', desc: 'Votre site et vos emails vérifiés', base: 79, modes: ['distance'],
+    note: 'Un premier contrôle, à distance et sans rien toucher : vous savez en quelques jours ce qui va bien et ce qui est à corriger. Déduit si vous commandez l’audit dans le mois.',
+    compris: ['Cadenas https et en-têtes de sécurité', 'Logiciels et extensions à jour', 'Emails protégés contre l’usurpation (SPF, DMARC)', 'Rapport court avec les priorités'],
+    pasCompris: ['Tests à la main des comptes et formulaires (voir l’audit)', 'Corrections (sur devis)'],
+    options: [['site2', 'Site web supplémentaire', 39], ['appel', 'Explication du rapport au téléphone (20 min)', 0, 'Offert']] },
   { id: 'cyber', icon: 'lock', nom: 'Audit cybersécurité', desc: 'Vérifications autorisées, corrections', base: 290, modes: ['distance', 'site'],
     note: 'Uniquement sur vos propres systèmes ou avec autorisation écrite. Rapport clair : constats expliqués et corrections ciblées.',
+    compris: ['Accord écrit sur ce qui est vérifié', 'Vérifications à la main (comptes, formulaires, sauvegardes)', 'Rapport classé par priorité', 'Contre-vérification après vos corrections'],
+    pasCompris: ['Attaques destructives : rien n’est supprimé ni bloqué', 'Certification officielle'],
     options: [['site', 'Vérification d’un site web supplémentaire', 150], ['email', 'Sécurité des emails (SPF, DMARC)', 90], ['acces', 'Revue des accès et mots de passe', 120],
       ['fix', 'Corrections ciblées (par heure)', 59], ['form', 'Sensibilisation de l’équipe (1 h)', 99]] },
   // --- Drone & impression 3D
-  { id: 'drone', icon: 'drone', nom: 'Drone', desc: 'Images aériennes, observation', base: 149, modes: ['site'],
-    note: 'Images aériennes professionnelles et observation visuelle, sous réserve de faisabilité (météo, zone de vol autorisée).',
-    options: [['photo', 'Photos aériennes', 0, 'Inclus'], ['video', 'Vidéo aérienne montée', 120], ['inspect', 'Observation toiture / bâtiment', 60]] },
-  { id: 'impression3d', icon: 'box', nom: 'Impression 3D', desc: 'Objets, supports, pièces simples', base: 15, modes: ['atelier', 'distance'],
-    note: 'Une sélection de modèles est en préparation. Fichiers existants et adaptations simples étudiés au cas par cas (prix selon la taille et la matière).',
-    options: [['fichier', 'Impression d’un fichier existant', 0, 'Sur devis'], ['adapt', 'Adaptation simple d’un modèle', 25], ['piece', 'Pièce de remplacement (étude)', 35], ['serie', 'Petite série (5 pièces ou plus)', 0, 'Sur devis']] },
+  { id: 'drone', icon: 'drone', nom: 'Drone', desc: 'Photos, vidéos, toitures vues du ciel', base: 149, modes: ['site'],
+    note: 'Forfait : 30 minutes sur place et une dizaine de photos retouchées, livrées sous 48 h. Selon la météo et les zones de vol autorisées.',
+    compris: ['30 min de vol sur place', 'Une dizaine de photos HD retouchées', 'Livraison en ligne sous 48 h'],
+    pasCompris: ['Zones interdites de vol (aéroport, sites protégés)', 'Montage long (sur devis)'],
+    options: [['photo', 'Photos aériennes', 0, 'Inclus'], ['video', 'Clip vidéo 4K monté (30 à 45 s)', 120], ['inspect', 'Inspection de toiture avec rapport photo', 60], ['chantier', 'Suivi de chantier (passage suivant)', 99]] },
+  { id: 'impression3d', icon: 'box', nom: 'Impression 3D', desc: 'Objets, supports, pièces simples', base: 25, modes: ['atelier', 'distance'],
+    note: 'Prix de base : un objet jusqu’à 10 cm d’après un fichier existant, à retirer en agence. Plus grand, ou plusieurs pièces : prix annoncé avant d’imprimer.',
+    compris: ['Objet jusqu’à 10 cm', 'Matière et couleur au choix (PLA ou PETG)', 'Retrait en agence'],
+    pasCompris: ['Création du modèle 3D au-delà de 15 min (49 € de l’heure)'],
+    options: [['fichier', 'Impression d’un fichier existant', 0, 'Inclus'], ['adapt', 'Adaptation simple d’un modèle', 25], ['piece', 'Pièce de remplacement (mesure et modèle)', 35], ['serie', 'Petite série (5 pièces ou plus)', 0, 'Sur devis']] },
   // --- Programmation
   { id: 'devsurmesure', icon: 'code', nom: 'Programmation sur mesure', desc: 'Automatisation, outils, logiciels', base: 190, modes: ['distance', 'site', 'atelier'],
     note: 'Devis après un premier échange gratuit : nous partons de votre besoin réel, et le programme vous appartient.',
@@ -194,6 +218,7 @@ const SERVICES = [
   { id: 'pos', icon: 'receipt', nom: 'Caisse enregistreuse', desc: 'Pour commerces', base: 149, modes: ['site'],
     options: [['touch', 'Écran tactile', 190], ['drawer', 'Tiroir-caisse', 79], ['scanner', 'Lecteur code-barres', 59], ['printer', 'Imprimante ticket', 79], ['stock', 'Gestion des stocks', 49], ['tpe', 'Liaison terminal CB', 39]] },
   { id: 'maintenance', icon: 'tools', nom: 'Maintenance informatique', desc: 'Assistance et entretien du parc', base: 49, remise: true, modes: ['site', 'distance'], appareil: true,
+    compris: ['Assistance par téléphone et à distance', 'Mises à jour et antivirus suivis', 'Un interlocuteur qui connaît votre parc'], pasCompris: ['Matériel et licences'],
     options: [['pc', 'Entretien des postes', 30], ['security', 'Antivirus des postes', 25], ['server', 'Serveur', 89], ['check', 'Bilan de santé du parc', 19]] }
 ];
 
@@ -233,7 +258,7 @@ const CATEGORIES = [
     accroche: 'Le Wi-Fi partout dans la maison, sans coupure.' },
   { id: 'multimedia', univers: 'maison', nom: 'TV & multimédia', icon: 'tv',      badge: 'zap',        couleur: '#f472b6', services: ['multimedia'],
     accroche: 'Votre TV, votre box et votre son bien installés, sans prise de tête.' },
-  { id: 'web',       univers: 'web',    nom: 'Site web',      icon: 'globe',      badge: 'search',     couleur: '#6366f1', services: ['siteweb', 'maintweb'],
+  { id: 'web',       univers: 'web',    nom: 'Site web',      icon: 'globe',      badge: 'search',     couleur: '#6366f1', services: ['siteweb', 'maintweb', 'sitepirate'],
     accroche: 'Un site qui présente votre activité et vous apporte des demandes.' },
   { id: 'appli',     univers: 'web',    nom: 'Application',   icon: 'smartphone', badge: 'users',      couleur: '#ec4899', services: ['appmobile'],
     accroche: 'Une application à votre nom, pensée pour vos clients.' },
@@ -247,7 +272,7 @@ const CATEGORIES = [
     accroche: 'Un réseau rapide et fiable pour toute l’équipe.' },
   { id: 'cloud',     univers: 'pro',    nom: 'Emails & cloud', icon: 'mail',      badge: 'cloud',      couleur: '#3b82f6', services: ['cloudpro'],
     accroche: 'Des emails à votre nom et des fichiers partagés, partout.' },
-  { id: 'cyber',     univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       badge: 'search',     couleur: '#f43f5e', services: ['cyber'],
+  { id: 'cyber',     univers: 'pro',    nom: 'Cybersécurité', icon: 'lock',       badge: 'search',     couleur: '#f43f5e', services: ['cyberexpress', 'cyber'],
     accroche: 'Vérifiez vos accès et vos sites avant qu’un pirate ne le fasse.' },
   { id: 'caisse',    univers: 'pro',    nom: 'Caisse',        icon: 'receipt',    badge: 'zap',        couleur: '#facc15', services: ['pos'],
     accroche: 'Une caisse simple, rapide et fiable pour votre commerce.' },
@@ -292,8 +317,8 @@ const PACKS = [
   { id: 'tv',      univers: 'maison', icon: 'tv',     pour: 'Maison', nom: 'Ma TV et ma box bien installées', prix: 59, remise: true,
     inclus: ['TV connectée réglée', 'Box et chaînes', 'Téléphone affiché sur la TV'], items: { multimedia: ['tv', 'box', 'cast'] } },
   // Web & marketing
-  { id: 'lancer',  univers: 'web', icon: 'globe',     pour: 'Entreprise', nom: 'Lancer mon activité en ligne', prix: 590, remise: false,
-    inclus: ['Site vitrine à votre nom', 'Fiche Google Maps optimisée', 'Référencement local'], items: { siteweb: ['domain', 'seo'], marketing: ['google'] } },
+  { id: 'lancer',  univers: 'web', icon: 'globe',     pour: 'Entreprise', nom: 'Lancer mon activité en ligne', prix: 890, remise: false,
+    inclus: ['Site vitrine 5 pages à votre nom', 'Fiche Google Maps optimisée', 'Référencement local'], items: { siteweb: ['pages', 'domain', 'seo'], marketing: ['google'] } },
   { id: 'clients', univers: 'web', icon: 'megaphone', pour: 'Entreprise', nom: 'Trouver plus de clients', prix: 299, remise: false,
     inclus: ['Bilan et plan d’action', 'Fiche Google optimisée', 'Publicité + 4 visuels'], items: { marketing: ['google', 'pub', 'contenu'] } },
   // Entreprises
@@ -332,7 +357,8 @@ const SYMPTOMES = [
   { id: 'shop',    label: "J'ouvre ou j'équipe un commerce",          pack: 'shop' },
   { id: 'site',    label: 'Je veux un site web pour mon activité',    items: { siteweb: [] } },
   { id: 'appli',   label: 'Je veux une application pour mes clients', items: { appmobile: [] } },
-  { id: 'audit',   label: 'Je veux vérifier la sécurité de mon site', items: { cyber: [] } },
+  { id: 'audit',   label: 'Je veux vérifier la sécurité de mon site', items: { cyberexpress: [] } },
+  { id: 'pirate2', label: 'Mon site est piraté ou ne s’affiche plus', items: { sitepirate: [] } },
   { id: 'clients', label: 'Je veux plus de clients / être plus visible', items: { marketing: ['google'] } },
   { id: 'reseau',  label: 'Je n’ai pas le temps de gérer mes réseaux',  items: { reseaux: [] } },
   { id: 'droneph', label: 'Je veux des photos ou vidéos par drone',     items: { drone: ['photo'] } },
@@ -400,6 +426,7 @@ const ICONS = {
   chat: '<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>',
   box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
   grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+  alert: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',

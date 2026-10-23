@@ -888,7 +888,7 @@ function renderDevis(lead, received, google) {
       <div class="devis-client"><span class="mono">CLIENT</span><b>${esc(lead.name)}</b><span>${esc(lead.phone)} · ${esc(lead.email)}</span><span>${esc(lead.lieu)}</span>${lead.appareil ? `<span>Appareil : ${esc(lead.appareil)}</span>` : ''}</div>
       <table class="devis-table"><thead><tr><th>Désignation</th><th>Prix</th></tr></thead><tbody>${rows}</tbody>
         <tfoot><tr><td>Total estimé${r.savings + r.remise ? `<small>dont ${eur(r.savings + r.remise)} d'économie</small>` : ''}</td><td>${priceText(r)}</td></tr></tfoot></table>
-      <p class="devis-note">${CONFIG.mentionPrix ? esc(CONFIG.mentionPrix) + '. ' : ''}${r.remise ? 'Remise étudiant accordée sur présentation de la carte étudiant en cours de validité. ' : ''}Estimation établie en ligne à partir des informations fournies. Le prix définitif est confirmé après diagnostic, avant toute intervention. Aucun engagement.</p>
+      <p class="devis-note">${CONFIG.mentionPrix ? esc(CONFIG.mentionPrix) + '. ' : ''}${r.remise ? 'Remise étudiant accordée sur présentation de la carte étudiant en cours de validité. ' : ''}${CONFIG.paiement3fois && r.min >= CONFIG.paiement3fois ? 'Paiement possible en 3 fois sans frais. ' : ''}Estimation établie en ligne à partir des informations fournies. Le prix définitif est confirmé après diagnostic, avant toute intervention. Aucun engagement.</p>
     </article>
     <p class="center"><button type="button" class="link" onclick="reset()">Faire une nouvelle demande</button></p>`;
   document.body.classList.add('print-devis');

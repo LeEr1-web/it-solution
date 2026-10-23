@@ -7,6 +7,7 @@
     <section class="svc-block" id="${s.id}" style="--t:${c.couleur}">
       <h3>${ico(s.icon)} ${esc(s.nom)} <span class="mono">${prix(s)}</span></h3>
       <p class="muted">${esc(s.desc)} — ${s.modes.map(m => where[m]).join(', ')}.${s.remise ? ` Remise étudiant −${CONFIG.remiseEtudiant} %.` : ''}${s.note ? ` ${esc(s.note)}` : ''}</p>
+      ${s.compris ? `<div class="svc-compris"><div><b>Compris</b><ul>${s.compris.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>${s.pasCompris ? `<div class="non"><b>Pas compris</b><ul>${s.pasCompris.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}</div>` : ''}
       <table class="price-table"><tbody>${s.options.map(o => `<tr><td>${esc(o[1])}</td><td class="mono">${o[2] ? '+' + eur(o[2]) + (s.mensuel ? '/mois' : '') : esc(o[3] || 'Gratuit')}</td></tr>`).join('')}</tbody></table>
     </section>`;
 
@@ -35,6 +36,9 @@
   const z = ZONES, d = DELAIS;
   const faq = [
     ['Intervenez-vous partout en Martinique ?', `Oui. Nos agences de Ducos et du Robert couvrent toute l’île. Le déplacement est offert dans les communes d’agence, puis coûte ${eur(z.centre.prix)} (Centre), ${eur(z.sud.prix)} (Sud) ou ${eur(z.nord.prix)} (Nord), et il est offert dès ${eur(CONFIG.deplacementOffertDes)} de prestation.`],
+    ['Combien coûte un dépannage ?', `Un dépannage d’ordinateur commence à ${eur(svc('repair').base)}, diagnostic compris. Le prix est confirmé avant de réparer, et les pièces éventuelles sont annoncées avant. En agence ou à distance, il n’y a pas de frais de déplacement.`],
+    ['Puis-je payer en plusieurs fois ?', `Oui : à partir de ${eur(CONFIG.paiement3fois)} (site internet, application, installation de caméras ou de réseau), vous pouvez payer en 3 fois sans frais.`],
+    ['Je ne sais pas par où commencer pour mon site ou ma sécurité.', `Commencez petit : un contrôle sécurité express à ${eur(svc('cyberexpress').base)}, ou un site d’une page à ${eur(svc('siteweb').base)} qui pourra grandir ensuite. Pour une application, une maquette à tester sur votre téléphone, déduite si vous continuez.`],
     ['Le devis est-il gratuit ?', 'Oui, le devis est gratuit et sans engagement. Le prix est confirmé avant toute intervention : vous savez tout avant de dire oui.'],
     ['En combien de temps intervenez-vous ?', `Sous 3 jours en temps normal. Une intervention sous 24 à 48 h coûte ${eur(d.rapide.prix)} de plus, et le jour même ${eur(d.urgence.prix)} de plus, selon disponibilité.`],
     ['Puis-je déposer mon matériel en agence ?', 'Oui, sans frais de déplacement, à Ducos ou au Robert. Vous pouvez aussi être dépanné à distance quand c’est possible.'],
