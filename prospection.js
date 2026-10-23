@@ -780,13 +780,34 @@ const envoyable = p => !!(p && p.email && !['stop', 'client', 'perdu'].includes(
 const etapeNom = p => ['1er message', 'relance', 'dernière relance'][Math.min(p.etape || 0, 2)];
 function toggleSel(id) { selection.has(id) ? selection.delete(id) : selection.add(id); render(); }
 function selTout(ids, on) { ids.forEach(id => on ? selection.add(id) : selection.delete(id)); render(); }
+const caseSel = p => { const ok = envoyable(p), on = selection.has(p.id);
+  return `<label class="p-coche" title="${ok ? 'Sélectionner' : 'Pas d’email, liste noire, STOP ou 3 messages déjà envoyés'}"><input type="checkbox" ${on ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="toggleSel('${esc(p.id)}')" aria-label="Sélectionner ${esc(p.nom)}"></label>`; };
+// « Emails envoyés » : relancer tout de suite, programmer la relance, liste noire
+function actionsEnvoi(p) {
+  const id = esc(p.id);
+  if (estNoir(p)) return `<button type="button" class="link" onclick="listeFiche('${id}','noire')">Retirer de la liste noire</button>`;
+  const ok = envoyable(p);
+  return `${ok ? `<button type="button" class="btn btn-sm btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerEmail('${id}')" title="Envoie la relance maintenant">${ico('mail')} Relancer</button>
+      <label class="p-quand" title="Date de la relance automatique">Relance le <input type="date" min="${todayISO()}" value="${esc(p.relance || '')}" onchange="relanceLe('${id}', this.value)"></label>
+      <button type="button" class="link" onclick="relanceLe('${id}', addDays(todayISO(), 3))">dans 3 j</button>` : ''}
+    <button type="button" class="btn btn-sm g-danger" onclick="listeFiche('${id}','noire')">Liste noire</button>`;
+}
+function relanceLe(id, date) {
+  const p = parId(id); if (!p || !envoyable(p)) return;
+  p.relance = date || '';
+  if (date && ['sansrep', 'nouveau'].includes(p.statut)) p.statut = 'contacte';
+  if (date) p.repondu = false;
+  noter(p, date ? `Relance programmée le ${frDay(date)}` : 'Relance annulée');
+  sauver(p); render();
+  toast(date ? `Relance de ${p.nom} programmée le ${frDay(date)}` : 'Relance annulée');
+}
 function ligneSel(p, contenu) {
   const ok = envoyable(p), on = selection.has(p.id);
   return `<div class="p-selrow ${on ? 'coche' : ''}">
     <label class="p-coche" title="${ok ? 'Sélectionner pour l’envoi' : 'Pas d’email, liste noire, STOP ou 3 messages déjà envoyés'}"><input type="checkbox" ${on ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="toggleSel('${esc(p.id)}')" aria-label="Sélectionner ${esc(p.nom)}"></label>
     ${contenu || ligne(p)}</div>`;
 }
-function barreSel(visibles) {
+function barreSel(visibles, relance) {
   const ok = visibles.filter(envoyable);
   const n = [...selection].filter(id => envoyable(parId(id))).length;
   const tous = ok.length && ok.every(p => selection.has(p.id));
@@ -796,7 +817,8 @@ function barreSel(visibles) {
     ${n ? `<button type="button" class="link" onclick="selection.clear();render()">Vider</button>
       <button type="button" class="link" onclick="listeSelection('blanche')">Liste blanche</button>
       <button type="button" class="link g-danger-link" onclick="listeSelection('noire')">Liste noire</button>
-      <button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerSelection()">${ico('mail')} Envoyer l’email à ${n} entreprise${n > 1 ? 's' : ''}</button>` : '<span class="muted small">Cochez une ou plusieurs entreprises.</span>'}</div>`;
+      ${relance ? `<button type="button" class="link" onclick="[...selection].forEach(id => relanceLe(id, addDays(todayISO(), 3)))">Relance dans 3 j</button>` : ''}
+      <button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerSelection()">${ico('mail')} ${relance ? 'Relancer' : 'Envoyer l’email à'} ${n} entreprise${n > 1 ? 's' : ''}</button>` : '<span class="muted small">Cochez une ou plusieurs entreprises.</span>'}</div>`;
 }
 async function envoyerSelection() {
   if (!scriptPret()) return aActiver();
@@ -937,18 +959,19 @@ const VUES = {
     const nb = list.reduce((s, x) => s + x.envois.length, 0);
     const rep = list.filter(x => x.p.repondu || ['interesse', 'rdv', 'client'].includes(x.p.statut));
     const aRelancer = list.filter(x => x.p.statut === 'contacte' && !x.p.repondu && x.p.relance && x.p.relance <= t && (x.p.etape || 0) < 3);
-    const etat = p => p.statut === 'stop' ? '<span class="p-late">STOP — ne plus contacter</span>' : p.repondu || ['interesse', 'rdv', 'client'].includes(p.statut) ? '<span class="p-ok">✓ A répondu</span>'
+    const etat = p => estNoir(p) ? '<span class="p-lnoire">Liste noire</span>' : p.statut === 'stop' ? '<span class="p-late">STOP — ne plus contacter</span>' : p.repondu || ['interesse', 'rdv', 'client'].includes(p.statut) ? '<span class="p-ok">✓ A répondu</span>'
       : p.statut === 'sansrep' ? '<span class="muted">Sans réponse (séquence terminée)</span>' : p.relance ? (p.relance <= t ? '<span class="p-due">Relance due</span>' : `<span class="muted">Relance le ${frDay(p.relance)}</span>`) : '';
     return `<div class="g-stats p-kpi"><span><b>${list.length}</b> entreprises contactées par email</span><span><b>${nb}</b> emails envoyés</span>
         <span><b>${list.filter(x => x.envois.some(h => h.d.slice(0, 10) >= semaine)).length}</b> cette semaine</span><span><b>${rep.length}</b> réponses</span><span><b>${aRelancer.length}</b> à relancer</span></div>
       ${aRelancer.length ? `<div class="p-auto"><b>${ico('repeat')} Sans réponse</b><button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="relancerTous()">Relancer ${aRelancer.length > 1 ? `les ${aRelancer.length} entreprises` : "l’entreprise"} sans réponse</button><span class="muted small">Relance polie, sans prix ; 3 messages au maximum.</span></div>` : ''}
       <p class="muted">Tous les emails, envoyés depuis cette page ou par la prospection automatique. Le détail complet est aussi dans l’onglet « Emails envoyés » du tableau Google.</p>
-      <div class="tablewrap"><table class="admin-table p-envoyes"><thead><tr><th>Entreprise</th><th>Email</th><th>Envois</th><th>Dernier envoi</th><th>Suivi</th><th></th></tr></thead><tbody>
-      ${list.map(({ p, envois }) => `<tr><td><button type="button" class="link" onclick="ouvrir('${esc(p.id)}')">${esc(p.nom)}</button><br><span class="muted small">${esc(p.commune || '')}${p.auto ? ' · automatique' : ''}</span></td>
+      ${barreSel(list.map(x => x.p), true)}
+      <div class="tablewrap"><table class="admin-table p-envoyes"><thead><tr><th></th><th>Entreprise</th><th>Email</th><th>Envois</th><th>Dernier envoi</th><th>Suivi</th><th></th></tr></thead><tbody>
+      ${list.map(({ p, envois }) => `<tr class="${selection.has(p.id) ? 'coche' : ''}"><td>${caseSel(p)}</td><td><button type="button" class="link" onclick="ouvrir('${esc(p.id)}')">${esc(p.nom)}</button><br><span class="muted small">${esc(p.commune || '')}${p.auto ? ' · automatique' : ''}</span></td>
         <td>${esc(p.email || p.emailInvalide || '')}</td><td>${envois.map(h => esc(h.t.replace(/^Email envoyé( \(automatique\))? — /, '').replace(/^Email — /, ''))).join(' → ')}</td>
         <td>${new Date(envois.slice(-1)[0].d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</td><td>${etat(p)}</td>
-        <td>${p.statut === 'contacte' && !p.repondu && (p.etape || 0) < 3 ? `<button type="button" class="btn btn-sm${scriptPret() ? '' : ' btn-off'}" onclick="envoyerEmail('${esc(p.id)}')">Relancer</button>` : ''}</td></tr>`).join('')
-        || '<tr><td colspan="6" class="muted">Aucun email envoyé pour l’instant.</td></tr>'}</tbody></table></div>`;
+        <td class="p-act">${actionsEnvoi(p)}</td></tr>`).join('')
+        || '<tr><td colspan="7" class="muted">Aucun email envoyé pour l’instant.</td></tr>'}</tbody></table></div>`;
   },
   reglages() {
     const r = db.reglages;

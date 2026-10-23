@@ -177,3 +177,11 @@ button.p-chip:hover{border-color:var(--primary)}
 .p-lnoire{background:#111827;color:#fff}.p-lblanche{background:#dcfce7;color:#166534}
 .p-fiche-listes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 8px}
 .p-fiche-listes .on{outline:2px solid currentColor}
+
+/* Emails envoyés : actions par ligne */
+.p-envoyes .p-act{white-space:nowrap}
+.p-envoyes .p-act>*{vertical-align:middle;margin:2px 4px 2px 0}
+.p-envoyes tr.coche td{background:var(--primary-soft)}
+.p-quand{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.p-quand input{min-height:32px;padding:2px 6px;font-size:13px;width:auto}
+@media (max-width:900px){.p-envoyes .p-act{white-space:normal}}
