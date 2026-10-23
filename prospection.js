@@ -193,8 +193,9 @@ const ACTIFS = ['contacte', 'interesse', 'rdv'];
 // séquence : 1er message, relance à J+3, dernière relance à J+7 après, puis « Sans réponse »
 const SEQUENCE = [3, 7, 0];
 
-let db = { prospects: [], reglages: { parJour: 10, signature: 'Erwan' }, supprimes: [] };
-try { const s = JSON.parse(localStorage.getItem('itProspects')); if (s && Array.isArray(s.prospects)) db = { ...db, ...s, reglages: { ...db.reglages, ...s.reglages } }; } catch (e) {}
+let db = { prospects: [], reglages: { parJour: 10, signature: 'L’équipe IloTech' }, supprimes: [], listes: { noire: [], blanche: [] } };
+try { const s = JSON.parse(localStorage.getItem('itProspects')); if (s && Array.isArray(s.prospects)) db = { ...db, ...s, reglages: { ...db.reglages, ...s.reglages }, listes: { noire: [], blanche: [], ...s.listes } }; } catch (e) {}
+if (!db.reglages.signature || db.reglages.signature === 'Erwan') db.reglages.signature = 'L’équipe IloTech';
 let cle = '';
 try { cle = localStorage.getItem('itGestionCle') || ''; } catch (e) {}
 let vue = 'jour', fiche = null, canal = 'whatsapp', resultats = [], recherche = { source: 'bodacc', jours: 60, segment: '', commune: '', q: '', avecTel: false },
@@ -228,6 +229,7 @@ async function synchroniser() {
       if (!p) db.prospects.push(q);
       else if ((q.maj || '') > (p.maj || '')) Object.assign(p, q);
     });
+    try { const l = await api('listes_lire'); db.listes = { noire: l.noire || [], blanche: l.blanche || [] }; } catch (e) {}   // moteur ancien : listes locales
     try { localStorage.setItem('itProspects', JSON.stringify(db)); } catch (e) {}
     sync = { etat: 'ok', quand: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) };
     render();
@@ -458,33 +460,33 @@ function contexte(p) {
   const v = hash(p.id) % 2;
   let accroche;
   if (age !== null && age <= 365) accroche = v ? `Félicitations pour le lancement de ${nomCourt} !` : `Bravo pour la création de ${nomCourt}, et bienvenue dans l’aventure !`;
-  else if (p.site && p.analyse?.reason === 'injoignable') accroche = `J’ai voulu consulter le site de ${nomCourt}, mais il ne s’affiche plus : vos clients tombent sur une page d’erreur.`;
-  else if (p.analyse?.ok && !p.analyse.mobile) accroche = `J’ai regardé le site de ${nomCourt} : il s’affiche mal sur téléphone, alors que la plupart de vos clients vous cherchent depuis leur portable.`;
-  else if (p.analyse?.ok && p.analyse.annee && p.analyse.annee <= new Date().getFullYear() - 3) accroche = `J’ai regardé le site de ${nomCourt} : il n’a pas l’air d’avoir été mis à jour depuis ${p.analyse.annee}.`;
-  else if ((p.site && /^http:/i.test(p.site)) || (p.analyse?.ok && !p.analyse.https)) accroche = `J’ai remarqué que le site de ${nomCourt} s’affiche « non sécurisé » dans les navigateurs, ce qui peut faire fuir des clients.`;
-  else if (!p.site && p.sansSite) accroche = `J’ai vu que ${nomCourt} n’a pas encore de site internet : c’est pourtant là que vos clients vous cherchent en premier.`;
-  else accroche = v ? `Je me permets de vous contacter au sujet de l’informatique de ${nomCourt}.` : `Je travaille avec plusieurs ${seg.pluriel} en Martinique et je pense pouvoir vous être utile.`;
+  else if (p.site && p.analyse?.reason === 'injoignable') accroche = `Nous avons voulu consulter le site de ${nomCourt}, mais il ne s’affiche plus : vos clients tombent sur une page d’erreur.`;
+  else if (p.analyse?.ok && !p.analyse.mobile) accroche = `Nous avons regardé le site de ${nomCourt} : il s’affiche mal sur téléphone, alors que la plupart de vos clients vous cherchent depuis leur portable.`;
+  else if (p.analyse?.ok && p.analyse.annee && p.analyse.annee <= new Date().getFullYear() - 3) accroche = `Nous avons regardé le site de ${nomCourt} : il n’a pas l’air d’avoir été mis à jour depuis ${p.analyse.annee}.`;
+  else if ((p.site && /^http:/i.test(p.site)) || (p.analyse?.ok && !p.analyse.https)) accroche = `Nous avons remarqué que le site de ${nomCourt} s’affiche « non sécurisé » dans les navigateurs, ce qui peut faire fuir des clients.`;
+  else if (!p.site && p.sansSite) accroche = `Nous avons vu que ${nomCourt} n’a pas encore de site internet : c’est pourtant là que vos clients vous cherchent en premier.`;
+  else accroche = v ? `Nous nous permettons de vous contacter au sujet de l’informatique de ${nomCourt}.` : `Nous travaillons avec plusieurs ${seg.pluriel} en Martinique et pensons pouvoir vous être utiles.`;
   const bonjour = p.prenom ? `Bonjour ${p.prenom}` : 'Bonjour';
-  const moi = db.reglages.signature || 'Erwan';
-  const source = SOURCE_PHRASE[p.source] ? `J’ai trouvé vos coordonnées sur ${SOURCE_PHRASE[p.source]}. ` : '';
+  const moi = db.reglages.signature || 'L’équipe IloTech';
+  const source = SOURCE_PHRASE[p.source] ? `Nous avons trouvé vos coordonnées sur ${SOURCE_PHRASE[p.source]}. ` : '';
   const offre = pk ? ` Par exemple notre formule « ${pk.nom} », à prix fixe annoncé à l’avance.` : '';
-  return { seg, ag, nomCourt, bonjour, moi, accroche, source, offre, signature: `${moi} — IloTech, agence ${ag.de} · ${ag.tel}` };
+  return { seg, ag, nomCourt, bonjour, moi, accroche, source, offre, signature: `${moi} — agence ${ag.de} · ${ag.tel}` };
 }
 function messages(p) {
   const c = contexte(p);
   const etape = p.etape || 0;
-  const optout = `${c.source}Si vous ne souhaitez pas être recontacté, dites-le moi simplement.`;
+  const optout = `${c.source}Si vous ne souhaitez pas être recontacté, dites-le nous simplement.`;
   let court;
-  if (etape === 0) court = `${c.bonjour},\n\n${c.accroche}\n\nJe suis ${c.moi}, technicien informatique chez IloTech (${c.ag.nom}). Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.${c.offre}\n\nLe devis est gratuit et sans engagement. Seriez-vous disponible 10 minutes cette semaine pour en parler ?\n\nNotre présentation : ${SITE}plaquette.html?src=whatsapp\n\n${c.signature}\n\n${optout}`;
-  else if (etape === 1) court = `${c.bonjour}, je me permets de revenir vers vous au sujet de mon message pour ${c.nomCourt}. Le diagnostic informatique reste offert : un créneau cette semaine vous conviendrait-il ?\n\n${c.signature}`;
-  else court = `${c.bonjour}, dernier petit message de ma part pour ${c.nomCourt} : si un jour vous avez besoin d’un informaticien qui se déplace en Martinique (${c.seg.argument.split(',')[0]}), gardez simplement ce numéro. Bonne continuation !\n\n${c.signature}`;
-  const sujet = etape === 0 ? (hash(p.id) % 2 ? `${c.nomCourt} : diagnostic informatique offert` : `Une question pour ${c.nomCourt}`) : etape === 1 ? `Re : ${c.nomCourt}, devis gratuit` : `Dernier message — ${c.nomCourt}`;
+  if (etape === 0) court = `${c.bonjour},\n\n${c.accroche}\n\nIloTech est une entreprise informatique martiniquaise (agence ${c.ag.de}). Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.${c.offre}\n\nLe devis est gratuit et sans engagement. Seriez-vous disponible 10 minutes cette semaine pour en parler ?\n\nNotre présentation : ${SITE}plaquette.html?src=whatsapp\n\n${c.signature}\n\n${optout}`;
+  else if (etape === 1) court = `${c.bonjour}, nous nous permettons de revenir vers vous au sujet de notre message pour ${c.nomCourt}. Le devis reste gratuit et sans engagement : un créneau cette semaine vous conviendrait-il ?\n\n${c.signature}`;
+  else court = `${c.bonjour}, dernier petit message de notre part pour ${c.nomCourt} : si un jour vous avez besoin d’un informaticien qui se déplace en Martinique (${c.seg.argument.split(',')[0]}), gardez simplement ce numéro. Bonne continuation !\n\n${c.signature}`;
+  const sujet = etape === 0 ? (hash(p.id) % 2 ? `${c.nomCourt} : votre informatique en Martinique` : `Une question pour ${c.nomCourt}`) : etape === 1 ? `Re : ${c.nomCourt}, devis gratuit` : `Dernier message — ${c.nomCourt}`;
   const services = (p.offre?.services || []).map(id => SERVICES.find(s => s.id === id)).filter(Boolean);
   const email = etape === 0
-    ? `${c.bonjour},\n\n${c.accroche}\n\nJe suis ${c.moi}, de IloTech, entreprise informatique martiniquaise installée à Ducos et au Robert. Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.\n\nCe que nous pourrions vous apporter :\n${services.map(s => `• ${s.nom} : ${s.desc.toLowerCase()}`).join('\n')}\n${c.offre ? '\n' + c.offre.trim() + '\n' : ''}\nNous intervenons sur place ou à distance, et le devis est gratuit et sans engagement. Vous trouverez notre présentation ici : ${SITE}plaquette.html?src=email\n\nSeriez-vous disponible pour un échange de 10 minutes cette semaine ?\n\nBien cordialement,\n${c.moi}\nIloTech — Informatique, réseaux, web et sécurité\nAgence ${c.ag.de} · ${c.ag.tel}\n${SITE}\n\n—\n${c.source}Pour ne plus recevoir de message de notre part, répondez simplement STOP.`
+    ? `${c.bonjour},\n\n${c.accroche}\n\nIloTech est une entreprise informatique martiniquaise installée à Ducos et au Robert. Nous équipons les ${c.seg.pluriel} de Martinique : ${c.seg.argument}.\n\nCe que nous pourrions vous apporter :\n${services.map(s => `• ${s.nom} : ${s.desc.toLowerCase()}`).join('\n')}\n${c.offre ? '\n' + c.offre.trim() + '\n' : ''}\nNous intervenons sur place ou à distance, et le devis est gratuit et sans engagement. Vous trouverez notre flyer en pièce jointe, et notre présentation complète ici : ${SITE}plaquette.html?src=email\n\nSeriez-vous disponible pour un échange de 10 minutes cette semaine ?\n\nBien cordialement,\n${c.moi}\nInformatique, réseaux, web et sécurité\nAgence ${c.ag.de} · ${c.ag.tel}\n${SITE}\n\n—\n${c.source}Pour ne plus recevoir de message de notre part, répondez simplement STOP.`
     : court + `\n\n—\nPour ne plus recevoir de message de notre part, répondez simplement STOP.`;
-  const appel = `PRÉSENTATION\n« ${c.bonjour}, ${c.moi} de IloTech, informaticien à ${c.ag.nom}. Je vous dérange deux minutes ? »\n\nACCROCHE\n« ${c.accroche} »\n\nQUESTIONS\n${c.seg.questions.map(q => '• ' + q).join('\n')}\n\nPROPOSITION\n« Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je peux passer voir votre installation et vous faire un devis gratuit, sans engagement.${c.offre} »\n\nOBJECTIONS\n• « J’ai déjà quelqu’un » → « Très bien ! Gardez notre numéro pour les urgences : nous intervenons sous 48 h. »\n• « Pas le temps » → « Je comprends. Quel moment vous arrangerait pour 10 minutes ? »\n• « C’est trop cher » → « Le devis est gratuit et le prix est annoncé avant toute intervention : vous savez tout avant. »\n• « Envoyez-moi un email » → « Avec plaisir, à quelle adresse ? »\n\nCONCLURE\nFixer un rendez-vous (jour + heure) ou une date de rappel.`;
-  const visite = `À dire en arrivant (30 secondes) :\n« ${c.bonjour}, ${c.moi} de IloTech, l’informaticien de ${c.ag.nom}. ${c.accroche} Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je vous laisse ma carte : le devis est gratuit, il suffit d’un message WhatsApp au ${c.ag.tel}. »\n\nÀ regarder sur place : caisse, Wi-Fi client, caméras, ordinateur de l’accueil, présence sur Google Maps.`;
+  const appel = `PRÉSENTATION\n« ${c.bonjour}, je vous appelle de la part d’IloTech, l’entreprise informatique de ${c.ag.nom}. Je vous dérange deux minutes ? »\n\nACCROCHE\n« ${c.accroche} »\n\nQUESTIONS\n${c.seg.questions.map(q => '• ' + q).join('\n')}\n\nPROPOSITION\n« Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je peux passer voir votre installation et vous faire un devis gratuit, sans engagement.${c.offre} »\n\nOBJECTIONS\n• « J’ai déjà quelqu’un » → « Très bien ! Gardez notre numéro pour les urgences : nous intervenons sous 48 h. »\n• « Pas le temps » → « Je comprends. Quel moment vous arrangerait pour 10 minutes ? »\n• « C’est trop cher » → « Le devis est gratuit et le prix est annoncé avant toute intervention : vous savez tout avant. »\n• « Envoyez-moi un email » → « Avec plaisir, à quelle adresse ? »\n\nCONCLURE\nFixer un rendez-vous (jour + heure) ou une date de rappel.`;
+  const visite = `À dire en arrivant (30 secondes) :\n« ${c.bonjour}, je viens de la part d’IloTech, l’entreprise informatique de ${c.ag.nom}. ${c.accroche} Nous équipons les ${c.seg.pluriel} : ${c.seg.argument}. Je vous laisse ma carte : le devis est gratuit, il suffit d’un message WhatsApp au ${c.ag.tel}. »\n\nÀ regarder sur place : caisse, Wi-Fi client, caméras, ordinateur de l’accueil, présence sur Google Maps.`;
   return { whatsapp: court, sms: court.replace(/\n\n/g, '\n').slice(0, 600), email: { sujet, corps: email }, appel, visite };
 }
 
@@ -545,6 +547,7 @@ async function completerEmails() {
 async function envoyerEmail(id, silencieux) {
   if (!scriptPret()) return silencieux ? false : aActiver();
   const p = parId(id); if (!p || !p.email) return false;
+  if (estNoir(p)) { if (!silencieux) toast('Cette entreprise est sur la liste noire : pas d’envoi', true); return false; }
   const m = messages(p);
   const sujet = !silencieux && $('fSujet') ? $('fSujet').value : m.email.sujet;
   const corps = !silencieux && $('fMsg') ? $('fMsg').value : m.email.corps;
@@ -556,7 +559,7 @@ async function envoyerEmail(id, silencieux) {
     if (!silencieux) toast(`Email envoyé à ${p.email}`);
     return true;
   } catch (e) {
-    if (!silencieux) toast(e.message === 'quota' ? 'Limite Gmail du jour atteinte : réessayez demain' : e.message === 'email' ? 'Adresse email invalide' : e.message === 'domaine' ? 'Cette adresse ne reçoit pas d’emails (domaine inexistant)' : 'Envoi impossible pour le moment', true);
+    if (!silencieux) toast(e.message === 'quota' ? 'Limite Gmail du jour atteinte : réessayez demain' : e.message === 'email' ? 'Adresse email invalide' : e.message === 'domaine' ? 'Cette adresse ne reçoit pas d’emails (domaine inexistant)' : e.message === 'liste_noire' ? 'Cette entreprise est sur la liste noire : pas d’envoi' : 'Envoi impossible pour le moment', true);
     return e.message === 'quota' ? 'quota' : false;
   }
 }
@@ -601,9 +604,10 @@ function autoHTML() {
       <div class="p-modes" role="radiogroup" aria-label="Mode de prospection">${Object.entries(MODES_AUTO).map(([k, [l]]) =>
         `<button type="button" role="radio" aria-checked="${mode === k}" class="${mode === k ? 'on m-' + k : ''}" onclick="reglerAuto('${k}')">${l}</button>`).join('')}</div>
       <label class="p-parjour">Emails par jour <input type="number" min="1" max="60" value="${auto.parJour}" onchange="reglerAuto(null, this.value)"></label>
+      <label class="p-check"><input type="checkbox" ${auto.blancheSeule ? 'checked' : ''} onchange="reglerAuto(null, null, this.checked)"> Seulement la liste blanche</label>
       <button type="button" class="btn btn-sm" onclick="lancerAuto()" ${chargement ? 'disabled' : ''}>${ico('zap')} Lancer maintenant</button>
     </div>
-    <p class="muted small">${MODES_AUTO[mode][1]} Les réponses et les « STOP » sont détectés tout seuls ; jamais d’envoi le week-end ; aucun prix dans les emails.</p>
+    <p class="muted small">${MODES_AUTO[mode][1]} Les réponses, refus et « STOP » sont détectés tout seuls (refus → liste noire) ; la liste blanche passe en premier ; jamais d’envoi le week-end ; aucun prix dans les emails.</p>
     ${b ? `<p class="muted small">Dernier passage : ${new Date(b.date).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} —
       ${b.mode === 'validation' ? `${b.aValider || 0} emails préparés` : `${b.envoyes} nouveaux emails, ${b.relances} relances`}, ${b.reponses} réponses, ${b.analyses} sites analysés (${b.emailsTrouves} emails trouvés).</p>` : '<p class="muted small">Pas encore de passage.</p>'}`;
 }
@@ -611,9 +615,9 @@ async function chargerAuto() {
   try { auto = await api('prospects_auto_etat'); } catch (e) { auto = { erreur: true }; }
   document.querySelectorAll('.auto-etat').forEach(el => { el.innerHTML = autoHTML(); });
 }
-async function reglerAuto(mode, parJour) {
+async function reglerAuto(mode, parJour, blancheSeule) {
   if (mode === 'auto' && !confirm('Mode automatique : les emails partiront tout seuls chaque jour ouvré à 9 h. Continuer ?')) return;
-  try { auto = await api('prospects_auto_regler', { mode: mode || undefined, parJour: parJour || undefined }); toast(mode ? `Mode « ${MODES_AUTO[mode][0]} » enregistré` : 'Réglage enregistré'); }
+  try { auto = await api('prospects_auto_regler', { mode: mode || undefined, parJour: parJour || undefined, blancheSeule: typeof blancheSeule === 'boolean' ? blancheSeule : undefined }); toast(mode ? `Mode « ${MODES_AUTO[mode][0]} » enregistré` : 'Réglage enregistré'); }
   catch (e) { toast('Réglage impossible (moteur à jour ?)', true); }
   render();
 }
@@ -704,20 +708,82 @@ const relanceTxt = p => !p.relance ? '' : p.relance < todayISO() ? `<span class=
 function ligne(p) {
   return `<button type="button" class="p-row" onclick="ouvrir('${esc(p.id)}')">
     ${badgeScore(p.score)}
-    <span class="p-main"><b>${esc(p.nom)}</b><small>${chipSeg(p.segment)} ${esc(p.commune || '')} · Agence ${AGENCES[agenceDe(p)].nom}</small></span>
+    <span class="p-main"><b>${esc(p.nom)}${estNoir(p) ? ' <span class="p-lnoire">Liste noire</span>' : estBlanc(p) ? ' <span class="p-lblanche">Prioritaire</span>' : ''}</b><small>${chipSeg(p.segment)} ${esc(p.commune || '')} · Agence ${AGENCES[agenceDe(p)].nom}</small></span>
     <span class="p-sig">${signaux(p)}</span>
     <span class="p-side">${chipStatut(p.statut)}${relanceTxt(p)}</span></button>`;
 }
+/* ---------- Liste noire (jamais contactées) et liste blanche (prioritaires) ----------
+   Une valeur = une adresse email, un domaine (@exemple.fr), un nom d'entreprise ou l'identifiant d'un prospect.
+   Partagées avec le moteur Google (onglet « Listes ») : le moteur ne leur écrit jamais / les traite en premier. */
+const normNom = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+function correspond(p, entrees) {
+  const em = String(p.email || p.emailInvalide || '').toLowerCase(), dom = em.split('@')[1] || '', nom = normNom(p.nom);
+  return (entrees || []).some(e => {
+    const v = String(e.valeur || '').toLowerCase();
+    if (v === String(p.id || '').toLowerCase()) return true;
+    if (v.charAt(0) === '@') return !!dom && (dom === v.slice(1) || dom.endsWith('.' + v.slice(1)));
+    if (v.indexOf('@') > 0) return em === v;
+    return !!nom && normNom(v) === nom;
+  });
+}
+const estNoir = p => correspond(p, db.listes.noire);
+const estBlanc = p => correspond(p, db.listes.blanche);
+const valeurDe = p => p.email || p.nom;
+async function ajouterListe(liste, valeurs, raison) {
+  valeurs = valeurs.map(v => String(v).trim()).filter(Boolean);
+  if (!valeurs.length) return;
+  const date = todayISO();
+  valeurs.forEach(v => { if (!db.listes[liste].some(e => e.valeur.toLowerCase() === v.toLowerCase())) db.listes[liste].push({ valeur: v, raison: raison || '', date }); });
+  if (liste === 'noire') db.prospects.filter(p => estNoir(p) && !['stop', 'client'].includes(p.statut)).forEach(p => { p.statut = 'stop'; p.relance = ''; p.aValider = false; noter(p, 'Liste noire : ne plus contacter'); sauver(p); });
+  sauver();
+  if (scriptPret()) { try { const r = await api('listes_ajouter', { liste, valeurs, raison }); db.listes = { noire: r.noire, blanche: r.blanche }; sauver(); } catch (e) { toast('Liste enregistrée sur cet appareil seulement (moteur à jour ?)', true); } }
+  toast(`${valeurs.length} ajout${valeurs.length > 1 ? 's' : ''} à la liste ${liste}`); render();
+}
+async function retirerListe(liste, valeur) {
+  db.listes[liste] = db.listes[liste].filter(e => e.valeur !== valeur); sauver();
+  if (scriptPret()) { try { const r = await api('listes_retirer', { liste, valeur }); db.listes = { noire: r.noire, blanche: r.blanche }; sauver(); } catch (e) {} }
+  render();
+}
+function listeFiche(id, liste) {
+  const p = parId(id); if (!p) return;
+  const dans = liste === 'noire' ? estNoir(p) : estBlanc(p);
+  if (dans) { db.listes[liste].filter(e => correspond(p, [e])).forEach(e => retirerListe(liste, e.valeur)); }
+  else if (liste === 'blanche' || confirm(`Mettre ${p.nom} sur la liste noire ? Elle ne recevra plus jamais de message (ni de vous, ni du moteur automatique).`)) {
+    if (liste === 'blanche' && estNoir(p)) return toast('Cette entreprise est sur la liste noire : retirez-la d’abord', true);
+    ajouterListe(liste, [valeurDe(p)], liste === 'noire' ? 'Ajouté depuis la fiche' : 'Prioritaire');
+  }
+  setTimeout(renderFiche, 50);
+}
+function listeSelection(liste) {
+  const list = [...selection].map(parId).filter(Boolean);
+  if (!list.length) return;
+  if (liste === 'noire' && !confirm(`Mettre ${list.length} entreprise${list.length > 1 ? 's' : ''} sur la liste noire ?\n\n${list.map(p => '• ' + p.nom).join('\n')}`)) return;
+  ajouterListe(liste, list.map(valeurDe), liste === 'noire' ? 'Ajouté depuis la sélection' : 'Prioritaire');
+  selection.clear();
+}
+function listesHTML() {
+  const bloc = (liste, titre, aide) => `<div class="p-liste p-liste-${liste}">
+      <h3>${titre} <span class="muted">(${db.listes[liste].length})</span></h3>
+      <p class="muted small">${aide}</p>
+      <textarea id="ajout-${liste}" rows="3" placeholder="Une par ligne : contact@exemple.fr, @exemple.fr ou Nom de l’entreprise"></textarea>
+      <div class="actions left"><button type="button" class="btn btn-sm" onclick="ajouterListe('${liste}', $('ajout-${liste}').value.split(/[\\n,;]+/), $('raison-${liste}').value)">Ajouter</button>
+        <input id="raison-${liste}" class="p-raison" placeholder="Raison (facultatif)" value="${liste === 'noire' ? 'A refusé' : 'Prioritaire'}"></div>
+      <ul class="p-entrees">${db.listes[liste].map((e, i) => `<li><b>${esc(e.valeur)}</b> <span class="muted small">${esc(e.raison || '')}${e.date ? ' · ' + esc(String(e.date).slice(0, 10)) : ''}</span>
+        <button type="button" class="link" onclick="retirerListe('${liste}', db.listes.${liste}[${i}].valeur)">Retirer</button></li>`).join('') || '<li class="muted small">Vide.</li>'}</ul></div>`;
+  return `<div class="p-listes">${bloc('noire', 'Liste noire : ne jamais contacter', 'Les entreprises qui ont refusé ou demandé STOP. Ni la page ni le moteur automatique ne leur écriront plus. <b>Ajoutez ici les adresses des refus déjà reçus.</b> Les nouveaux refus reçus par email y sont ajoutés tout seuls.')}
+    ${bloc('blanche', 'Liste blanche : à contacter en priorité', 'Les entreprises que vous voulez démarcher : le moteur automatique leur écrit avant les nouvelles entreprises trouvées (si elles sont dans vos prospects avec un email).')}</div>`;
+}
+
 /* ---------- Sélection de plusieurs entreprises pour leur envoyer un email ---------- */
 const selection = new Set();
-const envoyable = p => !!(p && p.email && !['stop', 'client', 'perdu'].includes(p.statut) && (p.etape || 0) < 3);
+const envoyable = p => !!(p && p.email && !['stop', 'client', 'perdu'].includes(p.statut) && (p.etape || 0) < 3 && !estNoir(p));
 const etapeNom = p => ['1er message', 'relance', 'dernière relance'][Math.min(p.etape || 0, 2)];
 function toggleSel(id) { selection.has(id) ? selection.delete(id) : selection.add(id); render(); }
 function selTout(ids, on) { ids.forEach(id => on ? selection.add(id) : selection.delete(id)); render(); }
 function ligneSel(p, contenu) {
   const ok = envoyable(p), on = selection.has(p.id);
   return `<div class="p-selrow ${on ? 'coche' : ''}">
-    <label class="p-coche" title="${ok ? 'Sélectionner pour l’envoi' : 'Pas d’email, STOP ou 3 messages déjà envoyés'}"><input type="checkbox" ${on ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="toggleSel('${esc(p.id)}')" aria-label="Sélectionner ${esc(p.nom)}"></label>
+    <label class="p-coche" title="${ok ? 'Sélectionner pour l’envoi' : 'Pas d’email, liste noire, STOP ou 3 messages déjà envoyés'}"><input type="checkbox" ${on ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="toggleSel('${esc(p.id)}')" aria-label="Sélectionner ${esc(p.nom)}"></label>
     ${contenu || ligne(p)}</div>`;
 }
 function barreSel(visibles) {
@@ -728,6 +794,8 @@ function barreSel(visibles) {
     <label class="p-check"><input type="checkbox" ${tous ? 'checked' : ''} ${ok.length ? '' : 'disabled'} onchange="selTout([${ok.map(p => `'${esc(p.id)}'`).join(',')}], this.checked)"> Tout sélectionner <span class="muted">(${ok.length} avec email)</span></label>
     <span class="p-selnb">${n} sélectionnée${n > 1 ? 's' : ''}</span>
     ${n ? `<button type="button" class="link" onclick="selection.clear();render()">Vider</button>
+      <button type="button" class="link" onclick="listeSelection('blanche')">Liste blanche</button>
+      <button type="button" class="link g-danger-link" onclick="listeSelection('noire')">Liste noire</button>
       <button type="button" class="btn btn-primary${scriptPret() ? '' : ' btn-off'}" onclick="envoyerSelection()">${ico('mail')} Envoyer l’email à ${n} entreprise${n > 1 ? 's' : ''}</button>` : '<span class="muted small">Cochez une ou plusieurs entreprises.</span>'}</div>`;
 }
 async function envoyerSelection() {
@@ -885,12 +953,14 @@ const VUES = {
   reglages() {
     const r = db.reglages;
     return `<h2>Réglages</h2><div class="p-filtres">
-        <label>Votre prénom (signature des messages)<input value="${esc(r.signature)}" onchange="db.reglages.signature=this.value.trim()||'Erwan';sauver()"></label>
+        <label>Signature des messages<input value="${esc(r.signature)}" onchange="db.reglages.signature=this.value.trim()||'L’équipe IloTech';sauver()"></label>
         <label>Prospects à contacter par jour<input type="number" min="1" max="50" value="${r.parJour}" onchange="db.reglages.parJour=Math.max(1,+this.value||10);sauver()"></label>
         <label>Emails envoyés par jour au maximum<input type="number" min="1" max="60" value="${r.maxEmails || 25}" onchange="db.reglages.maxEmails=Math.min(60,Math.max(1,+this.value||25));sauver()"></label></div>
       <p class="muted small">Gmail autorise environ 100 emails par jour : restez autour de 25 pour que vos messages ne finissent pas en spam.</p>
       <h2>Prospection automatique</h2>
       <div class="p-auto-etat auto-etat">${autoHTML()}</div>
+      <h2 id="listes">Liste noire et liste blanche</h2>
+      ${listesHTML()}
       <h2>Partage entre Ducos et Le Robert</h2>
       ${!CONFIG.endpoint ? '<p class="notice">Le script Google n’est pas encore branché : vos prospects restent sur cet appareil. Une fois le moteur Google installé (README.txt), ils seront partagés automatiquement dans l’onglet « Prospects » du tableau.</p>'
         : cle ? `<p class="notice ok">Connecté : vos prospects sont partagés dans l’onglet « Prospects » du tableau Google. <button type="button" class="link" onclick="synchroniser()">Synchroniser maintenant</button></p>`
@@ -905,6 +975,7 @@ const VUES = {
         <li><b>Uniquement des professionnels</b>, pour une offre liée à leur activité. Le démarchage des particuliers par email ou SMS demande leur accord préalable.</li>
         <li><b>Toujours dire d’où viennent les coordonnées</b> et <b>offrir de ne plus être contacté</b> : les messages préparés le font déjà.</li>
         <li><b>« Ne plus contacter »</b> : le prospect est mis de côté pour toujours et n’apparaît plus dans les recherches.</li>
+        <li><b>Un refus = la liste noire</b> : « non merci », « pas intéressé », « STOP »… Le moteur les détecte et les y ajoute ; ajoutez-y aussi les refus reçus par téléphone.</li>
         <li>Pas plus de <b>3 messages</b> sans réponse (la séquence s’arrête toute seule), et pas d’envoi automatique en masse.</li>
         <li>Les entrepreneurs individuels sont des personnes : gardez seulement ce qui est utile et supprimez les prospects inactifs après 3 ans.</li>
       </ul>
@@ -941,6 +1012,7 @@ function renderFiche() {
   };
   const champ = (k, label, type = 'text') => `<label>${label}<input type="${type}" value="${esc(p[k] || '')}" onchange="majChamp('${esc(p.id)}','${k}',this.value)"></label>`;
   $('fiche').innerHTML = `<div class="dialog-head"><h2>${badgeScore(p.score)} <span>${esc(p.nom)}</span></h2><button type="button" class="btn" onclick="$('fiche').close()">Fermer</button></div>
+    ${estNoir(p) ? '<p class="notice">Liste noire : cette entreprise ne doit plus être contactée.</p>' : ''}
     <p class="p-sub">${chipSeg(p.segment)} ${esc(p.commune || '')} · Agence ${AGENCES[agenceDe(p)].nom}${p.creation ? ` · créée le ${frDate(p.creation)}` : ''}${p.effectif ? ' · ' + EFFECTIFS[p.effectif] : ''}</p>
     <div class="p-statuts">${Object.entries(STATUTS).map(([k, s]) => `<button type="button" class="${p.statut === k ? 'on' : ''}" style="--c:${s.c}" onclick="setStatut('${esc(p.id)}','${k}')">${s.nom}</button>`).join('')}</div>
     <div class="p-fiche">
@@ -985,6 +1057,9 @@ function renderFiche() {
           ${p.site ? `<a href="${esc(/^https?:/i.test(p.site) ? p.site : 'https://' + p.site)}" target="_blank" rel="noopener">Voir son site</a>` : ''}</div>
         ${p.activite ? `<p class="muted small">Activité déclarée : ${esc(p.activite)}</p>` : ''}${p.horaires ? `<p class="muted small">Horaires : ${esc(p.horaires)}</p>` : ''}
         <p class="muted small">Source : ${SOURCES[p.source] || p.source}${p.adresse ? ' · ' + esc(p.adresse) : ''}</p>
+        <div class="p-fiche-listes">
+          <button type="button" class="btn btn-sm${estBlanc(p) ? ' on' : ''}" onclick="listeFiche('${esc(p.id)}','blanche')">${estBlanc(p) ? '✓ Sur la liste blanche (retirer)' : 'Liste blanche : prioritaire'}</button>
+          <button type="button" class="btn btn-sm g-danger${estNoir(p) ? ' on' : ''}" onclick="listeFiche('${esc(p.id)}','noire')">${estNoir(p) ? '✓ Sur la liste noire (retirer)' : 'Liste noire : ne plus contacter'}</button></div>
         <button type="button" class="link g-danger-link" onclick="supprimer('${esc(p.id)}')">Supprimer ce prospect</button>
       </section></div>`;
   // garder les modifications du message pour le lien d'envoi

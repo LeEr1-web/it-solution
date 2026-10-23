@@ -43,6 +43,10 @@
       .fly::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     }
     @media screen and (max-width:820px){.feuille{zoom:.45}}
+    body.solo{background:#fff}
+    body.solo .barre,body.solo .aide{display:none}
+    body.solo .feuille{width:105mm;height:148mm;margin:0;box-shadow:none;display:block;zoom:var(--zoom,1)}
+    body.solo .fly{height:148mm;border:0!important}
   </style>
 </head>
 <body>
@@ -55,8 +59,8 @@
   </div>
   <p class="aide">Imprimez sur du papier un peu épais (160 g ou plus), puis découpez le long des pointillés. En boîte aux lettres, respectez les « Stop pub ». Les prix sont repris du site et restent toujours à jour.</p>
   <div class="feuille" id="feuille"></div>
-  <script src="data.js?v=61"></script>
-  <script src="outils.js?v=61"></script>
+  <script src="data.js?v=62"></script>
+  <script src="outils.js?v=62"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     const s = svc, p = pack;
@@ -73,7 +77,12 @@
           ['Sauvegardes automatiques', dès('sauvegarde')], ['Audit cybersécurité', dès('cyber')]],
         plus: 'Devis gratuit · Intervention rapide · Prix fixés à l’avance', qr: 'Devis et rendez-vous' }
     };
-    let version = new URLSearchParams(location.search).get('v') === 'pro' ? 'pro' : 'part';
+    const q = new URLSearchParams(location.search);
+    let version = q.get('v') === 'pro' ? 'pro' : 'part';
+    const sansPrix = q.get('prix') === '0', solo = q.get('solo') === '1';
+    if (solo) { document.body.classList.add('solo'); if (q.get('zoom')) document.body.style.setProperty('--zoom', q.get('zoom')); }
+    // sans prix (flyer joint aux emails de prospection) : une coche à la place du prix
+    if (sansPrix) Object.values(VERSIONS).forEach(v => { v.lignes = v.lignes.map(([a]) => [a, '✓']); v.plus = v.plus.replace(' · Prix fixés à l’avance', ' · Prix annoncé avant'); });
     function flyer(v) {
       return `<div class="fly">
         <div class="tete"><img src="img/logo-ilo.png" alt=""><div><b>Ilo<span>Tech</span></b><small>Dépannage &amp; installation informatique · Martinique</small></div></div>
@@ -87,9 +96,9 @@
       version = v;
       document.getElementById('bPart').classList.toggle('on', v === 'part');
       document.getElementById('bPro').classList.toggle('on', v === 'pro');
-      document.getElementById('feuille').innerHTML = flyer(VERSIONS[v]).repeat(4);
+      document.getElementById('feuille').innerHTML = flyer(VERSIONS[v]).repeat(solo ? 1 : 4);
       document.querySelectorAll('.code').forEach(el => {
-        if (window.QRCode) new QRCode(el, { text: SITE + (v === 'pro' ? 'services.html?src=flyer-pro' : '?src=flyer'), width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
+        if (window.QRCode) new QRCode(el, { text: SITE + (v === 'pro' ? 'services.html?src=' + (q.get('src') || 'flyer-pro') : '?src=' + (q.get('src') || 'flyer')), width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
         else el.textContent = SITE;
       });
     }

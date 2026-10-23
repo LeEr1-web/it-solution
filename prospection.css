@@ -162,3 +162,18 @@ button.p-chip:hover{border-color:var(--primary)}
 .p-selbar{position:sticky;top:0;z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:8px 0;padding:8px 12px;border-radius:10px;background:#fff;border:1.5px solid var(--primary);box-shadow:0 4px 14px rgba(11,21,38,.08)}
 .p-selbar .btn{margin-left:auto}
 .p-selnb{font-weight:700;color:var(--primary)}
+
+/* Listes noire et blanche */
+.p-listes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.p-liste{padding:12px 14px;border-radius:12px;background:#fff;border:1.5px solid var(--line)}
+.p-liste-noire{border-color:#111827}.p-liste-blanche{border-color:#16a34a}
+.p-liste h3{margin:0 0 4px}
+.p-liste textarea{width:100%;min-height:64px;font:14px var(--sans)}
+.p-raison{flex:1;min-width:140px;min-height:34px;padding:4px 8px}
+.p-entrees{list-style:none;margin:8px 0 0;padding:0;max-height:260px;overflow:auto}
+.p-entrees li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:5px 0;border-top:1px solid var(--line)}
+.p-entrees li .link{margin-left:auto}
+.p-lnoire,.p-lblanche{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:700;vertical-align:middle}
+.p-lnoire{background:#111827;color:#fff}.p-lblanche{background:#dcfce7;color:#166534}
+.p-fiche-listes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 8px}
+.p-fiche-listes .on{outline:2px solid currentColor}

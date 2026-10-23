@@ -60,8 +60,8 @@
 <body>
   <div class="barre"><b>Plaquette IloTech</b><button type="button" class="imp" onclick="print()">Imprimer / PDF</button><a href="index.html">Prendre rendez-vous</a></div>
   <article class="page" id="plaquette"></article>
-  <script src="data.js?v=61"></script>
-  <script src="outils.js?v=61"></script>
+  <script src="data.js?v=62"></script>
+  <script src="outils.js?v=62"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     (function () {
@@ -86,7 +86,7 @@
         <section><h2>Nous contacter</h2><div class="contact">${Object.values(AGENCES).map(a => `<div class="agence"><b>Agence ${esc(a.de)}</b><span class="tel">${esc(a.tel)}</span><br><span>Appel ou WhatsApp · ${esc(a.detail)}</span></div>`).join('')}
           <div class="qr"><div id="qr"></div>Rendez-vous en ligne</div></div>
           <p>${CONFIG.email ? `Email : <b>${esc(CONFIG.email)}</b> · ` : ''}Site : <b>${esc(SITE.replace(/^https:\/\//, ''))}</b></p></section>
-        <footer>${esc(ENTREPRISE.nomCommercial)} — ${esc(ENTREPRISE.exploitant)} · SIRET ${esc(ENTREPRISE.siret)} · ${esc(ENTREPRISE.adresse)}</footer>`;
+        <footer>${esc(ENTREPRISE.nomCommercial)} — Entreprise individuelle · SIRET ${esc(ENTREPRISE.siret)} · ${esc(ENTREPRISE.adresse)}</footer>`;
       if (window.QRCode) new QRCode($('qr'), { text: SITE + '?src=plaquette', width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
     })();
   </script>

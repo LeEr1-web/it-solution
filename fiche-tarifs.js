@@ -46,7 +46,7 @@
       <p class="f-desc">Devis gratuit et sans engagement, valable ${CONFIG.validiteDevis} jours.</p>
       ${BIENTOT.length ? `<p class="f-desc"><b>Bientôt :</b> ${BIENTOT.map(esc).join(', ')}.</p>` : ''}</section>
   </div>
-  <footer class="f-foot">${esc(ENTREPRISE.exploitant)} · SIRET ${esc(ENTREPRISE.siret)} · ${esc(ENTREPRISE.adresse)}</footer>`;
+  <footer class="f-foot">${esc(ENTREPRISE.nomCommercial)} — Entreprise individuelle · SIRET ${esc(ENTREPRISE.siret)} · ${esc(ENTREPRISE.adresse)}</footer>`;
 
   document.getElementById('fiche').innerHTML = h;
 })();
