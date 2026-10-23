@@ -796,6 +796,7 @@ async function sendByEmail(lead, photoInGoogle) {
     'Description': lead.desc || '—',
     'Récapitulatif': lead.recap
   };
+  if (CONFIG.emailCopie) body._cc = CONFIG.emailCopie;
   if (!lead.email) { delete body._replyto; delete body._autoresponse; body.email = 'Pas d’email (rappeler au ' + lead.phone + ')'; }
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(CONFIG.emailReception), {

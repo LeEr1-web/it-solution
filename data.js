@@ -7,6 +7,7 @@ const CONFIG = {
   //    via le service gratuit FormSubmit. La 1re fois, FormSubmit vous envoie un email d'activation à valider.
   //    Ensuite, vous pouvez remplacer l'adresse par l'alias secret fourni par FormSubmit (voir README.txt).
   emailReception: 'ilotech.contact@gmail.com',
+  emailCopie: 'nolan.bourt@gmail.com',   // reçoit aussi une copie de chaque demande (plusieurs : séparées par des virgules)
   // ② Réception GOOGLE (tableau + planning + rappels + suivi de réparation) : URL du script (README.txt, « INSTALLER LE MOTEUR GOOGLE »).
   //    Les deux peuvent fonctionner ensemble. Si aucun n'est rempli, les demandes partent par WhatsApp.
   endpoint: 'https://script.google.com/macros/s/AKfycbx6NsIGVdNgkN7TdYYP6R_Y6Ds2gr9fXp8PZOz-lIF632DDhaFFuZICs7cDB9VawkrJ/exec',   // moteur sur ilotech.contact@gmail.com
