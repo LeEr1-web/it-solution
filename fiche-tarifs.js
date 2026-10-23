@@ -7,7 +7,7 @@
   const service = s => `
     <section class="f-svc">
       <h3><span>${ico(s.icon)} ${esc(s.nom)}</span><b class="mono">${s.base ? 'dès ' : ''}${prixBase(s)}</b></h3>
-      <p class="f-desc">${esc(s.desc)}${s.remise ? ` · <span class="f-etu">−${CONFIG.remiseEtudiant} % étudiant</span>` : ''}</p>
+      <p class="f-desc">${esc(s.desc)}</p>
       <table>${s.options.map(o => `<tr><td>${esc(o[1])}</td><td class="mono">${prixOpt(s, o)}</td></tr>`).join('')}</table>
       ${s.note ? `<p class="f-note">${esc(s.note)}</p>` : ''}
     </section>`;
@@ -42,7 +42,6 @@
       ${Object.values(DELAIS).map(x => `<tr><td>${esc(x.label)}<small>${esc(x.desc)}</small></td><td class="mono">${x.prix ? '+' + eur(x.prix) : 'Inclus'}</td></tr>`).join('')}
       ${Object.values(CRENEAUX).map(x => `<tr><td>${esc(x.label)}<small>${esc(x.heures)}</small></td><td class="mono">${x.prix ? '+' + eur(x.prix) : 'Inclus'}</td></tr>`).join('')}</table></section>
     <section class="f-svc"><h3><span>Remises et conditions</span></h3>
-      <p class="f-desc">Étudiants : −${CONFIG.remiseEtudiant} % sur la main d'œuvre, sur présentation de la carte étudiant.</p>
       <p class="f-desc">Devis gratuit et sans engagement, valable ${CONFIG.validiteDevis} jours.</p>
       ${BIENTOT.length ? `<p class="f-desc"><b>Bientôt :</b> ${BIENTOT.map(esc).join(', ')}.</p>` : ''}</section>
   </div>

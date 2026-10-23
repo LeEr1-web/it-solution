@@ -30,7 +30,7 @@ const STEPS = {
 };
 const DEFAULT = {
   step: 1, kind: 'rdv', tab: 'services', cat: 'ordi', pack: null, symptoms: [], sel: [], opt: {},
-  d: { appType: '', mode: 'site', commune: '', agence: 'ducos', creneau: '', date: '', type: 'individual', budget: 'medium', appareil: '', desc: '', contrat: false, name: '', email: '', phone: '', address: '', pref: 'whatsapp', consent: false, website: '', chatMsg: MESSAGES_WA[0][1], chatCommune: '', etudiant: false }
+  d: { appType: '', mode: 'site', commune: '', agence: 'ducos', creneau: '', date: '', type: 'individual', budget: 'medium', appareil: '', desc: '', contrat: false, name: '', email: '', phone: '', address: '', pref: 'whatsapp', consent: false, website: '', chatMsg: MESSAGES_WA[0][1], chatCommune: '' }
 };
 let state = load();
 const slotCache = {};   // places restantes par créneau, par "date|agence" : { matin: 2, aprem: 0 }
@@ -167,12 +167,11 @@ function calc() {
   const { sel, opt, d } = state;
   const p = packValid() ? pack(state.pack) : null;
   const lines = [];
-  let presta = 0, variable = 0, packValue = 0, eligible = 0;
+  let presta = 0, variable = 0, packValue = 0;
 
   if (p) {
     packValue = itemsValue(p.items);
     presta += p.prix;
-    if (p.remise) eligible += p.prix;
     lines.push({ label: packLabel(p), detail: p.inclus.join(' · '), prix: p.prix, old: packValue });
   }
   let mensuel = 0;
@@ -190,19 +189,15 @@ function calc() {
     const sub = (inPack ? 0 : s.base) + chosen.reduce((t, o) => t + o[2], 0);
     if (!sub) { if (!inPack) lines.push({ label: s.nom, detail: chosen.map(o => o[1]).join(', '), prix: 0 }); return; }
     presta += sub; variable += sub;
-    if (s.remise) eligible += sub;
     lines.push({ label: inPack ? `${s.nom} — en plus du pack` : s.nom, detail: chosen.map(o => o[1]).join(', '), prix: sub });
   });
-
-  const remise = d.etudiant ? Math.round(eligible * CONFIG.remiseEtudiant / 100) : 0;
-  if (remise) lines.push({ label: `Remise étudiant (−${CONFIG.remiseEtudiant} %)`, detail: 'Sur présentation de la carte étudiant', prix: -remise, remise: true });
 
   let depl = 0, deplLabel = '', deplPlein = 0, offert = false;
   const c = commune(d.commune);
   if (d.mode === 'site' && c) {
     depl = deplPlein = ZONES[c[1]].prix;
     deplLabel = c[1] === 'agence' ? 'Déplacement (commune d’agence)' : `Déplacement zone ${ZONES[c[1]].nom}`;
-    if (depl > 0 && presta - remise >= CONFIG.deplacementOffertDes) { offert = true; depl = 0; }
+    if (depl > 0 && presta >= CONFIG.deplacementOffertDes) { offert = true; depl = 0; }
   } else if (d.mode === 'atelier') {
     deplLabel = `Dépôt en agence (${AGENCES[d.agence].nom})`;
   } else if (d.mode === 'distance') {
@@ -215,9 +210,9 @@ function calc() {
   const extras = depl + urg + cren;
   return {
     lines, presta, depl, deplPlein, deplLabel, offert, delai, urg, cren,
-    pack: p ? p.id : null, savings: p ? packValue - p.prix : 0, remise, mensuel,
-    min: presta ? presta - remise + extras : 0,
-    max: presta ? Math.round((presta - variable) + variable * CONFIG.margeHaute) - remise + extras : 0
+    pack: p ? p.id : null, savings: p ? packValue - p.prix : 0, mensuel,
+    min: presta ? presta + extras : 0,
+    max: presta ? Math.round((presta - variable) + variable * CONFIG.margeHaute) + extras : 0
   };
 }
 const priceText = r => {
@@ -234,7 +229,6 @@ function renderSummary() {
   const { d } = state;
   const line = (label, value, detail) => `<div class="line"><span>${label}${detail ? `<small>${esc(detail)}</small>` : ''}</span><b>${value}</b></div>`;
   let h = selectionHTML();
-  if (r.remise) h += line(`Remise étudiant (−${CONFIG.remiseEtudiant} %)`, `<span class="free">${eur(-r.remise)}</span>`, 'Sur présentation de la carte étudiant');
   if (r.presta && r.deplLabel && state.step >= 2) {
     const c = commune(d.commune);
     h += line(r.deplLabel, r.offert ? `<s>${eur(r.deplPlein)}</s><span class="free">Offert</span>` : r.depl ? eur(r.depl) : '<span class="free">Gratuit</span>', d.mode === 'site' && c ? c[0] : '');
@@ -249,9 +243,7 @@ function renderSummary() {
   const txt = priceText(r);
   $('price').textContent = txt;
   $('mobilePrice').textContent = txt;
-  const eco = r.savings + r.remise;
-  $('savings').innerHTML = eco ? `Vous économisez <b>${eur(eco)}</b>${r.savings && r.remise ? ' (pack + remise étudiant)' : r.remise ? ' avec la remise étudiant' : ' avec le pack'}` : '';
-  $('student').innerHTML = `<input type="checkbox" ${d.etudiant ? 'checked' : ''} onchange="setD('etudiant',this.checked)"><span><b>Je suis étudiant(e)</b> · −${CONFIG.remiseEtudiant} % sur la main d'œuvre<small>Sur présentation de la carte étudiant</small></span>`;
+  $('savings').innerHTML = r.savings ? `Vous économisez <b>${eur(r.savings)}</b> avec le pack` : '';
 
   const meta = [];
   const c = commune(d.commune);
@@ -499,7 +491,7 @@ const VIEWS = {
       <div class="field full"><label for="desc">Expliquez avec vos mots</label><textarea id="desc" placeholder="Exemple : mon ordinateur est très lent depuis une mise à jour." oninput="setD('desc',this.value,true)">${esc(d.desc)}</textarea></div>
       <div class="field full"><label for="photo">Photo du problème <span class="muted">(message d'erreur, matériel…)</span></label>
         <div class="photo-row"><input id="photo" type="file" accept="image/*" onchange="addPhoto(this.files[0])">${photo ? `<img src="${photo.url}" alt="Aperçu de votre photo" class="thumb"><button type="button" class="link" onclick="removePhoto()">Retirer</button>` : ''}</div></div></div>
-      ${d.type !== 'individual' && d.type !== 'student' ? `<label class="check"><input type="checkbox" ${d.contrat ? 'checked' : ''} onchange="setD('contrat',this.checked,true)"><span><b>Je souhaite des informations sur le ${CONTRAT_PRO}</b><br><span class="muted">Interventions prioritaires, déplacements inclus, suivi des sauvegardes.</span></span></label>` : ''}
+      ${d.type !== 'individual' ? `<label class="check"><input type="checkbox" ${d.contrat ? 'checked' : ''} onchange="setD('contrat',this.checked,true)"><span><b>Je souhaite des informations sur le ${CONTRAT_PRO}</b><br><span class="muted">Interventions prioritaires, déplacements inclus, suivi des sauvegardes.</span></span></label>` : ''}
       <label class="check consent"><input type="checkbox" ${d.consent ? 'checked' : ''} onchange="setD('consent',this.checked,true)"><span>J'accepte que mes informations soient utilisées par IloTech pour traiter ma demande et me recontacter (<a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>). <span class="req">*</span></span></label>
       <div class="estimate">${rdv ? `Rendez-vous : <b>${frDate(d.date)}, ${CRENEAUX[d.creneau]?.label.toLowerCase() || ''}</b> · ` : ''}Estimation : <b>${priceText(r)}</b></div>`;
   }
@@ -550,7 +542,6 @@ function openZones() { $('zonesDialog').showModal(); }
    ===================================================================== */
 function setD(k, v, silent) {
   state.d[k] = v;
-  if (k === 'type' && v === 'student') state.d.etudiant = true;
   if (k === 'mode' || k === 'commune' || k === 'agence') { state.d.creneau = ''; fetchSlots(state.d.date); }
   if (silent) { renderSummary(); save(); } else render();
 }
@@ -698,8 +689,7 @@ function recapText(lead) {
     lead.hasPhoto ? '- Photo du problème jointe' : '',
     lead.contrat ? `- Souhaite des informations sur le ${CONTRAT_PRO}` : '',
     '',
-    `Estimation : ${priceText(r)}${r.savings + r.remise ? ` (économie : ${eur(r.savings + r.remise)})` : ''}`,
-    lead.etudiant ? `Étudiant(e) : carte à présenter le jour de l'intervention` : '',
+    `Estimation : ${priceText(r)}${r.savings ? ` (économie : ${eur(r.savings)})` : ''}`,
     `Recontacter par : ${CONTACT_PREF[lead.pref]}`,
     lead.desc ? `\nBesoin : ${lead.desc}` : ''
   ];
@@ -792,7 +782,6 @@ async function sendByEmail(lead, photoInGoogle) {
     'Estimation': priceText(r),
     'Appareil': lead.appareil || '—',
     'Photo': lead.hasPhoto ? (photoInGoogle ? 'Oui — dans le tableau Google' : 'Le client a une photo : demandez-la sur WhatsApp') : 'Non',
-    'Étudiant': lead.etudiant ? 'Oui (carte à vérifier)' : 'Non',
     'Description': lead.desc || '—',
     'Récapitulatif': lead.recap
   };
@@ -899,8 +888,8 @@ function renderDevis(lead, received, google) {
       </header>
       <div class="devis-client"><span class="mono">CLIENT</span><b>${esc(lead.name)}</b><span>${esc(lead.phone)} · ${esc(lead.email)}</span><span>${esc(lead.lieu)}</span>${lead.appareil ? `<span>Appareil : ${esc(lead.appareil)}</span>` : ''}</div>
       <table class="devis-table"><thead><tr><th>Désignation</th><th>Prix</th></tr></thead><tbody>${rows}</tbody>
-        <tfoot><tr><td>Total estimé${r.savings + r.remise ? `<small>dont ${eur(r.savings + r.remise)} d'économie</small>` : ''}</td><td>${priceText(r)}</td></tr></tfoot></table>
-      <p class="devis-note">${CONFIG.mentionPrix ? esc(CONFIG.mentionPrix) + '. ' : ''}${r.remise ? 'Remise étudiant accordée sur présentation de la carte étudiant en cours de validité. ' : ''}${CONFIG.paiement3fois && r.min >= CONFIG.paiement3fois ? 'Paiement possible en 3 fois sans frais. ' : ''}Estimation établie en ligne à partir des informations fournies. Le prix définitif est confirmé après diagnostic, avant toute intervention. Aucun engagement.</p>
+        <tfoot><tr><td>Total estimé${r.savings ? `<small>dont ${eur(r.savings)} d'économie</small>` : ''}</td><td>${priceText(r)}</td></tr></tfoot></table>
+      <p class="devis-note">${CONFIG.mentionPrix ? esc(CONFIG.mentionPrix) + '. ' : ''}${CONFIG.paiement3fois && r.min >= CONFIG.paiement3fois ? 'Paiement possible en 3 fois sans frais. ' : ''}Estimation établie en ligne à partir des informations fournies. Le prix définitif est confirmé après diagnostic, avant toute intervention. Aucun engagement.</p>
     </article>
     <p class="center"><button type="button" class="link" onclick="reset()">Faire une nouvelle demande</button></p>`;
   document.body.classList.add('print-devis');

@@ -49,7 +49,7 @@ const PAGES = [
       'Nous commençons toujours par un diagnostic, puis nous vous annonçons le prix avant de réparer. Vos fichiers sont préservés. Selon la panne, nous intervenons chez vous, dans nos agences de Ducos et du Robert, ou à distance en quelques minutes.'
     ],
     exemple: { titre: 'Exemple : le PC portable de Mme L., au Lamentin', avant: ['Démarrage en 1 min 40', 'Fenêtres de publicité partout', 'Ventilateur bruyant'], apres: ['Démarrage en 14 s', 'Logiciels inutiles et pubs retirés', 'Nettoyage interne : PC silencieux'] },
-    pourquoi: ['Diagnostic et prix annoncé avant toute réparation', 'Dès 35 €, parmi les tarifs les plus bas de l’île', 'Chez vous, en agence ou à distance', 'Vos fichiers préservés', '−15 % pour les étudiants'],
+    pourquoi: ['Diagnostic et prix annoncé avant toute réparation', 'Dès 35 €, parmi les tarifs les plus bas de l’île', 'Chez vous, en agence ou à distance', 'Vos fichiers préservés'],
     faq: [
       ['Combien coûte un dépannage d’ordinateur ?', 'Un dépannage commence à {repair}, diagnostic compris. Le prix exact est confirmé avant de réparer. En agence ou à distance, il n’y a pas de frais de déplacement.'],
       ['Intervenez-vous à domicile ?', 'Oui, dans toute la Martinique. Le déplacement est offert dans les communes d’agence et à partir d’un certain montant ; sinon il dépend de la zone (Centre, Sud, Nord).'],

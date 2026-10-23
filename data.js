@@ -18,7 +18,6 @@ const CONFIG = {
   deplacementOffertDes: 200, // déplacement offert à partir de ce montant de prestation (€)
   margeHaute: 1.3,           // fourchette haute = prix de base × margeHaute (hors packs, qui ont un prix fixe)
   validiteDevis: 30,         // jours
-  remiseEtudiant: 15,        // % sur la main d'œuvre (services marqués remise: true) — sur présentation de la carte étudiant
   paiement3fois: 500,        // paiement en 3 fois sans frais à partir de ce montant (sites, applications, installations)
   placesParCreneau: 3,       // clients max par agence le matin, et autant l'après-midi (même valeur que CAPACITE dans le script Google)
   delaiMinJours: 1           // pas de rendez-vous le jour même : premier jour réservable = demain
@@ -66,54 +65,54 @@ const COMMUNES = [
 ];
 
 // modes : où le service peut être réalisé (site = chez le client, atelier = dépôt en agence, distance = télé-assistance)
-// appareil : true = on demande la marque / le modèle — remise : true = remise étudiant possible (main d'œuvre)
+// appareil : true = on demande la marque / le modèle
 // note : message affiché à l'étape « Détails »
 const SERVICES = [
   // --- Ordinateur : pannes, lenteur, réparations matérielles
-  { id: 'repair', icon: 'monitor', nom: 'Dépannage PC', desc: 'Ne démarre plus, plantages', base: 35, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
+  { id: 'repair', icon: 'monitor', nom: 'Dépannage PC', desc: 'Ne démarre plus, plantages', base: 35, modes: ['site', 'atelier', 'distance'], appareil: true,
     compris: ['Diagnostic de la panne', 'Prix confirmé avant de réparer', 'Vos fichiers préservés'], pasCompris: ['Pièces à remplacer (prix annoncé avant)'],
     options: [['boot', 'Windows ne démarre plus', 35], ['bsod', 'Écran bleu, plantages', 35], ['screen', 'Écran noir au démarrage', 40], ['slow', 'PC très lent', 20], ['reinstall', 'Réinstallation de Windows', 45]] },
-  { id: 'boost', icon: 'zap', nom: 'Accélérer Windows', desc: 'Nettoyage et optimisation', base: 39, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
+  { id: 'boost', icon: 'zap', nom: 'Accélérer Windows', desc: 'Nettoyage et optimisation', base: 39, modes: ['site', 'atelier', 'distance'], appareil: true,
     options: [['startup', 'Démarrage rapide', 15], ['clean', 'Nettoyage Windows', 20], ['drivers', 'Pilotes / mises à jour', 15], ['bloat', 'Logiciels inutiles retirés', 15], ['gaming', 'Optimisation jeux', 30]] },
-  { id: 'hwfixe', icon: 'tower', nom: 'Réparation PC fixe', desc: 'Pièces, montage, upgrade', base: 35, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'hwfixe', icon: 'tower', nom: 'Réparation PC fixe', desc: 'Pièces, montage, upgrade', base: 35, modes: ['atelier', 'site'], appareil: true,
     options: [['psu', 'Alimentation en panne (hors pièce)', 35], ['gpu', 'Pose ou changement carte graphique', 30], ['ram', 'Ajout de mémoire (RAM)', 20],
       ['fan', 'Surchauffe, ventilateurs, bruit', 30]] },
-  { id: 'hwportable', icon: 'laptop', nom: 'Réparation PC portable', desc: 'Écran, clavier, batterie', base: 35, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'hwportable', icon: 'laptop', nom: 'Réparation PC portable', desc: 'Écran, clavier, batterie', base: 35, modes: ['atelier', 'site'], appareil: true,
     options: [['screen', 'Écran cassé (hors pièce)', 59], ['keyboard', 'Clavier (hors pièce)', 39], ['battery', 'Batterie (hors pièce)', 29],
       ['charge', 'Prise de charge', 49], ['hinge', 'Charnière cassée', 49], ['fan', 'Surchauffe, ventilateur', 30]] },
   // --- Sécurité
-  { id: 'antivirus', icon: 'shield', nom: 'Antivirus & virus', desc: 'Suppression et protection', base: 29, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
+  { id: 'antivirus', icon: 'shield', nom: 'Antivirus & virus', desc: 'Suppression et protection', base: 29, modes: ['site', 'atelier', 'distance'], appareil: true,
     options: [['virus', 'Suppression de virus et pubs', 40], ['install', 'Installation d’un antivirus', 15], ['scan', 'Analyse complète du PC', 15],
       ['browser', 'Navigateur nettoyé (pop-ups, faux messages)', 15], ['ransom', 'Rançongiciel : diagnostic', 59]] },
-  { id: 'comptes', icon: 'lock', nom: 'Comptes & arnaques', desc: 'Piratage, mots de passe', base: 29, remise: true, modes: ['site', 'atelier', 'distance'],
+  { id: 'comptes', icon: 'lock', nom: 'Comptes & arnaques', desc: 'Piratage, mots de passe', base: 29, modes: ['site', 'atelier', 'distance'],
     note: 'Nous sécurisons vos comptes et appareils. En cas de fraude bancaire, prévenez aussi votre banque et déposez plainte.',
     options: [['hack', 'Compte piraté (email, Facebook…)', 35], ['pass', 'Gestionnaire de mots de passe', 15], ['2fa', 'Double authentification', 15],
       ['parent', 'Contrôle parental', 20], ['scam', 'Aide après une arnaque en ligne', 25]] },
   // --- Données
-  { id: 'sauvegarde', icon: 'cloud', nom: 'Sauvegarde', desc: 'Automatique, en ligne, NAS', base: 29, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
+  { id: 'sauvegarde', icon: 'cloud', nom: 'Sauvegarde', desc: 'Automatique, en ligne, NAS', base: 29, modes: ['site', 'atelier', 'distance'], appareil: true,
     options: [['auto', 'Sauvegarde automatique du PC', 30], ['cloud', 'Sauvegarde en ligne (cloud)', 25], ['nas', 'Disque réseau (NAS) à la maison', 69], ['check', 'Vérification d’une sauvegarde existante', 15]] },
-  { id: 'recup', icon: 'database', nom: 'Récupération de données', desc: 'Fichiers effacés, disque en panne', base: 35, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'recup', icon: 'database', nom: 'Récupération de données', desc: 'Fichiers effacés, disque en panne', base: 35, modes: ['atelier', 'site'], appareil: true,
     options: [['deleted', 'Fichiers effacés par erreur', 40], ['disk', 'Disque endommagé ou muet', 79], ['usb', 'Clé USB ou carte mémoire', 29], ['pcdead', 'PC en panne : sauver les fichiers', 40]] },
-  { id: 'stockage', icon: 'drive', nom: 'Stockage & transfert', desc: 'SSD, disque, transfert', base: 25, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'stockage', icon: 'drive', nom: 'Stockage & transfert', desc: 'SSD, disque, transfert', base: 25, modes: ['atelier', 'site'], appareil: true,
     options: [['ssd', 'Passage au SSD (hors pièce)', 35], ['upgrade', 'Agrandir le stockage (hors pièce)', 29], ['transfer', 'Transfert vers un nouveau PC ou disque', 29], ['clone', 'Copie complète du disque (clonage)', 39]] },
-  { id: 'recyclage', icon: 'recycle', nom: 'Reprise & recyclage', desc: 'Effacement sécurisé, recyclage', base: 0, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'recyclage', icon: 'recycle', nom: 'Reprise & recyclage', desc: 'Effacement sécurisé, recyclage', base: 0, modes: ['atelier', 'site'], appareil: true,
     options: [['wipe', 'Effacement sécurisé des données', 19], ['recycle', 'Récupération pour recyclage', 0, 'Gratuit']] },
   // --- Installation
-  { id: 'install', icon: 'laptop', nom: 'PC neuf & logiciels', desc: 'Mise en service, Office', base: 35, remise: true, modes: ['site', 'atelier', 'distance'], appareil: true,
+  { id: 'install', icon: 'laptop', nom: 'PC neuf & logiciels', desc: 'Mise en service, Office', base: 35, modes: ['site', 'atelier', 'distance'], appareil: true,
     options: [['newpc', 'Mise en service PC neuf', 35], ['transfer', 'Transfert depuis l’ancien PC', 35], ['office', 'Office / messagerie', 25], ['soft', 'Installation de logiciels', 15]] },
-  { id: 'printer', icon: 'printer', nom: 'Imprimante & scanner', desc: 'Installation et dépannage', base: 29, remise: true, modes: ['site', 'distance'], appareil: true,
+  { id: 'printer', icon: 'printer', nom: 'Imprimante & scanner', desc: 'Installation et dépannage', base: 29, modes: ['site', 'distance'], appareil: true,
     options: [['wifi', 'Connexion Wi-Fi / réseau', 15], ['scan', 'Scanner et numérisation', 15], ['multi', 'Partage sur plusieurs PC', 20], ['panne', 'Dépannage (bourrage, pilote, erreur)', 25]] },
-  { id: 'ups', icon: 'battery', nom: 'Onduleur', desc: 'Protection contre les coupures', base: 29, remise: true, modes: ['site'], appareil: true,
+  { id: 'ups', icon: 'battery', nom: 'Onduleur', desc: 'Protection contre les coupures', base: 29, modes: ['site'], appareil: true,
     note: 'Matériel non inclus : nous vous conseillons le modèle adapté (sur devis).',
     options: [['auto', 'Arrêt automatique du PC', 15], ['box', 'Protection box et TV', 10], ['battery', 'Changement de batterie (hors pièce)', 19], ['pro', 'Onduleur pour serveur ou caisse', 35]] },
   // --- Consoles
-  { id: 'console', icon: 'gamepad', nom: 'Entretien console', desc: 'Nettoyage, stockage, réparation', base: 29, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'console', icon: 'gamepad', nom: 'Entretien console', desc: 'Nettoyage, stockage, réparation', base: 29, modes: ['atelier', 'site'], appareil: true,
     options: [['clean', 'Nettoyage complet + pâte thermique', 35], ['storage', 'Changer / agrandir le stockage', 25], ['update', 'Mises à jour et configuration', 15],
       ['manette', 'Manette qui dérive', 25], ['hdmi', 'Réparation port HDMI', 59]] },
-  { id: 'emulation', icon: 'joystick', nom: 'Émulation & rétro', desc: 'Émulateurs, console rétro', base: 29, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'emulation', icon: 'joystick', nom: 'Émulation & rétro', desc: 'Émulateurs, console rétro', base: 29, modes: ['atelier', 'site'], appareil: true,
     note: 'Nous installons uniquement des émulateurs légaux. Les jeux doivent provenir de copies que vous possédez.',
     options: [['emu', 'Installation d’émulateurs', 25], ['retro', 'Console rétro sur Raspberry Pi (hors matériel)', 45], ['handheld', 'Steam Deck / console portable PC', 25]] },
-  { id: 'gamer', icon: 'tower', nom: 'PC gamer sur mesure', desc: 'Conseil, montage, optimisation', base: 39, remise: true, modes: ['atelier', 'site'],
+  { id: 'gamer', icon: 'tower', nom: 'PC gamer sur mesure', desc: 'Conseil, montage, optimisation', base: 39, modes: ['atelier', 'site'],
     note: 'Pièces non incluses : nous vous conseillons une configuration adaptée à votre budget.',
     options: [['build', 'Montage complet (pièces fournies)', 69], ['windows', 'Windows et pilotes installés', 25], ['tuning', 'Optimisation jeux et tests', 25],
       ['cable', 'Gestion des câbles et RGB', 19], ['upgrade', 'Mise à niveau d’un PC existant', 35]] },
@@ -141,10 +140,10 @@ const SERVICES = [
     options: [['commande', 'Aide à la commande et à l’activation', 0, 'Offert'], ['toit', 'Fixation sur le toit, un mât ou un pignon', 69], ['cable', 'Câble long ou passage en gaine (jusqu’à 30 m)', 39],
       ['mesh', 'Wi-Fi dans toute la maison (bornes mesh)', 79], ['secours', 'Secours automatique : box et Starlink ensemble', 59], ['onduleur', 'Internet maintenu pendant les coupures (onduleur)', 59],
       ['mini', 'Starlink Mini : réglage bateau, véhicule ou chantier', 29]] },
-  { id: 'network', icon: 'wifi', nom: 'Internet et Wi-Fi', desc: 'Réseau maison ou bureau', base: 49, remise: true, modes: ['site'],
+  { id: 'network', icon: 'wifi', nom: 'Internet et Wi-Fi', desc: 'Réseau maison ou bureau', base: 49, modes: ['site'],
     options: [['audit', 'Diagnostic Wi-Fi', 35], ['wifi', 'Amélioration Wi-Fi', 49], ['mesh', 'Wi-Fi dans toute la maison', 99], ['router', 'Configuration box / routeur', 35], ['cabling', 'Câblage', 99], ['pro', 'Réseau professionnel', 199]] },
   // --- Aide & suivi
-  { id: 'cours', icon: 'users', nom: 'Cours & accompagnement', desc: 'Débutants, seniors, à domicile', base: 35, remise: true, modes: ['site', 'atelier', 'distance'],
+  { id: 'cours', icon: 'users', nom: 'Cours & accompagnement', desc: 'Débutants, seniors, à domicile', base: 35, modes: ['site', 'atelier', 'distance'],
     note: 'Séance d’1 h à votre rythme. Cochez les sujets qui vous intéressent.',
     options: [['mail', 'Emails, WhatsApp, appels vidéo', 0, 'Inclus'], ['banque', 'Banque et démarches en ligne', 0, 'Inclus'], ['photos', 'Photos : ranger et partager', 0, 'Inclus'],
       ['arnaques', 'Repérer les arnaques', 0, 'Inclus'], ['ia', 'Découvrir l’intelligence artificielle (ChatGPT…) sans risque', 0, 'Inclus'], ['h2', 'Séance de 2 h au lieu d’1 h', 25], ['carnet', 'Carnet de 5 séances', 99]] },
@@ -152,7 +151,7 @@ const SERVICES = [
     note: 'Inclus chaque mois : contrôle de votre PC à distance, suivi de vos sauvegardes et tarif réduit sur les dépannages.',
     options: [['pc2', 'Ordinateur supplémentaire', 4.9], ['visite', 'Visite annuelle à domicile', 5], ['prio', 'Intervention prioritaire', 3]] },
   // --- Mobile & tablette
-  { id: 'mobile', icon: 'smartphone', nom: 'Smartphone & tablette', desc: 'Réparation, transfert, réglages', base: 25, remise: true, modes: ['atelier', 'site'], appareil: true,
+  { id: 'mobile', icon: 'smartphone', nom: 'Smartphone & tablette', desc: 'Réparation, transfert, réglages', base: 25, modes: ['atelier', 'site'], appareil: true,
     note: 'Pièces (écran, batterie) en supplément : prix confirmé avant la réparation selon le modèle.',
     options: [['screen', 'Écran cassé (hors pièce)', 45], ['battery', 'Batterie qui ne tient plus (hors pièce)', 25], ['eau', 'Tombé dans l’eau : diagnostic', 25],
       ['transfer', 'Transfert vers un nouveau téléphone', 20], ['backup', 'Sauvegarde des photos et contacts', 15], ['setup', 'Configuration et applications', 15],
@@ -227,7 +226,7 @@ const SERVICES = [
       ['partage', 'Agendas et fichiers partagés', 39], ['postes', 'Configuration des ordinateurs et téléphones (par poste)', 15]] },
   { id: 'pos', icon: 'receipt', nom: 'Caisse enregistreuse', desc: 'Pour commerces', base: 149, modes: ['site'],
     options: [['touch', 'Écran tactile', 190], ['drawer', 'Tiroir-caisse', 79], ['scanner', 'Lecteur code-barres', 59], ['printer', 'Imprimante ticket', 79], ['stock', 'Gestion des stocks', 49], ['tpe', 'Liaison terminal CB', 39]] },
-  { id: 'maintenance', icon: 'tools', nom: 'Maintenance informatique', desc: 'Assistance et entretien du parc', base: 49, remise: true, modes: ['site', 'distance'], appareil: true,
+  { id: 'maintenance', icon: 'tools', nom: 'Maintenance informatique', desc: 'Assistance et entretien du parc', base: 49, modes: ['site', 'distance'], appareil: true,
     compris: ['Assistance par téléphone et à distance', 'Mises à jour et antivirus suivis', 'Un interlocuteur qui connaît votre parc'], pasCompris: ['Matériel et licences'],
     options: [['pc', 'Entretien des postes', 30], ['security', 'Antivirus des postes', 25], ['server', 'Serveur', 89], ['check', 'Bilan de santé du parc', 19]] }
 ];
@@ -306,44 +305,43 @@ const APPAREILS = { fixe: 'PC fixe', portable: 'PC portable', aio: 'PC tout-en-u
 //   inclus : 3 lignes simples affichées au client
 //   items  : services + options correspondants (sert au calcul « au lieu de »)
 //   univers: le pôle où la formule est proposée
-//   remise : true = la remise étudiant s'applique aussi au pack
 const PACKS = [
   // Informatique
-  { id: 'boost',   univers: 'info', icon: 'zap',      pour: 'Ordinateur', populaire: true, nom: 'Rendre mon PC rapide', prix: 59, remise: true,
+  { id: 'boost',   univers: 'info', icon: 'zap',      pour: 'Ordinateur', populaire: true, nom: 'Rendre mon PC rapide', prix: 59,
     inclus: ['Nettoyage de Windows', 'Démarrage plus rapide', 'Mises à jour et pilotes'], items: { boost: ['startup', 'clean', 'drivers', 'bloat'] } },
-  { id: 'virus',   univers: 'info', icon: 'shield',   pour: 'Sécurité', nom: 'Supprimer un virus', prix: 49, remise: true,
+  { id: 'virus',   univers: 'info', icon: 'shield',   pour: 'Sécurité', nom: 'Supprimer un virus', prix: 49,
     inclus: ['Virus et pubs supprimés', 'Antivirus installé', 'Analyse complète du PC'], items: { antivirus: ['virus', 'install', 'scan'] } },
-  { id: 'donnees', univers: 'info', icon: 'database', pour: 'Fichiers', nom: 'Récupérer mes fichiers', prix: 89, remise: true,
+  { id: 'donnees', univers: 'info', icon: 'database', pour: 'Fichiers', nom: 'Récupérer mes fichiers', prix: 89,
     inclus: ['Diagnostic du disque', 'Photos et fichiers sauvés', 'Copiés sur clé ou disque'], items: { recup: ['disk', 'deleted'] } },
-  { id: 'backup',  univers: 'info', icon: 'cloud',    pour: 'Fichiers', nom: 'Sauvegarder mes données', prix: 59, remise: true,
+  { id: 'backup',  univers: 'info', icon: 'cloud',    pour: 'Fichiers', nom: 'Sauvegarder mes données', prix: 59,
     inclus: ['Sauvegarde automatique', 'Copie en ligne (cloud)', 'Restauration expliquée'], items: { sauvegarde: ['auto', 'cloud'] } },
-  { id: 'newpc',   univers: 'info', icon: 'laptop',   pour: 'Installation', nom: 'Installer mon nouveau PC', prix: 89, remise: true,
+  { id: 'newpc',   univers: 'info', icon: 'laptop',   pour: 'Installation', nom: 'Installer mon nouveau PC', prix: 89,
     inclus: ['PC prêt à l’emploi', 'Fichiers transférés', 'Office, mails, imprimante'], items: { install: ['newpc', 'transfer', 'office'], printer: [] } },
-  { id: 'phone',   univers: 'info', icon: 'smartphone', pour: 'Mobile', nom: 'Mon téléphone comme neuf', prix: 39, remise: true,
+  { id: 'phone',   univers: 'info', icon: 'smartphone', pour: 'Mobile', nom: 'Mon téléphone comme neuf', prix: 39,
     inclus: ['Transfert de l’ancien téléphone', 'Photos et contacts sauvegardés', 'Applications réglées'], items: { mobile: ['transfer', 'backup', 'setup'] } },
   // Maison connectée
-  { id: 'wifi',    univers: 'maison', icon: 'wifi',   pour: 'Maison', nom: 'Wi-Fi partout chez moi', prix: 149, remise: true,
+  { id: 'wifi',    univers: 'maison', icon: 'wifi',   pour: 'Maison', nom: 'Wi-Fi partout chez moi', prix: 149,
     inclus: ['Signal mesuré partout', 'Wi-Fi dans chaque pièce', 'Box et appareils réglés'], items: { network: ['audit', 'mesh', 'router'] } },
-  { id: 'video',   univers: 'maison', icon: 'camera', pour: 'Maison', nom: 'Surveiller ma maison', prix: 349, remise: false,
+  { id: 'video',   univers: 'maison', icon: 'camera', pour: 'Maison', nom: 'Surveiller ma maison', prix: 349,
     inclus: ['2 caméras installées', 'Vision de nuit', 'Vue sur smartphone'], items: { camera: ['cam2', 'night', 'remote'] } },
-  { id: 'starlink', univers: 'maison', icon: 'satellite', pour: 'Starlink', populaire: true, nom: 'Starlink installé, Wi-Fi partout', prix: 229, remise: false,
+  { id: 'starlink', univers: 'maison', icon: 'satellite', pour: 'Starlink', populaire: true, nom: 'Starlink installé, Wi-Fi partout', prix: 229,
     inclus: ['Antenne posée sur le toit', 'Wi-Fi dans toute la maison', 'Test de débit devant vous'], items: { starlink: ['commande', 'toit', 'mesh'] } },
-  { id: 'tv',      univers: 'maison', icon: 'tv',     pour: 'Maison', nom: 'Ma TV et ma box bien installées', prix: 59, remise: true,
+  { id: 'tv',      univers: 'maison', icon: 'tv',     pour: 'Maison', nom: 'Ma TV et ma box bien installées', prix: 59,
     inclus: ['TV connectée réglée', 'Box et chaînes', 'Téléphone affiché sur la TV'], items: { multimedia: ['tv', 'box', 'cast'] } },
   // Web & marketing
-  { id: 'lancer',  univers: 'web', icon: 'globe',     pour: 'Entreprise', nom: 'Lancer mon activité en ligne', prix: 890, remise: false,
+  { id: 'lancer',  univers: 'web', icon: 'globe',     pour: 'Entreprise', nom: 'Lancer mon activité en ligne', prix: 890,
     inclus: ['Site vitrine 5 pages à votre nom', 'Fiche Google Maps optimisée', 'Référencement local'], items: { siteweb: ['pages', 'domain', 'seo'], marketing: ['google'] } },
-  { id: 'clients', univers: 'web', icon: 'megaphone', pour: 'Entreprise', nom: 'Trouver plus de clients', prix: 299, remise: false,
+  { id: 'clients', univers: 'web', icon: 'megaphone', pour: 'Entreprise', nom: 'Trouver plus de clients', prix: 299,
     inclus: ['Bilan et plan d’action', 'Fiche Google optimisée', 'Publicité + 4 visuels'], items: { marketing: ['google', 'pub', 'contenu'] } },
   // Entreprises
-  { id: 'shop',    univers: 'pro', icon: 'receipt',   pour: 'Commerce', nom: 'Équiper mon commerce', prix: 590, remise: false,
+  { id: 'shop',    univers: 'pro', icon: 'receipt',   pour: 'Commerce', nom: 'Équiper mon commerce', prix: 590,
     inclus: ['Caisse + tiroir-caisse', 'Lecteur et tickets', 'Terminal CB relié'], items: { pos: ['touch', 'drawer', 'scanner', 'printer', 'tpe'], network: ['router'] } },
-  { id: 'bureau',  univers: 'pro', icon: 'briefcase', pour: 'Bureau', nom: 'Équiper mon bureau', prix: 349, remise: false,
+  { id: 'bureau',  univers: 'pro', icon: 'briefcase', pour: 'Bureau', nom: 'Équiper mon bureau', prix: 349,
     inclus: ['Réseau et Wi-Fi pro', 'Emails à votre nom', 'Microsoft 365 ou Google'], items: { reseaupro: ['cablage', 'wifipro'], cloudpro: ['domaine', 'm365'] } },
-  { id: 'secupro', univers: 'pro', icon: 'shield',    pour: 'Entreprise', nom: 'Protéger mon entreprise', prix: 390, remise: false,
+  { id: 'secupro', univers: 'pro', icon: 'shield',    pour: 'Entreprise', nom: 'Protéger mon entreprise', prix: 390,
     inclus: ['Audit des accès et emails', 'Sauvegarde automatique', 'Rapport clair'], items: { cyber: ['email', 'acces'], sauvegarde: ['auto', 'cloud'] } },
   // Drone & 3D
-  { id: 'aerien',  univers: 'crea', icon: 'drone',    pour: 'Drone', nom: 'Vue aérienne de mon bien', prix: 229, remise: false,
+  { id: 'aerien',  univers: 'crea', icon: 'drone',    pour: 'Drone', nom: 'Vue aérienne de mon bien', prix: 229,
     inclus: ['Photos aériennes HD', 'Vidéo montée', 'Idéal location, vente, commerce'], items: { drone: ['photo', 'video'] } }
 ];
 
@@ -412,7 +410,7 @@ const CRENEAUX = {
   samedi: { label: 'Samedi matin', heures: '8 h – 12 h',  h: [8, 12],  prix: 10 }
 };
 
-const TYPES = { individual: 'Un particulier', student: 'Un(e) étudiant(e)', company: 'Une entreprise', commerce: 'Un commerce', liberal: 'Une profession libérale', asso: 'Une association / collectivité' };
+const TYPES = { individual: 'Un particulier', company: 'Une entreprise', commerce: 'Un commerce', liberal: 'Une profession libérale', asso: 'Une association / collectivité' };
 const CONTACT_PREF = { appel: 'Un appel', whatsapp: 'WhatsApp', email: 'Email' };
 const CONTRAT_PRO = 'contrat de maintenance mensuel (à partir de 49 €/mois par poste)';
 

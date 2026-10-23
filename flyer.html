@@ -59,8 +59,8 @@
   </div>
   <p class="aide">Imprimez sur du papier un peu épais (160 g ou plus), puis découpez le long des pointillés. En boîte aux lettres, respectez les « Stop pub ». Les prix sont repris du site et restent toujours à jour.</p>
   <div class="feuille" id="feuille"></div>
-  <script src="data.js?v=67"></script>
-  <script src="outils.js?v=67"></script>
+  <script src="data.js?v=68"></script>
+  <script src="outils.js?v=68"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     const s = svc, p = pack;
@@ -70,7 +70,7 @@
           ['PC lent, en panne, virus', dès('repair')], ['Photos et fichiers perdus', dès('recup')],
           [`Wi-Fi dans toute la maison`, eur(p('wifi').prix)], ['Caméras de surveillance', dès('camera')],
           ['Installation PC et imprimante', dès('install')], ['Cours débutants et seniors', dès('cours')]],
-        plus: `Devis gratuit · Prix annoncé avant · −${CONFIG.remiseEtudiant} % étudiants`, qr: 'Rendez-vous en ligne' },
+        plus: 'Devis gratuit · Prix annoncé avant · Rendez-vous en ligne', qr: 'Rendez-vous en ligne' },
       pro: { titre: 'Commerces, cabinets, entreprises : une informatique qui marche.', lignes: [
           ['Caisse enregistreuse complète', `${eur(p('shop').prix)}`], ['Caméras et alarme', dès('camera')],
           ['Site internet + Google', dès('siteweb')], ['Maintenance du parc', dès('maintenance')],

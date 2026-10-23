@@ -132,7 +132,7 @@ PROSPECTION (prospection.html) — entreprises uniquement
 ══════════════════════════════════════════════════════════════
   Le site, la page Services, la fiche tarifs, les flyers, la prospection et les textes
   « Être trouvé » lisent tous data.js : une modification se reporte partout.
-  - CONFIG      : email, moteur Google (endpoint), adresse du site, remise étudiant, déplacement offert…
+  - CONFIG      : email, moteur Google (endpoint), adresse du site, déplacement offert, places par créneau…
   - SERVICES    : chaque prestation = un prix « dès » + des options
   - PACKS       : formules à prix fixe (le « au lieu de » est calculé tout seul)
   - UNIVERS     : les 5 pôles (Informatique, Maison connectée, Web & marketing, Entreprises, Drone & 3D)

@@ -6,7 +6,7 @@
   const block = (s, c) => `
     <section class="svc-block" id="${s.id}" style="--t:${c.couleur}">
       <h3>${ico(s.icon)} ${esc(s.nom)} <span class="mono">${prix(s)}</span></h3>
-      <p class="muted">${esc(s.desc)} — ${s.modes.map(m => where[m]).join(', ')}.${s.remise ? ` Remise étudiant −${CONFIG.remiseEtudiant} %.` : ''}${s.note ? ` ${esc(s.note)}` : ''}</p>
+      <p class="muted">${esc(s.desc)} — ${s.modes.map(m => where[m]).join(', ')}.${s.note ? ` ${esc(s.note)}` : ''}</p>
       ${s.compris ? `<div class="svc-compris"><div><b>Compris</b><ul>${s.compris.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>${s.pasCompris ? `<div class="non"><b>Pas compris</b><ul>${s.pasCompris.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}</div>` : ''}
       <table class="price-table"><tbody>${s.options.map(o => `<tr><td>${esc(o[1])}</td><td class="mono">${o[2] ? '+' + eur(o[2]) + (s.mensuel ? '/mois' : '') : esc(o[3] || 'Gratuit')}</td></tr>`).join('')}</tbody></table>
     </section>`;
@@ -43,7 +43,6 @@
     ['Le devis est-il gratuit ?', 'Oui, le devis est gratuit et sans engagement. Le prix est confirmé avant toute intervention : vous savez tout avant de dire oui.'],
     ['En combien de temps intervenez-vous ?', `Sous 3 jours en temps normal. Une intervention sous 24 à 48 h coûte ${eur(d.rapide.prix)} de plus, et le jour même ${eur(d.urgence.prix)} de plus, selon disponibilité.`],
     ['Puis-je déposer mon matériel en agence ?', 'Oui, sans frais de déplacement, à Ducos ou au Robert. Vous pouvez aussi être dépanné à distance quand c’est possible.'],
-    ['Avez-vous des tarifs pour les étudiants ?', `Oui : −${CONFIG.remiseEtudiant} % sur la main d’œuvre, sur présentation de la carte étudiant.`],
     ['Travaillez-vous avec les entreprises ?', 'Oui : maintenance du parc, réseau et Wi-Fi professionnel, emails à votre nom (Microsoft 365), cybersécurité, caisse, sites web et marketing.'],
     ['Mes données restent-elles confidentielles ?', 'Oui. Nous n’accédons qu’à ce qui est nécessaire à l’intervention, et vos fichiers ne sont ni copiés ni conservés sans votre accord.'],
     ['Comment suivre ma réparation ?', 'Avec la référence reçue après votre demande, sur la page « Suivre ma demande » du site, ou en écrivant à votre agence sur WhatsApp.']
