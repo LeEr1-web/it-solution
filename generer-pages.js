@@ -371,6 +371,64 @@ const PAGES = [
     ] }
 ];
 
+/* ---------- Guides (articles de conseil : attirent les recherches « comment… », « que faire si… ») ---------- */
+const GUIDES = [
+  { slug: 'guide-starlink-martinique', scene: 'starlink', couleur: '#cbd5e1', service: 'installation-starlink-martinique', cat: 'starlink',
+    titre: 'Starlink en Martinique : le guide avant d’installer | IloTech',
+    desc: 'Starlink en Martinique : comment ça marche, pour qui, comment choisir l’emplacement, résister aux cyclones, garder internet pendant les coupures et avoir du Wi-Fi partout.',
+    h1: 'Starlink en Martinique : le guide complet avant d’installer',
+    chapo: 'Internet lent dans les hauteurs, coupures de box, maison isolée, gîte ou bateau : Starlink est devenu une vraie solution en Martinique. Voici ce qu’il faut savoir pour qu’il marche vraiment bien.',
+    sections: [
+      ['Comment fonctionne Starlink ?', ['Starlink est un internet par satellite. Une antenne posée chez vous communique avec des milliers de petits satellites qui tournent assez près de la Terre, ce qui donne un internet bien plus rapide et réactif que les anciens satellites.', 'L’antenne est reliée à un routeur Wi-Fi fourni dans le kit. Il suffit d’une prise électrique : pas de ligne téléphonique, pas de fibre, pas de travaux de raccordement.']],
+      ['Pour qui c’est intéressant en Martinique ?', ['Starlink a surtout du sens là où la fibre et l’ADSL sont faibles ou absents : quartiers des mornes, Nord Atlantique et Nord Caraïbe, maisons au bout d’une trace, exploitations agricoles, gîtes et locations saisonnières, chantiers, et bateaux avec le Starlink Mini.', 'Si la fibre est disponible et fonctionne bien chez vous, elle reste souvent le meilleur choix au quotidien. Starlink peut alors servir de secours quand la box tombe en panne.']],
+      ['Le kit et l’abonnement', ['Le kit et l’abonnement s’achètent directement chez Starlink, sur starlink.com ou dans l’application. Les prix et les offres changent régulièrement : vérifiez-les au moment de commander.', 'Choisissez l’offre selon votre usage : maison, déplacements ou bateau. Nous pouvons vous aider à commander et à activer le service, gratuitement, lors de l’installation.']],
+      ['Le point le plus important : l’emplacement de l’antenne', ['L’antenne a besoin d’une grande portion de ciel dégagé. Un arbre, un morne, un pignon ou un poteau devant elle provoquent des micro-coupures, surtout pendant les appels vidéo.', 'Avant de percer quoi que ce soit, l’application Starlink permet de « scanner » le ciel avec le téléphone. Sur un toit, un pignon ou un mât, on gagne souvent beaucoup par rapport à une antenne posée au sol dans le jardin.']],
+      ['Vent et saison cyclonique', ['Une antenne mal fixée bouge, se dérègle ou s’envole. Il faut une fixation solide, adaptée au support (béton, bois, tôle), et un câble attaché pour ne pas battre au vent.', 'En cas d’alerte cyclonique, le plus prudent est de démonter l’antenne et de la ranger à l’intérieur avec le routeur, puis de la remettre en place après le passage. Nous vous montrons comment faire en quelques minutes.']],
+      ['Coupures de courant : garder internet', ['Sans électricité, Starlink s’arrête comme n’importe quelle box. Un onduleur bien choisi permet de passer les coupures courtes sans perdre la connexion, et protège le matériel contre les surtensions.', 'Le bon modèle dépend de ce qu’on y branche (antenne, routeur, ordinateur) et du temps d’autonomie voulu : c’est ce que nous dimensionnons avec vous.']],
+      ['Du Wi-Fi dans toute la maison', ['Le routeur Starlink couvre bien une pièce ou deux, mais les maisons en béton sur plusieurs niveaux arrêtent les ondes. Des bornes Wi-Fi « mesh » se relaient pour couvrir toute la maison avec un seul réseau, jusqu’à la terrasse.']]
+    ],
+    faq: [
+      ['Starlink est-il disponible en Martinique ?', 'Oui, Starlink est disponible en Martinique. Les offres et les prix se consultent sur starlink.com.'],
+      ['Peut-on installer Starlink soi-même ?', 'Oui, le kit est prévu pour. Mais un mauvais emplacement ou une fixation fragile causent la plupart des problèmes : coupures, débit faible, antenne abîmée par le vent. Une installation soignée évite ces soucis.'],
+      ['Starlink fonctionne-t-il quand il pleut ?', 'Oui. Une très forte averse peut ralentir le débit quelques instants, mais la connexion reste en général utilisable.'],
+      ['Peut-on garder sa box internet avec Starlink ?', 'Oui : on peut relier les deux, pour que l’un prenne le relais si l’autre tombe.']
+    ] },
+  { slug: 'guide-coupures-courant-martinique', scene: 'onduleur', couleur: '#f59e0b', service: 'onduleur-coupure-courant-martinique', cat: 'install',
+    titre: 'Coupures de courant : protéger son matériel en Martinique | IloTech',
+    desc: 'Coupures et micro-coupures de courant en Martinique : comment protéger ordinateur, box, Starlink, TV et caisse. Onduleur, parafoudre, sauvegardes et bons réflexes.',
+    h1: 'Coupures de courant : comment protéger son matériel',
+    chapo: 'Une coupure brutale peut abîmer un disque, corrompre un fichier ou griller une alimentation. Quelques équipements et de bons réflexes évitent presque tous ces dégâts.',
+    sections: [
+      ['Pourquoi les coupures abîment le matériel', ['Quand le courant revient, il arrive souvent avec un pic de tension. Les alimentations d’ordinateur, de box et de TV le supportent mal, surtout quand cela se répète. Un ordinateur éteint brutalement en pleine écriture peut aussi perdre ou abîmer des fichiers.']],
+      ['L’onduleur : la protection la plus efficace', ['Un onduleur est une batterie placée entre la prise et vos appareils. Pendant une coupure, il prend le relais quelques minutes : l’ordinateur s’éteint proprement, la box ou Starlink restent allumés, la caisse du commerce continue d’encaisser.', 'Il en existe plusieurs sortes. Pour un poste à la maison, un modèle simple suffit souvent ; pour un serveur, une caisse ou un équipement sensible, on choisit un modèle qui filtre mieux le courant. Le bon choix dépend de la puissance des appareils et de l’autonomie voulue.']],
+      ['Parafoudre et multiprise protégée', ['Un parafoudre protège contre les surtensions, par exemple pendant les orages. Une multiprise « parafoudre » est un minimum pour la TV, la box et l’ordinateur. Pendant un orage violent, débrancher reste la meilleure protection.']],
+      ['Les bons réflexes', ['Enregistrez souvent votre travail et activez l’enregistrement automatique. Mettez en place une sauvegarde automatique de vos photos et documents, sur un disque et en ligne. Après une coupure, attendez quelques minutes que le courant se stabilise avant de tout rallumer.']],
+      ['Pour les commerces et les bureaux', ['Caisse, serveur, box et terminal de paiement doivent passer les coupures sans s’arrêter. Un onduleur adapté et une sauvegarde vérifiée chaque nuit évitent une journée perdue.']]
+    ],
+    faq: [
+      ['Combien de temps tient un onduleur ?', 'De quelques minutes à une demi-heure selon le modèle et ce qui est branché : de quoi éteindre proprement ou passer une micro-coupure sans rien sentir.'],
+      ['La batterie d’un onduleur s’use-t-elle ?', 'Oui, elle se change en général au bout de quelques années. Un onduleur qui ne tient plus que quelques secondes a besoin d’une batterie neuve.'],
+      ['Un onduleur protège-t-il de la foudre ?', 'Il protège des surtensions courantes, pas d’un coup de foudre direct. En cas d’orage violent, débranchez.']
+    ] },
+  { slug: 'guide-arnaques-sms-martinique', scene: 'securite', couleur: '#ef4444', service: 'virus-arnaque-compte-pirate-martinique', cat: 'securite',
+    titre: 'Arnaques par SMS et faux appels : les reconnaître | IloTech',
+    desc: 'Faux colis, faux conseiller bancaire, faux Ameli, faux support Microsoft : comment reconnaître les arnaques par SMS, email et téléphone, et que faire si vous vous êtes fait avoir.',
+    h1: 'Arnaques par SMS, email et téléphone : les reconnaître et réagir',
+    chapo: 'Les arnaques se multiplient en Martinique comme partout : faux colis, faux conseiller bancaire, faux remboursement. Voici comment les repérer, et quoi faire tout de suite si vous avez cliqué.',
+    sections: [
+      ['Les arnaques les plus fréquentes', ['Le faux colis : un SMS annonce un colis bloqué et demande de payer quelques euros de frais. Le faux conseiller bancaire : il appelle, connaît parfois votre nom, et vous demande de valider une opération « pour la bloquer ». Le faux remboursement (Ameli, impôts, CAF) : un lien pour « recevoir » de l’argent. Le faux support informatique : une fenêtre bloque l’écran et affiche un numéro à appeler.']],
+      ['Les signes qui doivent alerter', ['L’urgence (« votre compte sera bloqué aujourd’hui »), un lien raccourci ou une adresse bizarre, des fautes, une demande de code reçu par SMS, ou de valider une opération dans l’application bancaire. Votre banque ne vous demandera jamais un code de validation au téléphone.']],
+      ['Les bons réflexes', ['Ne cliquez pas sur le lien : allez vous-même sur le site ou l’application officielle. Raccrochez et rappelez votre banque avec le numéro au dos de votre carte. Transférez les SMS frauduleux au 33700, le service officiel de signalement.']],
+      ['Si vous avez donné vos informations', ['Carte bancaire : faites opposition tout de suite et prévenez votre banque. Signalez les paiements frauduleux sur la plateforme officielle Perceval (service-public.fr) et déposez plainte. Mots de passe : changez-les, en commençant par l’email, et activez la double sécurité. Pour être guidé, le site officiel cybermalveillance.gouv.fr propose une assistance gratuite.']],
+      ['Protéger son téléphone et son ordinateur', ['Mettez à jour vos appareils, installez un antivirus fiable sur l’ordinateur, activez la double sécurité sur l’email et les réseaux sociaux. Si un proche âgé est concerné, quelques minutes d’explication valent toutes les protections.']]
+    ],
+    faq: [
+      ['J’ai cliqué sur un lien mais je n’ai rien rempli, est-ce grave ?', 'Souvent non. Fermez la page, ne saisissez rien, et faites une analyse antivirus. Si vous avez téléchargé un fichier ou installé une application, faites vérifier l’appareil.'],
+      ['Un « technicien Microsoft » a pris la main sur mon ordinateur, que faire ?', 'Débranchez internet, n’allumez pas votre banque en ligne, et faites vérifier l’ordinateur : il a pu installer un logiciel espion. Changez ensuite vos mots de passe depuis un autre appareil.'],
+      ['Comment récupérer un compte Facebook piraté ?', 'Utilisez la procédure officielle de récupération de Facebook, jamais un « service » trouvé sur internet qui demande de l’argent. Nous pouvons vous accompagner.']
+    ] }
+];
+
 /* ---------- Gabarit ---------- */
 const prixDe = s => s.base ? 'dès ' + eur(s.base) + (s.mensuel ? '/mois' : '') : 'Gratuit';
 const remplir = t => t.replace(/\{(\w+)\}/g, (m, id) => svc(id) ? prixDe(svc(id)) : m);
@@ -507,16 +565,132 @@ ${ld.map(o => `  <script type="application/ld+json">${JSON.stringify(o)}</script
 `;
 }
 
+/* ---------- Gabarit commun (en-tête et pied) ---------- */
+const enTete = (titre, desc, url, ld, ogTitre, ogDesc, robots = 'index,follow,max-image-preview:large') => `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${esc(titre)}</title>
+  <meta name="description" content="${esc(desc)}">
+  ${url ? `<link rel="canonical" href="${url}">` : ''}
+  <meta name="robots" content="${robots}">
+  <meta name="theme-color" content="#05070d">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="IloTech">
+  <meta property="og:title" content="${esc(ogTitre)}">
+  <meta property="og:description" content="${esc(ogDesc)}">
+  ${url ? `<meta property="og:url" content="${url}">` : ''}
+  <meta property="og:image" content="${SITE}img/og-ilotech.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css?v=${V}">
+${ld.map(o => `  <script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}
+</head>
+<body class="page-doc page-seo">
+  <header class="top">
+    <a class="brand" href="index.html" aria-label="IloTech — accueil">
+      <img class="logo" src="img/logo-ilo.png" alt="IloTech" width="64" height="38">
+      <span class="brand-text"><b>Ilo<span>Tech</span> <em class="it">IT</em></b><span class="mono">Ducos · Le Robert — Martinique</span></span>
+    </a>
+    <div class="top-actions"><a class="btn btn-head" href="conseils.html">Conseils</a><a class="btn btn-head" href="index.html">Prendre rendez-vous</a></div>
+  </header>
+`;
+const pied = () => `  <footer class="seo-pied"><p>IloTech — entreprise individuelle · SIRET ${esc(ENTREPRISE.siret)} · <a href="services.html">Services et tarifs</a> · <a href="conseils.html">Conseils</a> · <a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></p></footer>
+  <script src="data.js?v=${V}"></script>
+  <script src="outils.js?v=${V}"></script>
+</body>
+</html>
+`;
+const fil = (titre, parent = ['services.html', 'Services']) => `<nav class="fil" aria-label="Fil d’Ariane"><a href="index.html">Accueil</a> › <a href="${parent[0]}">${parent[1]}</a> › <span>${esc(titre)}</span></nav>`;
+const filLd = (titre, url, parent = ['services.html', 'Services']) => ({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'IloTech', item: SITE }, { '@type': 'ListItem', position: 2, name: parent[1], item: SITE + parent[0] }, { '@type': 'ListItem', position: 3, name: titre, item: url }] });
+
+function guide(g) {
+  const url = SITE + g.slug + '.html', srv = PAGES.find(p => p.slug === g.service);
+  const ld = [
+    { '@context': 'https://schema.org', '@type': 'Article', headline: g.h1, description: g.desc, inLanguage: 'fr-FR', mainEntityOfPage: url, image: SITE + 'img/og-ilotech.jpg',
+      datePublished: '2026-10-24', dateModified: new Date().toISOString().slice(0, 10),
+      author: { '@type': 'Organization', name: 'IloTech', url: SITE }, publisher: { '@type': 'Organization', name: 'IloTech', logo: { '@type': 'ImageObject', url: SITE + 'img/logo-ilo.png' } } },
+    { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: g.faq.map(([q, r]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: r } })) },
+    filLd(g.h1, url, ['conseils.html', 'Conseils'])
+  ];
+  return enTete(g.titre, g.desc, url, ld, g.h1, g.chapo) + `
+  <main class="doc doc-wide" style="--t:${g.couleur}">
+    ${fil(g.h1, ['conseils.html', 'Conseils'])}
+    <article class="guide">
+      <section class="seo-hero">
+        <div><span class="neuf-tag guide-tag">Guide pratique</span><h1>${esc(g.h1)}</h1><p class="lead">${esc(g.chapo)}</p>
+          ${srv ? `<div class="actions left"><a class="btn btn-primary" href="${srv.slug}.html">${esc(srv.h1)}</a><a class="btn" href="index.html?cat=${g.cat}">Prendre rendez-vous</a></div>` : ''}</div>
+        <figure class="seo-scene">${scene({ id: g.scene, nom: g.h1, couleur: g.couleur })}</figure>
+      </section>
+      <nav class="sommaire" aria-label="Sommaire"><b>Sommaire</b><ol>${g.sections.map(([t], i) => `<li><a href="#s${i + 1}">${esc(t)}</a></li>`).join('')}<li><a href="#faq">Questions fréquentes</a></li></ol></nav>
+      ${g.sections.map(([t, ps], i) => `<section id="s${i + 1}"><h2>${esc(t)}</h2>${ps.map(x => `<p class="seo-texte">${esc(x)}</p>`).join('')}</section>`).join('\n      ')}
+      <h2 id="faq">Questions fréquentes</h2>
+      <div class="faq">${g.faq.map(([q, r]) => `<details><summary>${esc(q)}</summary><p>${esc(r)}</p></details>`).join('')}</div>
+      ${srv ? `<section class="seo-cta" style="--t:${g.couleur}"><h2>Besoin d’un coup de main ?</h2><p>${esc(srv.accroche)}</p>
+        <div class="actions left"><a class="btn btn-primary" href="${srv.slug}.html">${esc(srv.h1)}</a><a class="btn btn-wa" href="${esc(waUrl(AGENCES.ducos.tel, `Bonjour IloTech, j’ai lu votre guide « ${g.h1} ».`))}" target="_blank" rel="noopener">WhatsApp</a></div></section>` : ''}
+    </article>
+    <h2>Autres conseils</h2>
+    <ul class="seo-liens">${GUIDES.filter(x => x !== g).map(x => `<li><a href="${x.slug}.html">${esc(x.h1)}</a></li>`).join('')}<li><a href="services.html">Tous nos services</a></li></ul>
+  </main>
+` + pied();
+}
+
 PAGES.forEach(p => {
   if (!catDe(p.cat)) throw new Error('catégorie inconnue : ' + p.cat);
   p.services.forEach(id => { if (!svc(id)) throw new Error('service inconnu : ' + id); });
-  fs.writeFileSync(path.join(dir, lien(p)), page(p));
+  let h = page(p);
+  const gs = GUIDES.filter(g => g.service === p.slug);
+  if (gs.length) h = h.replace('<h2>Nos autres services</h2>', `<p class="seo-guide">À lire aussi : ${gs.map(g => `<a href="${g.slug}.html">${esc(g.h1)}</a>`).join(' · ')}</p>\n    <h2>Nos autres services</h2>`);
+  fs.writeFileSync(path.join(dir, lien(p)), h);
 });
+GUIDES.forEach(g => fs.writeFileSync(path.join(dir, g.slug + '.html'), guide(g)));
 
-// sitemap : pages principales + pages service
+// page « Conseils » : liste des guides
+fs.writeFileSync(path.join(dir, 'conseils.html'), enTete('Conseils informatique, Starlink et sécurité en Martinique | IloTech',
+  'Guides pratiques IloTech : Starlink en Martinique, coupures de courant, arnaques par SMS. Des conseils simples pour vos appareils, votre internet et votre sécurité.',
+  SITE + 'conseils.html', [filLd('Conseils', SITE + 'conseils.html')], 'Conseils IloTech', 'Guides pratiques : Starlink, coupures de courant, arnaques.') + `
+  <main class="doc doc-wide">
+    ${fil('Conseils')}
+    <h1>Conseils et guides pratiques</h1>
+    <p class="lead">Des explications simples pour bien choisir, bien installer et rester en sécurité, pensées pour la Martinique.</p>
+    <div class="guides">${GUIDES.map(g => `<a class="guide-carte" href="${g.slug}.html" style="--t:${g.couleur}">${scene({ id: g.scene, nom: g.h1, couleur: g.couleur })}<b>${esc(g.h1)}</b><span>${esc(g.chapo)}</span></a>`).join('')}</div>
+    <h2>Nos services</h2>
+    <ul class="seo-liens">${PAGES.map(p => `<li><a href="${lien(p)}">${esc(p.h1)}</a></li>`).join('')}</ul>
+  </main>
+` + pied());
+
+// page d'erreur (adresse inconnue) : liens absolus, car elle s'affiche à n'importe quelle adresse
+fs.writeFileSync(path.join(dir, '404.html'), enTete('Page introuvable | IloTech', 'Cette page n’existe pas ou a été déplacée.', '', [], 'IloTech', 'Page introuvable', 'noindex')
+  .replace(/href="(?!https?:|#|tel:|\/)([^"]+)"/g, 'href="/$1"').replace(/src="(?!https?:|\/)([^"]+)"/g, 'src="/$1"') + `
+  <main class="doc doc-wide">
+    <h1>Oups, cette page n’existe pas</h1>
+    <p class="lead">Elle a peut-être été déplacée. Voici où trouver ce que vous cherchez :</p>
+    <div class="actions left"><a class="btn btn-primary" href="/">Prendre rendez-vous</a><a class="btn" href="/services.html">Nos services et tarifs</a><a class="btn" href="/conseils.html">Conseils</a></div>
+    <h2>Nos services</h2>
+    <ul class="seo-liens">${PAGES.map(p => `<li><a href="/${lien(p)}">${esc(p.h1)}</a></li>`).join('')}</ul>
+  </main>
+</body>
+</html>
+`);
+
+// page Services : liens en HTML simple vers chaque page (lisibles par Google sans JavaScript)
+const svcHtml = path.join(dir, 'services.html');
+let sh = fs.readFileSync(svcHtml, 'utf8');
+const bloc = `<!-- PAGES (généré par generer-pages.js) -->
+    <nav class="seo-index" aria-label="Tous nos services en détail"><h2>Tous nos services en détail</h2>
+      <ul class="seo-liens">${PAGES.map(p => `<li><a href="${lien(p)}">${esc(p.h1)}</a></li>`).join('')}<li><a href="conseils.html">Conseils et guides</a></li></ul></nav>
+    <!-- /PAGES -->`;
+sh = /<!-- PAGES[\s\S]*?<!-- \/PAGES -->/.test(sh) ? sh.replace(/<!-- PAGES[\s\S]*?<!-- \/PAGES -->/, bloc) : sh.replace('  </main>', '    ' + bloc + '\n  </main>');
+fs.writeFileSync(svcHtml, sh);
+
+// sitemap : pages principales, pages service, guides
 const jour = new Date().toISOString().slice(0, 10);
 const urls = [['', '1.0', 'weekly'], ['services.html', '0.9', 'weekly'], ...PAGES.map(p => [lien(p), p.nouveau ? '0.9' : '0.8', 'monthly']),
-  ['plaquette.html', '0.6', 'monthly'], ['fiche-tarifs.html', '0.5', 'monthly']];
+  ['conseils.html', '0.7', 'monthly'], ...GUIDES.map(g => [g.slug + '.html', '0.7', 'monthly']), ['plaquette.html', '0.6', 'monthly'], ['fiche-tarifs.html', '0.5', 'monthly']];
 fs.writeFileSync(path.join(dir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(([u, pr, f]) => `  <url><loc>${SITE}${u}</loc><lastmod>${jour}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority></url>`).join('\n')}
@@ -524,4 +698,4 @@ ${urls.map(([u, pr, f]) => `  <url><loc>${SITE}${u}</loc><lastmod>${jour}</lastm
 `);
 // liste des pages pour les liens de la page Services
 fs.writeFileSync(path.join(dir, 'pages-seo.js'), `// Généré par generer-pages.js : catégorie -> page dédiée (liens « En savoir plus »)\nconst PAGES_SEO = ${JSON.stringify(Object.fromEntries(PAGES.filter(p => !p.pasDeLienCat).map(p => [p.cat, { url: lien(p), titre: p.h1 }]).reverse()))};\n`);
-console.log(PAGES.length + ' pages générées, sitemap.xml à jour');
+console.log(`${PAGES.length} pages service, ${GUIDES.length} guides, conseils.html, 404.html, sitemap.xml (${urls.length} adresses)`);
