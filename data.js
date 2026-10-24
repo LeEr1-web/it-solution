@@ -2,7 +2,7 @@
    CONFIGURATION — modifiez ici les contacts, la réception, les prix, packs et services
    ===================================================================== */
 const CONFIG = {
-  siteUrl: 'https://leer1-web.github.io/it-solution/',   // adresse du site (liens dans les messages, flyers, QR codes)
+  siteUrl: 'https://ilo-tech.com/',   // adresse du site (liens dans les messages, flyers, QR codes)
   // ① Réception par EMAIL (le plus simple) : votre adresse. Chaque demande vous est envoyée par email
   //    via le service gratuit FormSubmit. La 1re fois, FormSubmit vous envoie un email d'activation à valider.
   //    Ensuite, vous pouvez remplacer l'adresse par l'alias secret fourni par FormSubmit (voir README.txt).

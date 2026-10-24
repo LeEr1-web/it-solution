@@ -5,18 +5,18 @@ Guide unique : tout est ici.
 1. LES PAGES
 ══════════════════════════════════════════════════════════════
 Pour les clients
-  Accueil (services, rendez-vous, devis)  https://leer1-web.github.io/it-solution/
-  Services et tarifs                      https://leer1-web.github.io/it-solution/services.html
-  Fiche tarifs (PDF)                      https://leer1-web.github.io/it-solution/fiche-tarifs.html
-  Suivre ma demande                       https://leer1-web.github.io/it-solution/#suivi
+  Accueil (services, rendez-vous, devis)  https://ilo-tech.com/
+  Services et tarifs                      https://ilo-tech.com/services.html
+  Fiche tarifs (PDF)                      https://ilo-tech.com/fiche-tarifs.html
+  Suivre ma demande                       https://ilo-tech.com/#suivi
   Mentions légales / Confidentialité      mentions-legales.html · confidentialite.html
 
 Pour vous (non référencées sur Google)
-  Rendez-vous (planning, confirmer…)      https://leer1-web.github.io/it-solution/gestion.html
-  Prospection (entreprises)               https://leer1-web.github.io/it-solution/prospection.html
-  Être trouvé (particuliers)              https://leer1-web.github.io/it-solution/visibilite.html
-  Flyers à imprimer                       https://leer1-web.github.io/it-solution/flyer.html
-  Plaquette (présentation, sans prix)     https://leer1-web.github.io/it-solution/plaquette.html
+  Rendez-vous (planning, confirmer…)      https://ilo-tech.com/gestion.html
+  Prospection (entreprises)               https://ilo-tech.com/prospection.html
+  Être trouvé (particuliers)              https://ilo-tech.com/visibilite.html
+  Flyers à imprimer                       https://ilo-tech.com/flyer.html
+  Plaquette (présentation, sans prix)     https://ilo-tech.com/plaquette.html
 
 ══════════════════════════════════════════════════════════════
 2. INSTALLER LE MOTEUR GOOGLE (15 minutes, une seule fois)
@@ -149,7 +149,7 @@ PROSPECTION (prospection.html) — entreprises uniquement
 ══════════════════════════════════════════════════════════════
 5. PUBLIER UNE MODIFICATION
 ══════════════════════════════════════════════════════════════
-  Le site est hébergé gratuitement sur GitHub Pages (dépôt LeEr1-web/it-solution).
+  Le site est hébergé gratuitement sur GitHub Pages (dépôt ilotech97x/it-solution, domaine ilo-tech.com).
   - Le plus simple : demandez à Claude, il modifie et publie.
   - Sur github.com : ouvrez le dépôt > data.js > crayon ✎ > modifiez > « Commit changes ».
   - Depuis ce dossier : git add -A && git commit -m "Mise à jour" && git push
