@@ -206,7 +206,15 @@ const SERVICES = [
   { id: 'devsurmesure', icon: 'code', nom: 'Programmation sur mesure', desc: 'Automatisation, outils, logiciels', base: 190, modes: ['distance', 'site', 'atelier'],
     note: 'Devis après un premier échange gratuit : nous partons de votre besoin réel, et le programme vous appartient.',
     options: [['excel', 'Automatisation Excel / Google Sheets', 90], ['script', 'Script ou petit outil sur mesure', 190], ['logiciel', 'Logiciel métier (gestion, stocks, planning)', 890],
-      ['api', 'Connexion entre vos outils (API)', 290], ['bot', 'Assistant IA pour répondre à vos clients', 390], ['iaform', 'Former votre équipe à l’IA (2 h)', 149]] },
+      ['api', 'Connexion entre vos outils (API)', 290]] },
+  // --- Intelligence artificielle
+  { id: 'iapro', icon: 'sparkles', nom: 'Intelligence artificielle', desc: 'Formation, assistants et automatisations', base: 149, modes: ['distance', 'site', 'atelier'],
+    note: 'On part de vos tâches réelles : ce qui prend du temps, ce qui se répète. L’IA fait le travail, vous gardez le contrôle, et vos données restent protégées.',
+    compris: ['Bilan des tâches où l’IA fait gagner du temps', 'Formation de 2 h avec vos vrais exemples', 'Règles simples pour protéger vos données et celles de vos clients'],
+    pasCompris: ['Abonnements aux outils d’IA (ChatGPT, Copilot, Gemini…), si vous en prenez'],
+    options: [['assistant', 'Assistant IA qui répond à vos clients (site ou WhatsApp)', 390], ['auto', 'Automatisation avec l’IA (emails, devis, tri de documents)', 290],
+      ['contenu', 'Textes et visuels pour vos réseaux, avec l’IA', 149], ['outils', 'Mise en place de ChatGPT, Copilot ou Gemini pour l’équipe', 99],
+      ['charte', 'Charte d’utilisation de l’IA et protection des données', 149], ['suivi', 'Séance de suivi (1 h) un mois après', 59]] },
   // --- Marketing
   { id: 'marketing', icon: 'megaphone', nom: 'Stratégie marketing', desc: 'Être visible, trouver des clients', base: 149, modes: ['distance', 'site', 'atelier'],
     note: 'On commence par un bilan de votre visibilité (Google, réseaux, site), puis un plan simple avec les actions qui rapportent le plus.',
@@ -238,7 +246,7 @@ const SERVICES = [
 const UNIVERS = [
   { id: 'info',   nom: 'Informatique',     icon: 'monitor',   badge: 'tools',    couleur: '#2b8cff', desc: 'Dépannage, installation, sécurité, fichiers et cours, chez vous, en agence ou à distance.' },
   { id: 'maison', nom: 'Maison connectée', icon: 'home',      badge: 'wifi',     couleur: '#22c55e', desc: 'Caméras, alarme, domotique et Wi-Fi dans toute la maison.' },
-  { id: 'web',    nom: 'Web & marketing',  icon: 'globe',     badge: 'trending', couleur: '#6366f1', desc: 'Sites web, boutiques en ligne, applications et stratégie pour trouver des clients.' },
+  { id: 'web',    nom: 'Web, IA & marketing',  icon: 'globe',     badge: 'trending', couleur: '#6366f1', desc: 'Sites web, intelligence artificielle, boutiques en ligne, applications et stratégie pour trouver des clients.' },
   { id: 'pro',    nom: 'Entreprises',      icon: 'briefcase', badge: 'shield',   couleur: '#8b5cf6', desc: 'Maintenance informatique, cybersécurité et caisse pour les commerces et les bureaux.' },
   { id: 'crea',   nom: 'Drone & 3D',       icon: 'drone',     badge: 'camera',   couleur: '#38bdf8', desc: 'Images aériennes et impression 3D, étudiées au cas par cas.' }
 ];
@@ -275,6 +283,8 @@ const CATEGORIES = [
     accroche: 'Une application à votre nom, pensée pour vos clients.' },
   { id: 'prog',      univers: 'web',    nom: 'Programmation', icon: 'code',       badge: 'zap',        couleur: '#0ea5e9', services: ['devsurmesure'],
     accroche: 'Gagnez du temps : on automatise vos tâches répétitives.' },
+  { id: 'ia',        univers: 'web',    nom: 'IA',            icon: 'sparkles',   badge: 'zap',        couleur: '#a855f7', services: ['iapro'], nouveau: true,
+    accroche: 'L’intelligence artificielle au service de votre activité : formation, assistants, automatisations.' },
   { id: 'marketing', univers: 'web',    nom: 'Marketing',     icon: 'megaphone',  badge: 'trending',   couleur: '#84cc16', services: ['marketing', 'reseaux'],
     accroche: 'Plus de visibilité, plus de clients : on vous aide à être trouvé.' },
   { id: 'pro',       univers: 'pro',    nom: 'Maintenance',   icon: 'tools',      badge: 'shield',     couleur: '#8b5cf6', services: ['maintenance'],
@@ -331,6 +341,8 @@ const PACKS = [
   // Web & marketing
   { id: 'lancer',  univers: 'web', icon: 'globe',     pour: 'Entreprise', nom: 'Lancer mon activité en ligne', prix: 890,
     inclus: ['Site vitrine 5 pages à votre nom', 'Fiche Google Maps optimisée', 'Référencement local'], items: { siteweb: ['pages', 'domain', 'seo'], marketing: ['google'] } },
+  { id: 'ia',      univers: 'web', icon: 'sparkles',  pour: 'IA', nom: 'Gagner du temps avec l’IA', prix: 349,
+    inclus: ['Formation de l’équipe (2 h)', 'Une tâche automatisée avec l’IA', 'Règles pour protéger vos données'], items: { iapro: ['auto', 'charte'] } },
   { id: 'clients', univers: 'web', icon: 'megaphone', pour: 'Entreprise', nom: 'Trouver plus de clients', prix: 299,
     inclus: ['Bilan et plan d’action', 'Fiche Google optimisée', 'Publicité + 4 visuels'], items: { marketing: ['google', 'pub', 'contenu'] } },
   // Entreprises
@@ -365,6 +377,8 @@ const SYMPTOMES = [
   { id: 'lenteur', label: 'Internet est lent ou coupe souvent chez moi', items: { network: ['audit'] } },
   { id: 'wifi',    label: 'Le Wi-Fi ne capte pas partout',            pack: 'wifi' },
   { id: 'ia',      label: 'Je veux apprendre à utiliser l’IA (ChatGPT)', items: { cours: ['ia'] } },
+  { id: 'iapro',   label: 'Je veux utiliser l’IA dans mon entreprise', pack: 'ia' },
+  { id: 'chatbot', label: 'Je veux un assistant qui répond à mes clients', items: { iapro: ['assistant'] } },
   { id: 'cam4g',   label: 'Je veux une caméra sans Wi-Fi (terrain, chantier)', items: { camera: ['solaire'] } },
   { id: 'net',     label: "Je n'ai plus internet",                    items: { network: ['router'] } },
   { id: 'surv',    label: 'Je veux surveiller ma maison',             pack: 'video' },
@@ -442,6 +456,7 @@ const ICONS = {
   chat: '<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>',
   box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
   grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+  sparkles: '<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
   satellite: '<path d="M4 10a9 9 0 0 0 10 10z"/><path d="M9 15l4-4"/><circle cx="13.5" cy="10.5" r="1.2"/><path d="M15 3a6 6 0 0 1 6 6M15 6.5a2.5 2.5 0 0 1 2.5 2.5"/>',
   alert: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/>',

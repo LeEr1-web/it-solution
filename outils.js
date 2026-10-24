@@ -2,6 +2,8 @@
    OUTILS COMMUNS à toutes les pages (chargé juste après data.js)
    ===================================================================== */
 const $ = id => document.getElementById(id);
+// sécurité : le site refuse de s'afficher dans le cadre (iframe) d'un autre site
+try { if (window.top !== window.self && !/^file:/.test(location.protocol)) window.top.location = window.location.href; } catch (e) { document.documentElement.style.display = 'none'; }
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const SITE = CONFIG.siteUrl;
 

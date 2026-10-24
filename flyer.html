@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://formsubmit.co; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Flyers à imprimer — IloTech</title>
   <meta name="robots" content="noindex, nofollow">
@@ -59,9 +61,9 @@
   </div>
   <p class="aide">Imprimez sur du papier un peu épais (160 g ou plus), puis découpez le long des pointillés. En boîte aux lettres, respectez les « Stop pub ». Les prix sont repris du site et restent toujours à jour.</p>
   <div class="feuille" id="feuille"></div>
-  <script src="data.js?v=70"></script>
-  <script src="outils.js?v=70"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="data.js?v=71"></script>
+  <script src="outils.js?v=71"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     const s = svc, p = pack;
     const dès = id => `dès ${eur(s(id).base)}${s(id).mensuel ? '/mois' : ''}`;

@@ -198,8 +198,8 @@ const PAGES = [
       ['Les cours se font-ils à domicile ?', 'Oui, partout en Martinique, ou en agence à Ducos et au Robert, ou à distance une fois les bases acquises.'],
       ['Peut-on offrir des cours ?', 'Oui, un carnet de séances est un beau cadeau pour un parent ou un grand-parent.']
     ] },
-  { slug: 'intelligence-artificielle-ia-martinique', cat: 'prog', scene: 'ia', services: ['cours', 'devsurmesure'],
-    titre: 'Formation IA et ChatGPT en Martinique | IloTech',
+  { slug: 'intelligence-artificielle-ia-martinique', cat: 'ia', scene: 'ia', services: ['iapro', 'cours'], distance: true, nouveau: true,
+    titre: 'Intelligence artificielle : formation et IA en Martinique | IloTech',
     desc: 'Découvrir et utiliser l’intelligence artificielle (ChatGPT…) en Martinique : formation pour particuliers et équipes, assistant IA pour répondre à vos clients, automatisations. Sans risque pour vos données.',
     h1: 'Intelligence artificielle : apprendre et l’utiliser',
     accroche: 'Rédiger un email, résumer un document, répondre plus vite à vos clients : l’IA fait gagner des heures. On vous apprend à vous en servir, sans risque.',
@@ -214,7 +214,7 @@ const PAGES = [
       ['Faut-il payer un abonnement ?', 'Les versions gratuites suffisent pour commencer. Nous vous disons si une version payante vaut le coup pour votre usage.'],
       ['Pouvez-vous créer un assistant pour mon entreprise ?', 'Oui : un assistant qui répond aux questions fréquentes de vos clients, sur votre site ou WhatsApp, avec vos informations.']
     ] },
-  { slug: 'creation-site-internet-martinique', cat: 'web', scene: 'web', services: ['siteweb', 'maintweb', 'sitepirate'],
+  { slug: 'creation-site-internet-martinique', distance: true, cat: 'web', scene: 'web', services: ['siteweb', 'maintweb', 'sitepirate'],
     titre: 'Création de site internet en Martinique dès 390 € | IloTech',
     desc: 'Création de site internet en Martinique : site vitrine, prise de rendez-vous, boutique en ligne, référencement Google local. Dès 390 €, paiement en 3 fois, le site vous appartient.',
     h1: 'Création de site internet en Martinique',
@@ -231,7 +231,7 @@ const PAGES = [
       ['Le site sera-t-il bien placé sur Google ?', 'Nous appliquons les bonnes pratiques (vitesse, textes, fiche Google reliée). Le référencement local, en option, renforce la visibilité sur votre commune.'],
       ['Mon site a été piraté, pouvez-vous m’aider ?', 'Oui : remise en ligne, nettoyage du piratage et rapport de ce qui s’est passé, à prix fixe annoncé avant.']
     ] },
-  { slug: 'application-mobile-martinique', cat: 'appli', scene: 'appli', services: ['appmobile', 'devsurmesure'],
+  { slug: 'application-mobile-martinique', distance: true, cat: 'appli', scene: 'appli', services: ['appmobile', 'devsurmesure'],
     titre: 'Création d’application mobile en Martinique | IloTech',
     desc: 'Application mobile et web sur mesure en Martinique : réservation, espace client, outil de terrain, notifications. Maquette à tester avant de décider, code remis, paiement en 3 fois.',
     h1: 'Création d’application mobile et web',
@@ -247,7 +247,7 @@ const PAGES = [
       ['Faut-il publier sur l’App Store et Google Play ?', 'Pas forcément : une application web s’installe sur le téléphone sans passer par les Stores. Si vous voulez y être, nous préparons la publication.'],
       ['Puis-je faire évoluer l’application ensuite ?', 'Oui : le code vous appartient, et nous chiffrons chaque nouvelle fonction avant.']
     ] },
-  { slug: 'marketing-digital-reseaux-sociaux-martinique', cat: 'marketing', scene: 'marketing', services: ['marketing', 'reseaux'],
+  { slug: 'marketing-digital-reseaux-sociaux-martinique', distance: true, cat: 'marketing', scene: 'marketing', services: ['marketing', 'reseaux'],
     titre: 'Marketing digital et réseaux sociaux en Martinique | IloTech',
     desc: 'Être visible et trouver des clients en Martinique : fiche Google Maps optimisée, avis, publicité Facebook et Instagram, vidéos courtes, gestion des réseaux sociaux. Bilan et plan d’action.',
     h1: 'Marketing digital et réseaux sociaux',
@@ -278,7 +278,7 @@ const PAGES = [
       ['Intervenez-vous pour les associations ?', 'Oui, ainsi que pour les cabinets, commerces, artisans et collectivités.'],
       ['Pouvez-vous avoir des emails à notre nom ?', 'Oui : contact@votre-entreprise, sur ordinateur et téléphone, avec agendas et fichiers partagés.']
     ] },
-  { slug: 'cybersecurite-entreprise-martinique', cat: 'cyber', scene: 'cyber', services: ['cyberexpress', 'cyber'],
+  { slug: 'cybersecurite-entreprise-martinique', distance: true, cat: 'cyber', scene: 'cyber', services: ['cyberexpress', 'cyber'],
     titre: 'Cybersécurité entreprise en Martinique dès 79 € | IloTech',
     desc: 'Cybersécurité en Martinique : contrôle sécurité express dès 79 €, audit de site et de messagerie, mots de passe, sauvegardes, sensibilisation de l’équipe. Rapport clair et priorités.',
     h1: 'Cybersécurité pour les entreprises',
@@ -368,11 +368,60 @@ const PAGES = [
     faq: [
       ['Pouvez-vous fixer la TV au mur ?', 'Oui, avec un support adapté à la taille et au mur (béton, cloison).'],
       ['Peut-on afficher son téléphone sur la TV ?', 'Oui, sans fil dans la plupart des cas : nous le réglons et vous montrons comment faire.']
+    ] },
+  { slug: 'assistant-ia-chatbot-entreprise-martinique', cat: 'ia', scene: 'ia', services: ['iapro', 'devsurmesure'], distance: true,
+    titre: 'Assistant IA et chatbot pour entreprises — Martinique | IloTech',
+    desc: 'Un assistant d’intelligence artificielle qui répond à vos clients sur votre site ou WhatsApp, prépare vos devis et trie vos emails. Pour les entreprises de Martinique et des Antilles.',
+    h1: 'Assistant IA et chatbot pour votre entreprise',
+    accroche: 'Répondre aux clients le soir et le week-end, préparer les devis, trier les emails : un assistant IA travaille pour vous, avec vos informations et vos règles.',
+    intro: [
+      'Les mêmes questions reviennent tous les jours : horaires, prix, disponibilités, délais. Un assistant IA bien préparé y répond tout de suite, sur votre site ou sur WhatsApp, et vous transmet les vraies demandes.',
+      'Nous le construisons à partir de vos informations (services, tarifs, conditions), avec des règles claires : ce qu’il peut dire, ce qu’il doit vous laisser, et ce qu’il ne doit jamais faire. Nous automatisons aussi les tâches répétitives : brouillons de devis, réponses types, tri des emails, résumés de documents.'
+    ],
+    exemple: { titre: 'Exemple : une location de voitures au Lamentin', avant: ['Messages WhatsApp sans réponse le soir', 'Mêmes questions 30 fois par jour', 'Devis préparés à la main'], apres: ['Réponses immédiates, 7 jours sur 7', 'Demandes complètes transmises à l’équipe', 'Brouillons de devis en un clic'] },
+    pourquoi: ['Construit avec vos informations, pas un robot générique', 'Règles claires et données protégées', 'Vous gardez la main sur chaque réponse importante', 'Formation de l’équipe incluse'],
+    faq: [
+      ['Un chatbot peut-il dire des bêtises à mes clients ?', 'Il peut se tromper s’il est mal préparé. Nous le limitons à vos informations, lui fixons des règles et il vous passe la main dès qu’une question sort de son domaine.'],
+      ['Mes données sont-elles protégées ?', 'Nous choisissons des outils et des réglages qui n’utilisent pas vos données pour entraîner l’IA, et nous rédigeons avec vous une charte d’utilisation.'],
+      ['Combien coûte un assistant IA ?', 'L’accompagnement commence à {iapro} ; l’assistant pour vos clients est une option détaillée ci-dessous. Les abonnements aux outils d’IA éventuels sont à part.']
+    ] },
+  { slug: 'starlink-gite-entreprise-bateau-martinique', cat: 'starlink', scene: 'starlink', services: ['starlink', 'network'], nouveau: true,
+    titre: 'Starlink pour gîte, entreprise et bateau en Martinique | IloTech',
+    desc: 'Starlink pour gîtes et locations saisonnières, entreprises, chantiers et bateaux en Martinique : installation, Wi-Fi pour les clients, secours internet et Starlink Mini.',
+    h1: 'Starlink pour gîtes, entreprises et bateaux',
+    accroche: 'Des voyageurs qui veulent du Wi-Fi, une entreprise qui ne peut pas être coupée, un chantier ou un bateau : Starlink apporte internet là où il manque.',
+    intro: [
+      'Pour un gîte ou une villa en location, un Wi-Fi lent coûte des avis et des réservations. Starlink, bien installé et relié à des bornes Wi-Fi, donne une connexion fiable dans tous les logements, avec un réseau séparé pour les voyageurs.',
+      'Pour une entreprise, Starlink sert de connexion principale dans les zones mal desservies, ou de secours automatique quand la fibre tombe : la caisse, le téléphone et les emails continuent de fonctionner. Sur un chantier ou un bateau, le Starlink Mini se déplace avec vous.'
+    ],
+    exemple: { titre: 'Exemple : trois bungalows au Prêcheur', avant: ['ADSL lent, voyageurs mécontents', 'Avis « Wi-Fi inutilisable »', 'Propriétaire sans connexion pour gérer'], apres: ['Starlink sur le toit, bornes dans chaque bungalow', 'Réseau Wi-Fi séparé pour les voyageurs', '« Wi-Fi excellent » dans les avis'] },
+    pourquoi: ['Wi-Fi voyageurs séparé de votre réseau', 'Secours automatique avec la box', 'Starlink Mini pour bateau et chantier', 'Fixation adaptée au vent et aux cyclones'],
+    faq: [
+      ['Peut-on partager Starlink entre plusieurs logements ?', 'Oui, avec des bornes Wi-Fi reliées entre elles. Nous créons un réseau séparé pour les voyageurs.'],
+      ['Starlink fonctionne-t-il en mer autour de la Martinique ?', 'Il existe des offres prévues pour la mer et pour les déplacements. Vérifiez les conditions sur starlink.com selon votre usage ; nous réglons l’installation à bord.'],
+      ['Peut-on utiliser Starlink en secours de la fibre ?', 'Oui : un routeur bascule automatiquement sur Starlink quand la fibre tombe, puis revient sur la fibre.']
     ] }
 ];
 
 /* ---------- Guides (articles de conseil : attirent les recherches « comment… », « que faire si… ») ---------- */
 const GUIDES = [
+  { slug: 'guide-ia-entreprise-martinique', scene: 'ia', couleur: '#a855f7', service: 'intelligence-artificielle-ia-martinique', cat: 'ia',
+    titre: 'L’IA pour les petites entreprises : par où commencer | IloTech',
+    desc: 'Intelligence artificielle pour les TPE, commerces et artisans de Martinique : à quoi elle sert vraiment, par où commencer, quels outils, et comment protéger vos données.',
+    h1: 'L’IA pour les petites entreprises : par où commencer',
+    chapo: 'ChatGPT, Copilot, Gemini… L’intelligence artificielle peut faire gagner des heures à une petite entreprise, à condition de bien choisir les tâches et de protéger ses données.',
+    sections: [
+      ['À quoi l’IA sert vraiment dans une petite entreprise', ['Rédiger un email ou une réponse à un avis, résumer un long document, préparer un devis à partir de notes, traduire un message pour un client étranger, créer un visuel ou une publication pour les réseaux sociaux, transformer un tableau en résumé clair.', 'L’IA ne remplace pas votre savoir-faire : elle prépare des brouillons que vous relisez et validez.']],
+      ['Par où commencer', ['Listez les tâches répétitives de la semaine : celles qui prennent du temps et se ressemblent toujours. Commencez par une seule, mesurez le temps gagné, puis passez à la suivante. Une formation courte avec vos propres exemples évite des semaines de tâtonnements.']],
+      ['Quels outils choisir', ['Les assistants généralistes (ChatGPT, Copilot, Gemini) couvrent la plupart des besoins. Si vous utilisez déjà Microsoft 365 ou Google Workspace, l’IA intégrée peut être la plus simple à adopter. Les versions gratuites suffisent pour tester ; les versions professionnelles apportent plus de confidentialité.']],
+      ['Protéger vos données et celles de vos clients', ['Ne copiez jamais dans une IA des informations sensibles (coordonnées bancaires, données de santé, mots de passe) sans un outil et des réglages adaptés. Rédigez une petite charte pour l’équipe : ce qu’on peut faire, ce qu’on ne fait pas, et qui valide.']],
+      ['Vérifier ce que l’IA répond', ['L’IA peut se tromper avec beaucoup d’assurance : chiffres, dates, références juridiques. Relisez toujours avant d’envoyer, surtout ce qui engage l’entreprise.']]
+    ],
+    faq: [
+      ['L’IA est-elle utile pour un artisan ou un petit commerce ?', 'Oui : réponses aux clients, devis, publications et emails sont les gains les plus rapides, souvent plusieurs heures par semaine.'],
+      ['Faut-il des compétences techniques ?', 'Non. Il faut surtout savoir bien formuler sa demande, ce qui s’apprend en une séance.'],
+      ['Combien coûte l’IA ?', 'Beaucoup d’outils ont une version gratuite. Les versions professionnelles coûtent quelques dizaines d’euros par mois et par personne selon l’outil.']
+    ] },
   { slug: 'guide-starlink-martinique', scene: 'starlink', couleur: '#cbd5e1', service: 'installation-starlink-martinique', cat: 'starlink',
     titre: 'Starlink en Martinique : le guide avant d’installer | IloTech',
     desc: 'Starlink en Martinique : comment ça marche, pour qui, comment choisir l’emplacement, résister aux cyclones, garder internet pendant les coupures et avoir du Wi-Fi partout.',
@@ -459,7 +508,7 @@ function page(p) {
   const ld = [
     { '@context': 'https://schema.org', '@type': 'Service', name: p.h1, serviceType: p.h1, description: p.desc, url,
       provider: { '@type': 'LocalBusiness', name: 'IloTech', url: SITE, telephone: '+596' + AGENCES.ducos.tel.replace(/\D/g, '').slice(1) },
-      areaServed: [{ '@type': 'AdministrativeArea', name: 'Martinique' }, ...COMMUNES.map(x => ({ '@type': 'City', name: x[0] }))],
+      areaServed: [{ '@type': 'AdministrativeArea', name: 'Martinique' }, ...(p.distance ? ['Guadeloupe', 'Guyane', 'Saint-Martin', 'Saint-Barthélemy'].map(n => ({ '@type': 'AdministrativeArea', name: n })) : []), ...COMMUNES.map(x => ({ '@type': 'City', name: x[0] }))],
       offers: p.services.map(svc).filter(Boolean).map(s => ({ '@type': 'Offer', name: s.nom, priceCurrency: 'EUR', price: s.base, priceSpecification: { '@type': 'PriceSpecification', minPrice: s.base, priceCurrency: 'EUR' }, availability: 'https://schema.org/InStock' })) },
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, r]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: r } })) },
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
@@ -470,6 +519,8 @@ function page(p) {
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://formsubmit.co; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>${esc(p.titre)}</title>
   <meta name="description" content="${esc(p.desc)}">
@@ -545,6 +596,7 @@ ${ld.map(o => `  <script type="application/ld+json">${JSON.stringify(o)}</script
     <div class="faq">${faq.map(([q, r]) => `<details><summary>${esc(q)}</summary><p>${esc(r)}</p></details>`).join('')}</div>
 
     <h2>Où intervenons-nous en Martinique ?</h2>
+    ${p.distance ? '<p><b>À distance dans toutes les Antilles</b> : ce service se fait aussi entièrement à distance, pour les entreprises de Guadeloupe, de Guyane, de Saint-Martin et de Saint-Barthélemy (échanges en visio, WhatsApp et email).</p>' : ''}
     <p>Nos agences de <b>Ducos</b> (${esc(AGENCES.ducos.tel)}) et du <b>Robert</b> (${esc(AGENCES.robert.tel)}) couvrent toute l’île. Déplacement offert dès ${eur(CONFIG.deplacementOffertDes)} de prestation, gratuit en agence et à distance.</p>
     <ul class="seo-zones">${zones}</ul>
 
@@ -570,6 +622,8 @@ const enTete = (titre, desc, url, ld, ogTitre, ogDesc, robots = 'index,follow,ma
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://formsubmit.co; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>${esc(titre)}</title>
   <meta name="description" content="${esc(desc)}">

@@ -25,7 +25,8 @@ async function charger() {
   chargement = true; erreur = ''; render();
   try { demandes = (await api('liste')).demandes || []; }
   catch (e) {
-    if (e.message === 'cle') { erreur = 'Code incorrect.'; cle = ''; try { localStorage.removeItem('itGestionCle'); } catch (x) {} }
+    if (e.message === 'bloque') erreur = 'Trop d’essais : accès bloqué 15 minutes.';
+    else if (e.message === 'cle') { erreur = 'Code incorrect.'; cle = ''; try { localStorage.removeItem('itGestionCle'); } catch (x) {} }
     else erreur = 'Impossible de joindre le script Google. Vérifiez votre connexion et l’adresse CONFIG.endpoint.';
   }
   chargement = false; render();

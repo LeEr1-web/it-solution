@@ -33,6 +33,7 @@ const DEFAULT = {
   d: { appType: '', mode: 'site', commune: '', agence: 'ducos', creneau: '', date: '', type: 'individual', budget: 'medium', appareil: '', desc: '', contrat: false, name: '', email: '', phone: '', address: '', pref: 'whatsapp', consent: false, website: '', chatMsg: MESSAGES_WA[0][1], chatCommune: '' }
 };
 let state = load();
+const ouvertLe = Date.now();   // anti-robot : un humain met plus de quelques secondes à remplir le formulaire
 const slotCache = {};   // places restantes par créneau, par "date|agence" : { matin: 2, aprem: 0 }
 const premierJour = () => addDays(todayISO(), CONFIG.delaiMinJours || 0);
 let sending = false;
@@ -71,7 +72,7 @@ function openStatus() {
     const hrs = HORAIRES[dt.getDay()];
     if (!hrs || (i === 0 && h >= hrs[0])) continue;
     const when = i === 0 ? "aujourd'hui" : i === 1 ? 'demain' : dt.toLocaleDateString('fr-FR', { weekday: 'long' });
-    return { open: false, text: `Fermé · ouvre ${when} à ${hrs[0]} h` };
+    return { open: false, text: `Fermé · ouvre ${when === "aujourd'hui" ? '' : when + ' '}à ${hrs[0]} h` };
   }
   return { open: false, text: 'Fermé' };
 }
@@ -741,10 +742,11 @@ async function send() {
   let google = null;
   if (CONFIG.endpoint) {
     try {
-      const res = await fetch(CONFIG.endpoint, { method: 'POST', body: JSON.stringify({ ...lead, photo: photo ? { data: photo.data, type: photo.type } : null }) });
+      const res = await fetch(CONFIG.endpoint, { method: 'POST', body: JSON.stringify({ ...lead, duree: Date.now() - ouvertLe, photo: photo ? { data: photo.data, type: photo.type } : null }) });
       google = await res.json();
     } catch (e) { google = { ok: false, reason: 'reseau' }; }
   }
+  if (google && !google.ok && google.reason === 'trop') { sending = false; renderNav(); return error('Trop de demandes envoyées : appelez-nous ou écrivez-nous sur WhatsApp.'); }
   if (google && !google.ok && google.reason === 'delai') { sending = false; goTo(2); return error('Les rendez-vous se prennent à partir de demain. Pour une urgence aujourd’hui, appelez-nous.'); }
   if (google && !google.ok && google.reason === 'complet') {
     sending = false;
